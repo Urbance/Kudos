@@ -1,0 +1,6 @@
+SQL:
+  hostname: "hostname"
+  port: "port"
+  database: "database"
+  username: "username"
+  password: "password"
