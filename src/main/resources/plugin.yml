@@ -1,0 +1,6 @@
+name: Kudos
+version: '${project.version}'
+main: de.urbance.Main
+api-version: 1.19
+authors: [ Urbance ]
+website: https://github.com/Urbance
