@@ -1,7 +1,7 @@
 package de.urbance;
 
 import Commands.Kudos;
-import Events.OnInventoryClick;
+import Utils.GUI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
@@ -19,7 +19,7 @@ public final class Main extends JavaPlugin {
 
         // Register Listeners and Commands
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new OnInventoryClick(), this);
+        pluginManager.registerEvents(new GUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
     }
 
