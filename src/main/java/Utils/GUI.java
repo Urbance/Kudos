@@ -13,6 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class GUI implements Listener {
     private final Inventory inventory;
 
@@ -26,16 +29,18 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, "§2§lDeine Kudos"));
-        inventory.setItem(4, createItem(Material.POPPY, "§eHilfe"));
-        inventory.setItem(6, createItem(Material.EMERALD, "§b§lTop3"));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, "§2§lDeine Kudos", null));
+        inventory.setItem(4, createItem(Material.POPPY, "§e§lHilfe",
+                Arrays.asList("§7/kudo [player] - Award a player a Kudo", "§7/kudos - Opens GUI", "§7/kudos [playername] - Displays the player's Kudos")));
+        inventory.setItem(6, createItem(Material.EMERALD, "§b§lTop3", null));
     }
 
-    private ItemStack createItem(Material material, String displayname) {
+    private ItemStack createItem(Material material, String displayname, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
 
         itemMeta.setDisplayName(displayname);
+        itemMeta.setLore(lore);
 
         item.setItemMeta(itemMeta);
 

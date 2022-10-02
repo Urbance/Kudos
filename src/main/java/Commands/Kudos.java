@@ -16,8 +16,8 @@ public class Kudos implements CommandExecutor {
     // TODO Add permission query
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
+            Player player = ((Player) sender).getPlayer();
             if (args.length == 0) {
-                Player player = ((Player) sender).getPlayer();
                 inventory = new GUI().getInventory();
                 player.openInventory(inventory);
             }
