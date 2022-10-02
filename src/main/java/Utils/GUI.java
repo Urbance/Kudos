@@ -17,7 +17,7 @@ public class GUI implements Listener {
     private final Inventory inventory;
 
     public GUI() {
-        inventory = Bukkit.createInventory(null, 27, "Kudos");
+        inventory = Bukkit.createInventory(null, 9, "Kudos");
         setItems();
     }
 
@@ -26,10 +26,9 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(11, createItem(Material.PLAYER_HEAD, "§2§lDeine Kudos"));
-        inventory.setItem(13, createItem(Material.POPPY, "§eVergebe einen Kudo"));
-        inventory.setItem(15, createItem(Material.EMERALD, "§b§lTop3"));
-        inventory.setItem(22, createItem(Material.PLAYER_HEAD, "§eSpielersuche"));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, "§2§lDeine Kudos"));
+        inventory.setItem(4, createItem(Material.POPPY, "§eHilfe"));
+        inventory.setItem(6, createItem(Material.EMERALD, "§b§lTop3"));
     }
 
     private ItemStack createItem(Material material, String displayname) {
@@ -56,7 +55,7 @@ public class GUI implements Listener {
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
 
-        ItemStack playerHead = inventory.getItem(11);
+        ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
