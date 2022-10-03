@@ -1,0 +1,14 @@
+GUI:
+  your_kudos:
+    item_name: "&2&lYour Kudos"
+    lore:
+      - "&7You have &e%player_kudos% &7Kudos"
+  help:
+    item_name: "&e&lHelp"
+    lore:
+      - "&7/kudo [player] - Award a player a Kudo"
+      - "&7/kudos - Opens GUI"
+      - "&7/kudos [playername] - Displays the player's Kudos"
+  top3:
+    item_name: "&b&lTop3"
+
