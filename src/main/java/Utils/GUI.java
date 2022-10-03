@@ -1,8 +1,12 @@
 package Utils;
 
 import Commands.Kudos;
+import Utils.SQL.SQLGetter;
+import de.urbance.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,10 +18,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GUI implements Listener {
     private final Inventory inventory;
+    public SQLGetter data;
+    FileConfiguration localeConfiguration;
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
@@ -29,17 +36,26 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, "§2§lDeine Kudos", null));
-        inventory.setItem(4, createItem(Material.POPPY, "§e§lHilfe",
-                Arrays.asList("§7/kudo [player] - Award a player a Kudo", "§7/kudos - Opens GUI", "§7/kudos [playername] - Displays the player's Kudos")));
-        inventory.setItem(6, createItem(Material.EMERALD, "§b§lTop3", null));
+        LocaleManager localeManager = new LocaleManager(Main.getPlugin(Main.class));
+        localeConfiguration = localeManager.getConfig();
+
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, localeConfiguration.getString("GUI.your_kudos.item_name"), null));
+        inventory.setItem(4, createItem(Material.POPPY, localeConfiguration.getString("GUI.help.item_name"), localeConfiguration.getStringList("GUI.help.lore")));
+        inventory.setItem(6, createItem(Material.EMERALD, localeConfiguration.getString("GUI.top3.item_name"), null));
     }
 
     private ItemStack createItem(Material material, String displayname, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
 
-        itemMeta.setDisplayName(displayname);
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
+
+        if (lore != null) {
+            for (int i = 0; i < lore.size(); i++) {
+                lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+            }
+        }
+
         itemMeta.setLore(lore);
 
         item.setItemMeta(itemMeta);
@@ -57,13 +73,22 @@ public class GUI implements Listener {
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
+        LocaleManager localeManager = new LocaleManager(Main.getPlugin(Main.class));
+        localeConfiguration = localeManager.getConfig();
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
+        data = new SQLGetter(Main.getPlugin(Main.class));
 
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
+
+        List<String> lore = localeConfiguration.getStringList("GUI.your_kudos.lore");
+        lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
+        lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
+
+        skullMeta.setLore(lore);
 
         playerHead.setItemMeta(skullMeta);
     }
