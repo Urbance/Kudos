@@ -3,4 +3,5 @@ SQL:
   port: "port"
   database: "database"
   username: "username"
-  password: "password"
+  password: ""
+  useSSL: "true"
