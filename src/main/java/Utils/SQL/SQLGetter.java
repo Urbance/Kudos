@@ -67,6 +67,39 @@ public class SQLGetter {
         }
     }
 
+    public void removeKudos(UUID uuid, int kudos) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET KUDOS=? WHERE UUID=?");
+            preparedStatement.setInt(1, (getKudos(uuid) - kudos));
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setKudos(UUID uuid, int kudos) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET KUDOS=? WHERE UUID=?");
+            preparedStatement.setInt(1, (kudos));
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearKudos(UUID uuid) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET KUDOS=? WHERE UUID=?");
+            preparedStatement.setInt(1, 0);
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getKudos(UUID uuid) {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT KUDOS from kudos WHERE UUID=?");
@@ -82,4 +115,5 @@ public class SQLGetter {
         }
         return 0;
     }
+
 }
