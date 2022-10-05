@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
+    public static String prefix;
 
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
@@ -24,6 +25,8 @@ public final class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         config.options().copyDefaults(true);
         saveConfig();
+
+        prefix = config.getString("prefix");
 
         // Register Listeners and Commands
         PluginManager pluginManager = Bukkit.getPluginManager();

@@ -5,3 +5,4 @@ SQL:
   username: "username"
   password: ""
   useSSL: "true"
+prefix: "&7[&eKudos&7] "

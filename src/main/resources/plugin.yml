@@ -6,4 +6,15 @@ authors: [ Urbance ]
 website: https://github.com/Urbance
 commands:
   kudos:
-    description: Award someone a Kudo!
+    description: Opens GUI or shows Kudos from a player
+  kudo:
+    description: Award someone a Kudo
+permissions:
+  kudos.gui:
+    description: Allows to open the GUI
+  kudos.show:
+    description: Allows viewing of Kudos from other players and itself
+  kudos.*:
+    description: Allows all kudos user commands
+  kudos.award:
+    description: Allows the awarding of Kudos
