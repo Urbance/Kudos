@@ -11,7 +11,9 @@ GUI:
       - "&7/kudos [playername] - Displays the player's Kudos"
   top3:
     item_name: "&b&lTop3"
-messages:
+kudo:
   player_award_kudo: "The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
+kudos:
   show_player_kudos: "The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
+other:
   no_permission: "You don't have the permission to do this!"

@@ -39,7 +39,7 @@ public class Kudo implements CommandExecutor {
                     data = new SQLGetter(Main.getPlugin(Main.class));
                     data.addKudos(targetPlayer.getUniqueId(), 1);
 
-                    String awardMessage = locale.getString("messages.player_award_kudo");
+                    String awardMessage = locale.getString("kudo.player_award_kudo");
                     awardMessage = awardMessage.replaceAll("%player%", player.getName());
                     awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
                     awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));

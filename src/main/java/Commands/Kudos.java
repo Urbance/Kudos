@@ -30,7 +30,7 @@ public class Kudos implements CommandExecutor {
                     inventory = new GUI().getInventory();
                     player.openInventory(inventory);
                 } else {
-                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("messages.no_permission")));
+                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("other.no_permission")));
                 }
             }
 
@@ -40,12 +40,12 @@ public class Kudos implements CommandExecutor {
                 if (player.hasPermission("kudos.show") || player.hasPermission("kudos.*")) {
                     Player targetPlayer = Bukkit.getPlayer(args[0]);
 
-                    String showKudosMessage = locale.getString("messages.show_player_kudos");
+                    String showKudosMessage = locale.getString("kudos.show_player_kudos");
                     showKudosMessage = showKudosMessage.replaceAll("%targetplayer%", targetPlayer.getName());
                     showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
                     Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + showKudosMessage));
                 } else {
-                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("messages.no_permission")));
+                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("other.no_permission")));
                 }
             }
         } else {
