@@ -30,7 +30,7 @@ public class Kudos implements CommandExecutor {
                     inventory = new GUI().getInventory();
                     player.openInventory(inventory);
                 } else {
-                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("other.no_permission")));
+                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
                 }
             }
 
@@ -45,7 +45,7 @@ public class Kudos implements CommandExecutor {
                     showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
                     Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + showKudosMessage));
                 } else {
-                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("other.no_permission")));
+                    Bukkit.getPlayer(player.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
                 }
             }
         } else {

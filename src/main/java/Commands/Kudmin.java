@@ -25,7 +25,7 @@ public class Kudmin implements CommandExecutor {
         SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
 
         if (!sender.hasPermission("kudos.kudmin")) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("other.no_permission")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
             return false;
         }
 
@@ -50,9 +50,8 @@ public class Kudmin implements CommandExecutor {
 
        switch (args[0]) {
            case "add":
-               if (!validateInput(args, sender)) {
+               if (!validateInput(args, sender))
                    return false;
-               }
 
                data.addKudos(Bukkit.getPlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
