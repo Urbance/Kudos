@@ -9,6 +9,8 @@ commands:
     description: Opens GUI or shows Kudos from a player
   kudo:
     description: Award someone a Kudo
+  kudmin:
+    description: Administrator tools
 permissions:
   kudos.gui:
     description: Allows to open the GUI

@@ -1,5 +1,6 @@
 package de.urbance;
 
+import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
@@ -34,6 +35,7 @@ public final class Main extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new OnPlayerJoin(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudmin").setExecutor(new Kudmin());
 
         // SQL Stuff
         this.SQL = new SQL();
