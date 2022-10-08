@@ -17,7 +17,7 @@ kudos:
   show_player_kudos: "&7The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
 error:
   no_permission: "&7You don't have the permission to do this!"
-  wrong_usage: "&7Wrong usage! Type &e/kudos for more informations"
+  wrong_usage: "&7Wrong usage! Type &e/kudos &7for more informations"
   specify_player: "&7Please specify a player!"
   player_not_found: "&7The player &e%targetplayer% &7was not found!"
   cant_give_yourself_kudo: "&7You can't give yourself a kudo!"
