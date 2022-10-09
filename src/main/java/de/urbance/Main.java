@@ -5,6 +5,7 @@ import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
 import Utils.GUI;
+import Utils.Metrics;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import org.bukkit.Bukkit;
@@ -51,6 +52,11 @@ public final class Main extends JavaPlugin implements Listener {
             Bukkit.getLogger().info("Database is connected");
             data.createTable();
         }
+
+
+        // bStats
+        int pluginId = 16627;
+        Metrics metrics = new Metrics(this, pluginId);
     }
 
     @Override
