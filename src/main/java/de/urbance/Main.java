@@ -53,10 +53,8 @@ public final class Main extends JavaPlugin implements Listener {
             data.createTable();
         }
 
-
         // bStats
-        int pluginId = 16627;
-        Metrics metrics = new Metrics(this, pluginId);
+        Metrics metrics = new Metrics(this, 16627);
     }
 
     @Override
