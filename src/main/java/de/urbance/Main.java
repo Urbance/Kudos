@@ -25,6 +25,8 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        getLogger().info("Successfully launched. For plugin support visit my Discord server: https://discord.gg/hDqPms3MbH");
+
         config.options().copyDefaults(true);
         saveConfig();
 
