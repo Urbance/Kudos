@@ -10,10 +10,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
-import static de.urbance.Main.prefix;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 public class Kudmin implements CommandExecutor {
+    public String prefix = "&7[&cKudmin&7] ";
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -30,7 +31,8 @@ public class Kudmin implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Try /kudmin help for more informations!"));
+            PluginDescriptionFile pluginDescriptionFile = Main.getPlugin(Main.class).getDescription();
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }
 
