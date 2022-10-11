@@ -6,3 +6,4 @@ SQL:
   password: ""
   useSSL: "true"
 prefix: "&7[&eKudos&7] "
+kudo_award_cooldown: 120

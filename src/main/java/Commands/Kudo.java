@@ -1,5 +1,6 @@
 package Commands;
 
+import Utils.CooldownManager;
 import Utils.LocaleManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
@@ -10,10 +11,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import static de.urbance.Main.prefix;
 
 public class Kudo implements CommandExecutor {
+    private final CooldownManager cooldownManager = new CooldownManager();
+
     public SQLGetter data;
     FileConfiguration locale;
 
@@ -29,6 +33,28 @@ public class Kudo implements CommandExecutor {
 
         Player player = ((Player) sender).getPlayer();
         locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
+        int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
+
+        if (timeLeft != 0) {
+            String mustWaitBeforeUseItAgain = locale.getString("error.must_wait_before_use_again");
+            mustWaitBeforeUseItAgain = mustWaitBeforeUseItAgain.replaceAll("%seconds%", String.valueOf(timeLeft));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + mustWaitBeforeUseItAgain));
+            return false;
+        }
+
+        cooldownManager.setCooldown(player.getUniqueId(), CooldownManager.COOLDOWN);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
+                cooldownManager.setCooldown(player.getUniqueId(), --timeLeft);
+                if (timeLeft == 0)
+                    this.cancel();
+            }
+        }.runTaskTimer(Main.getPlugin(Main.class), 20, 20);
+
+
 
         Player targetPlayer = Bukkit.getPlayer(args[0]);
 
@@ -40,6 +66,7 @@ public class Kudo implements CommandExecutor {
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
+
 
         return false;
     }
