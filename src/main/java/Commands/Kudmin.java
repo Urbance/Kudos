@@ -36,22 +36,21 @@ public class Kudmin implements CommandExecutor {
             return false;
         }
 
-        if (args[0].equals("help")) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',
-                    "&7========= &c&lKudmin Commands &7=========\n" +
-                            " \n" +
-                            "/kudmin help &7- Shows all kudmin commands\n" +
-                            "/kudmin add &e[player] [amount] &7- Add Kudos\n" +
-                            "/kudmin remove &e[player] [amount] &7- Remove Kudos\n" +
-                            "/kudmin set &e[player] [amount] &7- Set Kudos\n" +
-                            "/kudmin clear &e[player] &7- Clear all Kudos\n" +
-                            "/kudmin reload - Reloads config and locales\n" +
-                            " \n" +
-                            "All player commands are listed on &c/kudos"));
-        }
-
-       switch (args[0]) {
-           case "add":
+        switch (args[0]) {
+            case "help":
+                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',
+        "&7========= &c&lKudmin Commands &7=========\n" +
+                    " \n" +
+                    "/kudmin help &7- Shows all kudmin commands\n" +
+                    "/kudmin add &e[player] [amount] &7- Add Kudos\n" +
+                    "/kudmin remove &e[player] [amount] &7- Remove Kudos\n" +
+                    "/kudmin set &e[player] [amount] &7- Set Kudos\n" +
+                    "/kudmin clear &e[player] &7- Clear all Kudos\n" +
+                    "/kudmin reload - Reloads config and locales\n" +
+                    " \n" +
+                    "All player commands are listed on &c/kudos"));
+               break;
+            case "add":
                if (!validateInput(args, sender))
                    return false;
 
@@ -59,7 +58,7 @@ public class Kudmin implements CommandExecutor {
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
-           case "remove":
+            case "remove":
                if (!validateInput(args, sender)) {
                    return false;
                }
@@ -74,7 +73,7 @@ public class Kudmin implements CommandExecutor {
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
-           case "set":
+            case "set":
                if (!validateInput(args, sender)) {
                    return false;
                }
@@ -83,7 +82,7 @@ public class Kudmin implements CommandExecutor {
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
-           case "clear":
+            case "clear":
                if (args.length != 2) {
                    Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
                    return false;
