@@ -54,8 +54,6 @@ public class Kudo implements CommandExecutor {
             }
         }.runTaskTimer(Main.getPlugin(Main.class), 20, 20);
 
-
-
         Player targetPlayer = Bukkit.getPlayer(args[0]);
 
         data = new SQLGetter(Main.getPlugin(Main.class));
@@ -66,7 +64,6 @@ public class Kudo implements CommandExecutor {
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
-
 
         return false;
     }
