@@ -27,10 +27,7 @@ public class Kudos implements CommandExecutor {
             return false;
         }
 
-        locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
-
-        if (args.length > 1) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
+        if (!validateInput(args, sender)) {
             return false;
         }
 
@@ -69,5 +66,23 @@ public class Kudos implements CommandExecutor {
         showKudosMessage = showKudosMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + showKudosMessage));
+    }
+
+    public boolean validateInput(String[] args, CommandSender sender) {
+        locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
+
+        if (args.length > 1) {
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
+            return false;
+        }
+
+        if (Bukkit.getPlayer(args[0]) == null) {
+            String playerNotFound = locale.getString("error.player_not_found");
+            playerNotFound = playerNotFound.replaceAll("%targetplayer%", args[0]);
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + playerNotFound));
+            return false;
+        }
+
+        return true;
     }
 }
