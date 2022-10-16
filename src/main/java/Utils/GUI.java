@@ -22,7 +22,8 @@ import java.util.List;
 public class GUI implements Listener {
     private final Inventory inventory;
     public SQLGetter data;
-    FileConfiguration localeConfiguration;
+    public Main plugin = Main.getPlugin(Main.class);
+    public FileConfiguration locale = plugin.locale;
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
@@ -34,12 +35,9 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        LocaleManager localeManager = new LocaleManager(Main.getPlugin(Main.class));
-        localeConfiguration = localeManager.getConfig();
-
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, localeConfiguration.getString("GUI.your_kudos.item_name"), null));
-        inventory.setItem(4, createItem(Material.POPPY, localeConfiguration.getString("GUI.help.item_name"), localeConfiguration.getStringList("GUI.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, localeConfiguration.getString("GUI.top3.item_name"), null));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your_kudos.item_name"), null));
+        inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item_name"), locale.getStringList("GUI.help.lore")));
+        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item_name"), null));
     }
 
     private ItemStack createItem(Material material, String displayname, List<String> lore) {
@@ -71,8 +69,6 @@ public class GUI implements Listener {
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent event) {
-        LocaleManager localeManager = new LocaleManager(Main.getPlugin(Main.class));
-        localeConfiguration = localeManager.getConfig();
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
         data = new SQLGetter(Main.getPlugin(Main.class));
@@ -82,12 +78,11 @@ public class GUI implements Listener {
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
-        List<String> lore = localeConfiguration.getStringList("GUI.your_kudos.lore");
+        List<String> lore = locale.getStringList("GUI.your_kudos.lore");
         lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
         lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
 
         skullMeta.setLore(lore);
-
         playerHead.setItemMeta(skullMeta);
     }
 }

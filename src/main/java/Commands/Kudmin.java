@@ -14,6 +14,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 public class Kudmin implements CommandExecutor {
     public String prefix = "&7[&cKudmin&7] ";
+    public Main plugin = Main.getPlugin(Main.class);
+    public FileConfiguration locale = plugin.locale;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -22,7 +24,6 @@ public class Kudmin implements CommandExecutor {
             return false;
         }
 
-        FileConfiguration locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
         SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
 
         if (!sender.hasPermission("kudos.kudmin")) {
@@ -50,6 +51,10 @@ public class Kudmin implements CommandExecutor {
                     " \n" +
                     "All player commands are listed on &c/kudos"));
                break;
+            case "reload":
+                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
+                plugin.reloadConfigs();
+                break;
             case "add":
                if (!validateInput(args, sender))
                    return false;

@@ -5,19 +5,22 @@ import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
 import Utils.GUI;
+import Utils.LocaleManager;
 import Utils.Metrics;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
+import java.util.Locale;
 
 public final class Main extends JavaPlugin implements Listener {
     public static String prefix;
-
+    public FileConfiguration locale;
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
 
@@ -26,6 +29,8 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getLogger().info("Successfully launched. For plugin support visit my Discord server: https://discord.gg/hDqPms3MbH");
+
+        locale = new LocaleManager(this).getConfig();
 
         config.options().copyDefaults(true);
         saveConfig();
@@ -68,4 +73,16 @@ public final class Main extends JavaPlugin implements Listener {
         return getConfig();
     }
 
+    public void reloadConfigs() {
+        // Reload config
+        reloadConfig();
+        saveConfig();
+
+        // Reload messages.yml
+        LocaleManager localeManager = new LocaleManager(this);
+        FileConfiguration locale = localeManager.getConfig();
+        localeManager.reloadLocale();
+        this.locale = locale;
+
+    }
 }

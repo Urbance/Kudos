@@ -13,16 +13,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static de.urbance.Main.prefix;
-
 public class Kudo implements CommandExecutor {
     private final CooldownManager cooldownManager = new CooldownManager();
-
+    public String prefix;
     public SQLGetter data;
-    FileConfiguration locale;
+    public Main plugin = Main.getPlugin(Main.class);
+    public FileConfiguration locale = plugin.locale;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        prefix = Main.getPlugin(Main.class).getConfig().getString("prefix");
+
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
             return false;
@@ -32,7 +33,6 @@ public class Kudo implements CommandExecutor {
             return false;
 
         Player player = ((Player) sender).getPlayer();
-        locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
         int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
 
         if (timeLeft != 0) {
@@ -69,8 +69,6 @@ public class Kudo implements CommandExecutor {
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
-        locale = new LocaleManager(Main.getPlugin(Main.class)).getConfig();
-
         if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
             return false;
