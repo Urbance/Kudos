@@ -24,7 +24,7 @@ public class Kudmin implements CommandExecutor {
             return false;
         }
 
-        SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
+        SQLGetter data = new SQLGetter(plugin);
 
         if (!sender.hasPermission("kudos.kudmin")) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
@@ -32,7 +32,7 @@ public class Kudmin implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            PluginDescriptionFile pluginDescriptionFile = Main.getPlugin(Main.class).getDescription();
+            PluginDescriptionFile pluginDescriptionFile = plugin.getDescription();
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }

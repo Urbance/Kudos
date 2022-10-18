@@ -22,7 +22,7 @@ public class Kudos implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        prefix = Main.getPlugin(Main.class).getConfig().getString("prefix");
+        prefix = plugin.getConfig().getString("prefix");
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
@@ -55,7 +55,7 @@ public class Kudos implements CommandExecutor {
     }
 
     public void showKudos(String[] args, CommandSender sender) {
-        data = new SQLGetter(Main.getPlugin(Main.class));
+        data = new SQLGetter(plugin);
 
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));

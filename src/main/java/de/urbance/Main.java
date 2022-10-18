@@ -11,12 +11,10 @@ import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
-import java.util.Locale;
 
 public final class Main extends JavaPlugin implements Listener {
     public static String prefix;

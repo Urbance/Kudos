@@ -71,7 +71,7 @@ public class GUI implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
-        data = new SQLGetter(Main.getPlugin(Main.class));
+        data = new SQLGetter(plugin);
 
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();

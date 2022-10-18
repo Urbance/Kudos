@@ -22,7 +22,7 @@ public class Kudo implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        prefix = Main.getPlugin(Main.class).getConfig().getString("prefix");
+        this.prefix = plugin.getConfig().getString("prefix");
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
@@ -52,11 +52,11 @@ public class Kudo implements CommandExecutor {
                 if (timeLeft == 0)
                     this.cancel();
             }
-        }.runTaskTimer(Main.getPlugin(Main.class), 20, 20);
+        }.runTaskTimer(plugin, 20, 20);
 
         Player targetPlayer = Bukkit.getPlayer(args[0]);
 
-        data = new SQLGetter(Main.getPlugin(Main.class));
+        data = new SQLGetter(plugin);
         data.addKudos(targetPlayer.getUniqueId(), 1);
 
         String awardMessage = locale.getString("kudo.player_award_kudo");
