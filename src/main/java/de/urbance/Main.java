@@ -28,21 +28,6 @@ public final class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         getLogger().info("Successfully launched. For plugin support visit my Discord server: https://discord.gg/hDqPms3MbH");
 
-        locale = new LocaleManager(this).getConfig();
-
-        config.options().copyDefaults(true);
-        saveConfig();
-
-        prefix = config.getString("prefix");
-
-        // Register Listeners and Commands
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new GUI(), this);
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudmin").setExecutor(new Kudmin());
-
         // SQL Stuff
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
@@ -57,6 +42,21 @@ public final class Main extends JavaPlugin implements Listener {
             Bukkit.getLogger().info("Database is connected");
             data.createTable();
         }
+
+        locale = new LocaleManager(this).getConfig();
+
+        config.options().copyDefaults(true);
+        saveConfig();
+
+        prefix = config.getString("prefix");
+
+        // Register Listeners and Commands
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new GUI(), this);
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudmin").setExecutor(new Kudmin());
 
         // bStats
         Metrics metrics = new Metrics(this, 16627);

@@ -1,6 +1,7 @@
 package Utils;
 
 import Commands.Kudos;
+import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -21,12 +22,13 @@ import java.util.List;
 
 public class GUI implements Listener {
     private final Inventory inventory;
-    public SQLGetter data;
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale = plugin.locale;
+    public SQLGetter data = new SQLGetter(plugin);
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
+        SQLGetter data = new SQLGetter(plugin);
         setItems();
     }
 
@@ -37,25 +39,25 @@ public class GUI implements Listener {
     private void setItems() {
         inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your_kudos.item_name"), null));
         inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item_name"), locale.getStringList("GUI.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item_name"), null));
+        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item_name"), data.getTemp()));
     }
 
     private ItemStack createItem(Material material, String displayname, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
 
         if (lore != null) {
+            Bukkit.getConsoleSender().sendMessage("Size: " + String.valueOf(lore.size()));
+
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+
+                Bukkit.getConsoleSender().sendMessage(String.valueOf(i));
             }
         }
-
         itemMeta.setLore(lore);
-
         item.setItemMeta(itemMeta);
-
         return item;
     }
 
@@ -71,6 +73,7 @@ public class GUI implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
+        SQLGetter data = new SQLGetter(plugin);
         data = new SQLGetter(plugin);
 
         ItemStack playerHead = inventory.getItem(2);

@@ -1,19 +1,26 @@
 package Utils.SQL;
 
+import Utils.LocaleManager;
 import de.urbance.Main;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SQLGetter {
 
     private Main plugin;
+    public FileConfiguration locale;
 
     public SQLGetter(Main plugin) {
         this.plugin = plugin;
+        this.locale = new LocaleManager(plugin).getConfig();
     }
 
     public void createTable() {
@@ -114,6 +121,37 @@ public class SQLGetter {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public List<String> getTemp() {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT KUDOS, NAME FROM KUDOS ORDER BY KUDOS DESC LIMIT 3");
+            ResultSet results = preparedStatement.executeQuery();
+            List<String> topThree = locale.getStringList("GUI.top3.lore");
+
+            int counter = 0;
+            while (results.next()) {
+                if (results.getString("KUDOS") == null) {
+                    topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", String.valueOf(0)));
+                    topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
+                } else {
+                    topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
+                    topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
+                }
+                counter++;
+            }
+
+            for (int i = 0; i < topThree.size(); i++) {
+                if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%") ) {
+                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', locale.getString("GUI.top3.not_assigned")));
+                }
+            }
+
+            return topThree;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
