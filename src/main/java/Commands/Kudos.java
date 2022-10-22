@@ -16,13 +16,14 @@ import org.bukkit.inventory.Inventory;
 public class Kudos implements CommandExecutor {
     public static Inventory inventory;
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale = plugin.locale;
+    public FileConfiguration locale;
     public SQLGetter data;
     public String prefix;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         prefix = plugin.getConfig().getString("prefix");
+        this.locale = plugin.locale;
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");

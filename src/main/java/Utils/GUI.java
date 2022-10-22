@@ -23,11 +23,12 @@ import java.util.List;
 public class GUI implements Listener {
     private final Inventory inventory;
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale = plugin.locale;
+    public FileConfiguration locale;
     public SQLGetter data = new SQLGetter(plugin);
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
+        this.locale = plugin.locale;
         SQLGetter data = new SQLGetter(plugin);
         setItems();
     }

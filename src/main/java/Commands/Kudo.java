@@ -18,11 +18,12 @@ public class Kudo implements CommandExecutor {
     public String prefix;
     public SQLGetter data;
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale = plugin.locale;
+    public FileConfiguration locale;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.getConfig().getString("prefix");
+        this.locale = plugin.locale;
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
