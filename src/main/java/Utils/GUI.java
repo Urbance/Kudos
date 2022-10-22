@@ -48,12 +48,8 @@ public class GUI implements Listener {
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
 
         if (lore != null) {
-            Bukkit.getConsoleSender().sendMessage("Size: " + String.valueOf(lore.size()));
-
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
-
-                Bukkit.getConsoleSender().sendMessage(String.valueOf(i));
             }
         }
         itemMeta.setLore(lore);
