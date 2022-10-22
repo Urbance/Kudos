@@ -59,7 +59,7 @@ public class Kudmin implements CommandExecutor {
                if (!validateInput(args, sender))
                    return false;
 
-               data.addKudos(Bukkit.getPlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
+               data.addKudos(Bukkit.getPlayer(args[1]).getUniqueId(), ((Player) sender).getUniqueId(), Integer.parseInt(args[2]));
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 

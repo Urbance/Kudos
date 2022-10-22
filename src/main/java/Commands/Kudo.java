@@ -58,7 +58,7 @@ public class Kudo implements CommandExecutor {
         Player targetPlayer = Bukkit.getPlayer(args[0]);
 
         data = new SQLGetter(plugin);
-        data.addKudos(targetPlayer.getUniqueId(), 1);
+        data.addKudos(targetPlayer.getUniqueId(), ((Player) sender).getUniqueId(), 1);
 
         String awardMessage = locale.getString("kudo.player_award_kudo");
         awardMessage = awardMessage.replaceAll("%player%", player.getName());

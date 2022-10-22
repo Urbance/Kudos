@@ -27,7 +27,7 @@ public class SQLGetter {
         PreparedStatement preparedStatement;
         try {
             preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS kudos " +
-                    "(UUID VARCHAR(100),NAME VARCHAR(100),KUDOS INT(100),PRIMARY KEY (UUID) )");
+                    "(UUID VARCHAR(100),NAME VARCHAR(100),KUDOS INT(100),ASSIGNED INT(100),PRIMARY KEY (UUID))");
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,6 +42,8 @@ public class SQLGetter {
                 preparedStatement2.setString(1, player.getName());
                 preparedStatement2.setString(2, uuid.toString());
                 preparedStatement2.executeUpdate();
+                addKudos(uuid, null, 0);
+                addAssignedKudos(uuid, 0);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -63,12 +65,14 @@ public class SQLGetter {
         return false;
     }
 
-    public void addKudos(UUID uuid, int kudos) {
+    public void addKudos(UUID toPlayer, UUID fromPlayer, int kudos) {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET KUDOS=? WHERE UUID=?");
-            preparedStatement.setInt(1, (getKudos(uuid) + kudos));
-            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.setInt(1, (getKudos(toPlayer) + kudos));
+            preparedStatement.setString(2, toPlayer.toString());
             preparedStatement.executeUpdate();
+            if (fromPlayer != null)
+                addAssignedKudos(fromPlayer, 1);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -123,7 +127,34 @@ public class SQLGetter {
         return 0;
     }
 
-    public List<String> getTemp() {
+    public void addAssignedKudos(UUID uuid, int assigned) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET ASSIGNED=? WHERE UUID=?");
+            preparedStatement.setInt(1, (getAssignedKudo(uuid) + assigned));
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getAssignedKudo(UUID uuid) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT ASSIGNED from kudos WHERE UUID=?");
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+            int assigned = 0;
+            if (results.next()) {
+                assigned = results.getInt("ASSIGNED");
+                return assigned;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public List<String> getTopThreePlayers() {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT KUDOS, NAME FROM KUDOS ORDER BY KUDOS DESC LIMIT 3");
             ResultSet results = preparedStatement.executeQuery();
@@ -131,13 +162,8 @@ public class SQLGetter {
 
             int counter = 0;
             while (results.next()) {
-                if (results.getString("KUDOS") == null) {
-                    topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", String.valueOf(0)));
-                    topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
-                } else {
-                    topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
-                    topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
-                }
+                topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
+                topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
                 counter++;
             }
 
