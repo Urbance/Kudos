@@ -10,7 +10,7 @@ GUI:
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the player's Kudos"
   top3:
-    item_name: "&b&lTop3"
+    item_name: "&c&lTop3"
     lore:
       - "&c%top_kudos% &7%top_player%"
       - "&c%top_kudos% &7%top_player%"
