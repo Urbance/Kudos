@@ -28,27 +28,11 @@ public final class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         getLogger().info("Successfully launched. For plugin support visit my Discord server: https://discord.gg/hDqPms3MbH");
 
-        // SQL Stuff
-        this.SQL = new SQL();
-        this.data = new SQLGetter(this);
-
-        try {
-            SQL.connect();
-        } catch (ClassNotFoundException | SQLException e) {
-            Bukkit.getLogger().info("Database not connected");
-        }
-
-        if (SQL.isConnected()) {
-            Bukkit.getLogger().info("Database is connected");
-            data.createTable();
-        }
-
-        locale = new LocaleManager(this).getConfig();
-
-        config.options().copyDefaults(true);
-        saveConfig();
-
         prefix = config.getString("prefix");
+        this.locale = new LocaleManager(this).getConfig();
+
+        setupSQL();
+        setupConfigs();
 
         // Register Listeners and Commands
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -67,6 +51,27 @@ public final class Main extends JavaPlugin implements Listener {
         SQL.disconnect();
     }
 
+    public void setupSQL(){
+        this.SQL = new SQL();
+        this.data = new SQLGetter(this);
+
+        try {
+            SQL.connect();
+        } catch (ClassNotFoundException | SQLException e) {
+            Bukkit.getLogger().info("Database not connected");
+        }
+
+        if (SQL.isConnected()) {
+            Bukkit.getLogger().info("Database is connected");
+            data.createTable();
+        }
+    }
+
+    public void setupConfigs() {
+        config.options().copyDefaults(true);
+        saveConfig();
+    }
+
     public FileConfiguration getConfigFile() {
         return getConfig();
     }
@@ -81,6 +86,5 @@ public final class Main extends JavaPlugin implements Listener {
         FileConfiguration locale = localeManager.getConfig();
         localeManager.reloadLocale();
         this.locale = locale;
-
     }
 }
