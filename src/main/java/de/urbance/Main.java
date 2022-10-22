@@ -25,7 +25,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("Successfully launched. For plugin support visit my Discord server: https://discord.gg/hDqPms3MbH");
+        getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
         prefix = config.getString("prefix");
         this.locale = new LocaleManager(this).getConfig();
