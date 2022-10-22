@@ -24,10 +24,10 @@ public class LocaleManager {
 
     public void reloadLocale() {
         if (this.localeConfig == null)
-            this.localeFile = new File(this.plugin.getDataFolder(), "locales/messages.yml");
+            this.localeFile = new File(this.plugin.getDataFolder(), "messages.yml");
         this.localeConfig = YamlConfiguration.loadConfiguration(this.localeFile);
 
-        InputStream defaultStream = this.plugin.getResource("locales/messages.yml");
+        InputStream defaultStream = this.plugin.getResource("messages.yml");
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.localeConfig.setDefaults(defaultConfig);
@@ -55,10 +55,10 @@ public class LocaleManager {
 
     public void saveDefaultConfig() {
         if (this.localeFile == null)
-            this.localeFile = new File(this.plugin.getDataFolder(), "locales/messages.yml");
+            this.localeFile = new File(this.plugin.getDataFolder(), "messages.yml");
 
         if (!this.localeFile.exists()) {
-            this.plugin.saveResource("locales/messages.yml", false);
+            this.plugin.saveResource("messages.yml", false);
         }
     }
 }
