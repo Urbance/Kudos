@@ -1,5 +1,5 @@
-/*
- * This Metrics class was auto-generated and can be copied into your project if you are
+package de.urbance;/*
+ * This de.urbance.Metrics class was auto-generated and can be copied into your project if you are
  * not using a build tool like Gradle or Maven for dependency management.
  *
  * IMPORTANT: You are not allowed to modify this class, except changing the package.
@@ -12,7 +12,6 @@
  *
  * Violations will result in a ban of your plugin and account from bStats.
  */
-package Utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +53,7 @@ public class Metrics {
     private final MetricsBase metricsBase;
 
     /**
-     * Creates a new Metrics instance.
+     * Creates a new de.urbance.Metrics instance.
      *
      * @param plugin Your plugin instance.
      * @param serviceId The id of the service. It can be found at <a
@@ -152,11 +151,11 @@ public class Metrics {
 
     public static class MetricsBase {
 
-        /** The version of the Metrics class. */
+        /** The version of the de.urbance.Metrics class. */
         public static final String METRICS_VERSION = "3.0.0";
 
         private static final ScheduledExecutorService scheduler =
-                Executors.newScheduledThreadPool(1, task -> new Thread(task, "bStats-Metrics"));
+                Executors.newScheduledThreadPool(1, task -> new Thread(task, "bStats-de.urbance.Metrics"));
 
         private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
 
@@ -265,7 +264,7 @@ public class Metrics {
             // of requests on the
             // bStats backend. To circumvent this problem, we introduce some randomness into the initial
             // and second delay.
-            // WARNING: You must not modify and part of this Metrics class, including the submit delay or
+            // WARNING: You must not modify and part of this de.urbance.Metrics class, including the submit delay or
             // frequency!
             // WARNING: Modifying this code will get your plugin banned on bStats. Just don't do it!
             long initialDelay = (long) (1000 * 60 * (3 + Math.random() * 3));
@@ -319,7 +318,7 @@ public class Metrics {
             connection.addRequestProperty("Content-Encoding", "gzip");
             connection.addRequestProperty("Content-Length", String.valueOf(compressedData.length));
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("User-Agent", "Metrics-Service/1");
+            connection.setRequestProperty("User-Agent", "de.urbance.Metrics-Service/1");
             connection.setDoOutput(true);
             try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
                 outputStream.write(compressedData);
@@ -352,7 +351,7 @@ public class Metrics {
                 // names
                 if (MetricsBase.class.getPackage().getName().startsWith(defaultPackage)
                         || MetricsBase.class.getPackage().getName().startsWith(examplePackage)) {
-                    throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
+                    throw new IllegalStateException("bStats de.urbance.Metrics class has not been relocated correctly!");
                 }
             }
         }

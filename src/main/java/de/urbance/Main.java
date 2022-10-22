@@ -6,7 +6,6 @@ import Commands.Kudos;
 import Events.OnPlayerJoin;
 import Utils.GUI;
 import Utils.LocaleManager;
-import Utils.Metrics;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import org.bukkit.Bukkit;
