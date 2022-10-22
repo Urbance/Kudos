@@ -20,3 +20,5 @@ permissions:
     description: Allows all kudos user commands
   kudos.award:
     description: Allows the awarding of Kudos
+  kudmin:
+    description: Allows to execute administrator commands

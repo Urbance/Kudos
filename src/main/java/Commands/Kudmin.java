@@ -26,7 +26,7 @@ public class Kudmin implements CommandExecutor {
 
         SQLGetter data = new SQLGetter(plugin);
 
-        if (!sender.hasPermission("kudos.kudmin")) {
+        if (!sender.hasPermission("kudmin")) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
             return false;
         }
