@@ -10,11 +10,11 @@ GUI:
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the player's Kudos"
   top3:
-    item_name: "&b&lTop3"
+    item_name: "&c&lTop3"
     lore:
-      - "&c%top_kudos% &7%top_player%"
-      - "&c%top_kudos% &7%top_player%"
-      - "&c%top_kudos% &7%top_player%"
+      - "&e%top_kudos% &7%top_player%"
+      - "&e%top_kudos% &7%top_player%"
+      - "&e%top_kudos% &7%top_player%"
     not_assigned: "&eNot assigned"
 kudo:
   player_award_kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
