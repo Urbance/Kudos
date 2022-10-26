@@ -2,7 +2,9 @@ package Utils.SQL;
 
 import Utils.LocaleManager;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -47,6 +49,23 @@ public class SQLGetter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public OfflinePlayer getPlayer(UUID uuid) {
+        Bukkit.broadcastMessage("§cSQLGetter " + uuid);
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT UUID FROM kudos WHERE UUID=?");
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+            if (results.next()) {
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("UUID")));
+                Bukkit.broadcastMessage(player.getName());
+                return player;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean exists(UUID uuid) {

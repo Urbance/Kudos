@@ -5,12 +5,15 @@ import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+
+import java.util.UUID;
 
 public class Kudmin implements CommandExecutor {
     public String prefix = "&7[&cKudmin&7] ";
@@ -55,11 +58,12 @@ public class Kudmin implements CommandExecutor {
                 Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
                 break;
+
             case "add":
                if (!validateInput(args, sender))
                    return false;
 
-               data.addKudos(Bukkit.getPlayer(args[1]).getUniqueId(), ((Player) sender).getUniqueId(), Integer.parseInt(args[2]));
+               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), ((Player) sender).getUniqueId(), Integer.parseInt(args[2]));
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
@@ -68,13 +72,13 @@ public class Kudmin implements CommandExecutor {
                    return false;
                }
 
-               if (Integer.parseInt(args[2]) > data.getKudos(Bukkit.getPlayer(args[1]).getUniqueId())) {
-                   data.clearKudos(Bukkit.getPlayer(args[1]).getUniqueId());
+               if (Integer.parseInt(args[2]) > data.getKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
+                   data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
                    Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                    return false;
                }
 
-               data.removeKudos(Bukkit.getPlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
+               data.removeKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
@@ -83,7 +87,7 @@ public class Kudmin implements CommandExecutor {
                    return false;
                }
 
-               data.setKudos(Bukkit.getPlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
+               data.setKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
@@ -93,13 +97,12 @@ public class Kudmin implements CommandExecutor {
                    return false;
                }
 
-               // TODO Better solution -> Query on SQL side
-               if (Bukkit.getPlayer(args[1]) == null) {
-                   Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
-                   return false;
-               }
-
-               data.clearKudos(Bukkit.getPlayer(args[1]).getUniqueId());
+                OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+                if (player == null) {
+                    Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+                    return false;
+                }
+               data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
                break;
        }
@@ -107,6 +110,8 @@ public class Kudmin implements CommandExecutor {
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
+        SQLGetter data = new SQLGetter(plugin);
+
         if (args.length < 3) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
             return false;
@@ -118,14 +123,14 @@ public class Kudmin implements CommandExecutor {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a postive integer number"));
             return false;
         }
-
+        // TODO change query to "< 0"
         if (Integer.parseInt(args[2]) <= 0) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a number that is greater than 0"));
             return false;
         }
 
-        // TODO Better solution -> Query on SQL side
-        if (Bukkit.getPlayer(args[1]) == null) {
+        OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+        if (player == null) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
             return false;
         }

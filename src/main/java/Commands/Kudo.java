@@ -88,6 +88,7 @@ public class Kudo implements CommandExecutor {
         if (Bukkit.getPlayer(args[0]) == null) {
             String playerNotFound = locale.getString("error.player_not_found");
             playerNotFound = playerNotFound.replaceAll("%targetplayer%", args[0]);
+            // TODO Change text to player_not_online
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + playerNotFound));
             return false;
         }
