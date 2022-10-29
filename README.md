@@ -9,6 +9,8 @@
 6. [FAQs](#faqs)
 
 ## Introduction
+Kudos is an open source plugin for Minecraft 1.19 Spigot Server. The plugin allows to give someone a kudo (recognition/praise).<br>
+It includes a GUI, which can display various informations and statistics.
 
 ## Features
 * MySQL
@@ -21,7 +23,7 @@
 ## Installation
 * Download the plugin .jar 
 * Drag the .jar into your plugin folder
-* Start your server.
+* Start your server
 
 ## Commands and Permissions
 | Command | Permission | Description |
