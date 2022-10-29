@@ -75,11 +75,12 @@ public class Kudos implements CommandExecutor {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
             return false;
         }
-
-        this.targetplayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
-        if (targetplayer == null) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[0] + " &7not found"));
-            return false;
+        if (args.length == 1) {
+            this.targetplayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
+            if (targetplayer == null) {
+                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[0] + " &7not found"));
+                return false;
+            }
         }
         return true;
     }
