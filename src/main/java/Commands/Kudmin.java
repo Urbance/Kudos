@@ -120,7 +120,7 @@ public class Kudmin implements CommandExecutor {
         try {
             Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a postive integer number"));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number"));
             return false;
         }
         // TODO change query to "< 0"
