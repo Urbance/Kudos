@@ -123,7 +123,7 @@ public class Kudmin implements CommandExecutor {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number"));
             return false;
         }
-        // TODO change query to "< 0"
+        
         if (Integer.parseInt(args[2]) < 0) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a number that is greater than 0"));
             return false;
