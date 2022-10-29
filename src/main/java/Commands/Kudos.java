@@ -6,6 +6,7 @@ import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,11 +20,13 @@ public class Kudos implements CommandExecutor {
     public FileConfiguration locale;
     public SQLGetter data;
     public String prefix;
+    public OfflinePlayer targetplayer;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         prefix = plugin.getConfig().getString("prefix");
         this.locale = plugin.locale;
+        this.data = new SQLGetter(plugin);
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
@@ -56,17 +59,14 @@ public class Kudos implements CommandExecutor {
     }
 
     public void showKudos(String[] args, CommandSender sender) {
-        data = new SQLGetter(plugin);
-
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
             return;
         }
 
-        Player targetPlayer = Bukkit.getPlayer(args[0]);
         String showKudosMessage = locale.getString("kudos.show_player_kudos");
-        showKudosMessage = showKudosMessage.replaceAll("%targetplayer%", targetPlayer.getName());
-        showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        showKudosMessage = showKudosMessage.replaceAll("%targetplayer%", this.targetplayer.getName());
+        showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(this.targetplayer.getUniqueId())));
         Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + showKudosMessage));
     }
 
@@ -76,10 +76,9 @@ public class Kudos implements CommandExecutor {
             return false;
         }
 
-        if (args.length == 1 && Bukkit.getPlayer(args[0]) == null) {
-            String playerNotFound = locale.getString("error.player_not_found");
-            playerNotFound = playerNotFound.replaceAll("%targetplayer%", args[0]);
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + playerNotFound));
+        this.targetplayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
+        if (targetplayer == null) {
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[0] + " &7not found"));
             return false;
         }
         return true;

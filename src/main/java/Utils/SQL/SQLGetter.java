@@ -52,15 +52,12 @@ public class SQLGetter {
     }
 
     public OfflinePlayer getPlayer(UUID uuid) {
-        Bukkit.broadcastMessage("§cSQLGetter " + uuid);
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT UUID FROM kudos WHERE UUID=?");
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
             if (results.next()) {
-                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("UUID")));
-                Bukkit.broadcastMessage(player.getName());
-                return player;
+                return Bukkit.getOfflinePlayer(UUID.fromString(results.getString("UUID")));
             }
         } catch (SQLException e) {
             e.printStackTrace();
