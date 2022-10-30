@@ -8,6 +8,7 @@ import Utils.GUI;
 import Utils.LocaleManager;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
+import Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -20,8 +21,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration locale;
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
-
-    FileConfiguration config = getConfig();
+    public FileConfiguration config = getConfig();
 
     @Override
     public void onEnable() {
@@ -32,6 +32,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         setupSQL();
         setupConfigs();
+        UpdateChecker();
 
         // Register Listeners and Commands
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -85,5 +86,16 @@ public final class Main extends JavaPlugin implements Listener {
         FileConfiguration locale = localeManager.getConfig();
         localeManager.reloadLocale();
         this.locale = locale;
+    }
+
+    public void UpdateChecker() {
+        // TODO change resourceID
+        new UpdateChecker(this, 12345).getVersion(version -> {
+            if (this.getDescription().getVersion().equals(version)) {
+                getLogger().info("There is not a new update available.");
+            } else {
+                getLogger().info("There is a new update available.");
+            }
+        });
     }
 }
