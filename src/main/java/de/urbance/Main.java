@@ -33,14 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
         setupSQL();
         setupConfigs();
         UpdateChecker();
-
-        // Register Listeners and Commands
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new GUI(), this);
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudmin").setExecutor(new Kudmin());
+        registerListenerAndCommands();
 
         // bStats
         Metrics metrics = new Metrics(this, 16627);
@@ -49,6 +42,15 @@ public final class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         SQL.disconnect();
+    }
+
+    public void registerListenerAndCommands() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        pluginManager.registerEvents(new GUI(), this);
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudmin").setExecutor(new Kudmin());
     }
 
     public void setupSQL(){
