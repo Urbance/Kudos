@@ -14,6 +14,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -22,6 +24,7 @@ public final class Main extends JavaPlugin implements Listener {
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
     public FileConfiguration config = getConfig();
+    public Connection databaseConnection;
 
     @Override
     public void onEnable() {
@@ -29,6 +32,7 @@ public final class Main extends JavaPlugin implements Listener {
 
         prefix = config.getString("prefix");
         this.locale = new LocaleManager(this).getConfig();
+        this.databaseConnection = new SQL().getConnection();
 
         setupSQL();
         setupConfigs();
@@ -45,9 +49,13 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void registerListenerAndCommands() {
+
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new GUI(), this);
         pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (databaseConnection == null) {
+            return;
+        }
+        pluginManager.registerEvents(new GUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
         getCommand("kudmin").setExecutor(new Kudmin());

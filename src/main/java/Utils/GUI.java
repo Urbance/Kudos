@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.sql.Connection;
 import java.util.List;
 
 public class GUI implements Listener {
@@ -29,7 +30,7 @@ public class GUI implements Listener {
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
         this.locale = plugin.locale;
-        SQLGetter data = new SQLGetter(plugin);
+        this.data = new SQLGetter(plugin);
         setItems();
     }
 
