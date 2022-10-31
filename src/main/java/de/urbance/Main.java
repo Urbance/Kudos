@@ -22,6 +22,7 @@ public final class Main extends JavaPlugin implements Listener {
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
     public FileConfiguration config = getConfig();
+    public boolean isConnected;
 
     @Override
     public void onEnable() {
@@ -46,8 +47,11 @@ public final class Main extends JavaPlugin implements Listener {
 
     public void registerListenerAndCommands() {
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new GUI(), this);
         pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (!isConnected) {
+            return;
+        }
+        pluginManager.registerEvents(new GUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
         getCommand("kudmin").setExecutor(new Kudmin());
@@ -61,11 +65,13 @@ public final class Main extends JavaPlugin implements Listener {
             SQL.connect();
         } catch (ClassNotFoundException | SQLException e) {
             Bukkit.getLogger().info("Database not connected");
+            this.isConnected = false;
         }
 
         if (SQL.isConnected()) {
             Bukkit.getLogger().info("Database is connected");
             data.createTable();
+            this.isConnected = true;
         }
     }
 
