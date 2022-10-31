@@ -78,7 +78,7 @@ public class Kudos implements CommandExecutor {
         if (args.length == 1) {
             this.targetplayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetplayer == null) {
-                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[0] + " &7not found"));
+                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player_not_found").replaceAll("%targetplayer%", args[0])));
                 return false;
             }
         }
