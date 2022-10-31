@@ -1,4 +1,7 @@
 # Kudos
+<p align="center">
+  <img src="https://github.com/Urbance/Kudos/blob/main/logo.hereo-of-the-village.png" title="Logo-Hero-of-the-Village">
+</p>
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -19,6 +22,7 @@ It includes a GUI, which can display various informations and statistics.
 
 ## Requirements
 * MySQL Database
+* Requires Java 17 or later
 
 ## Installation
 * Download the plugin .jar 
@@ -46,4 +50,4 @@ It includes a GUI, which can display various informations and statistics.
 ***
 Q: I have Questions, Suggestions or Issues. How can I contact you?
 
-A:
+A: I am glad that you want to contact me. Join my [Discord Server](https://discord.gg/hDqPms3MbH) and open a ticket or write me a PM. 
