@@ -1,5 +1,6 @@
 package Commands;
 
+import Utils.LocaleManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -11,6 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+
+import java.util.UUID;
 
 public class Kudmin implements CommandExecutor {
     public String prefix = "&7[&cKudmin&7] ";
