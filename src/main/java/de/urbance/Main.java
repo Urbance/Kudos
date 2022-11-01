@@ -97,8 +97,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void UpdateChecker() {
-        // TODO change resourceID
-        new UpdateChecker(this, 12345).getVersion(version -> {
+        new UpdateChecker(this, 106036).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("There is not a new update available.");
             } else {
