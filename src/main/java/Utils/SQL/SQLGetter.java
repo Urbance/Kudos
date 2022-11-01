@@ -171,7 +171,7 @@ public class SQLGetter {
 
     public List<String> getTopThreePlayers() {
         try {
-            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM Kudos ORDER BY Kudos DESC LIMIT 3");
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3");
             ResultSet results = preparedStatement.executeQuery();
             List<String> topThree = locale.getStringList("GUI.top3.lore");
 
