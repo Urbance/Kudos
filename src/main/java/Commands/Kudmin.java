@@ -13,8 +13,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import java.util.UUID;
-
 public class Kudmin implements CommandExecutor {
     public String prefix = "&7[&cKudmin&7] ";
     public Main plugin = Main.getPlugin(Main.class);

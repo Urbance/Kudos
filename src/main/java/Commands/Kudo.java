@@ -36,9 +36,7 @@ public class Kudo implements CommandExecutor {
         int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
 
         if (timeLeft != 0) {
-            String mustWaitBeforeUseItAgain = locale.getString("error.must_wait_before_use_again");
-            mustWaitBeforeUseItAgain = mustWaitBeforeUseItAgain.replaceAll("%seconds%", String.valueOf(timeLeft));
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + mustWaitBeforeUseItAgain));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must_wait_before_use_again").replaceAll("%seconds%", String.valueOf(timeLeft))));
             return false;
         }
 

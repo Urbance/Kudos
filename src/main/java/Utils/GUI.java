@@ -29,7 +29,6 @@ public class GUI implements Listener {
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
         this.locale = plugin.locale;
-        SQLGetter data = new SQLGetter(plugin);
         setItems();
     }
 
@@ -70,7 +69,6 @@ public class GUI implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
-        SQLGetter data = new SQLGetter(plugin);
         data = new SQLGetter(plugin);
 
         ItemStack playerHead = inventory.getItem(2);
