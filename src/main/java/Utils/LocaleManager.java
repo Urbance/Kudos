@@ -12,13 +12,11 @@ import java.util.logging.Level;
 
 public class LocaleManager {
     private Main plugin;
-    private FileConfiguration config;
     private FileConfiguration localeConfig;
     private File localeFile;
 
     public LocaleManager(Main plugin) {
         this.plugin = plugin;
-        this.config = plugin.getConfig();
         saveDefaultConfig();
     }
 

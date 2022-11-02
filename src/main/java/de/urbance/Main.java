@@ -26,10 +26,10 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
-
         prefix = config.getString("prefix");
         this.locale = new LocaleManager(this).getConfig();
+
+        getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
         setupSQL();
         setupConfigs();
@@ -78,10 +78,6 @@ public final class Main extends JavaPlugin implements Listener {
     public void setupConfigs() {
         config.options().copyDefaults(true);
         saveConfig();
-    }
-
-    public FileConfiguration getConfigFile() {
-        return getConfig();
     }
 
     public void reloadConfigs() {
