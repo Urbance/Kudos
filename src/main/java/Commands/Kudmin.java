@@ -1,6 +1,5 @@
 package Commands;
 
-import Utils.LocaleManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -13,6 +12,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import java.util.UUID;
+
 public class Kudmin implements CommandExecutor {
     public String prefix = "&7[&cKudmin&7] ";
     public Main plugin = Main.getPlugin(Main.class);
@@ -20,27 +21,22 @@ public class Kudmin implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            Bukkit.getLogger().info("You can't execute this command as console!");
-            return false;
-        }
-
         SQLGetter data = new SQLGetter(plugin);
 
         if (!sender.hasPermission("kudmin")) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
             return false;
         }
 
         if (args.length == 0) {
             PluginDescriptionFile pluginDescriptionFile = plugin.getDescription();
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }
 
         switch (args[0]) {
             case "help":
-                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
         "&7========= &c&lKudmin Commands &7=========\n" +
                     " \n" +
                     "/kudmin help &7- Shows all kudmin commands\n" +
@@ -53,7 +49,7 @@ public class Kudmin implements CommandExecutor {
                     "All player commands are listed on &c/kudos"));
                break;
             case "reload":
-                Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
                 break;
 
@@ -61,8 +57,15 @@ public class Kudmin implements CommandExecutor {
                if (!validateInput(args, sender))
                    return false;
 
-               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), ((Player) sender).getUniqueId(), Integer.parseInt(args[2]));
-               Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
+               UUID uuid;
+               if (!(sender instanceof Player)) {
+                   uuid = null;
+               } else {
+                   uuid = ((Player) sender).getUniqueId();
+               }
+
+               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), uuid, Integer.parseInt(args[2]));
+               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
             case "remove":
@@ -72,12 +75,12 @@ public class Kudmin implements CommandExecutor {
 
                if (Integer.parseInt(args[2]) > data.getKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
                    data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                   Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
+                   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                    return false;
                }
 
                data.removeKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
-               Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
             case "set":
@@ -86,22 +89,22 @@ public class Kudmin implements CommandExecutor {
                }
 
                data.setKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
-               Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
+               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
             case "clear":
                if (args.length != 2) {
-                   Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
+                   sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
                    return false;
                }
 
                 OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
                 if (player == null) {
-                    Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
                     return false;
                 }
                data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-               Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
                break;
        }
     return false;
@@ -111,25 +114,25 @@ public class Kudmin implements CommandExecutor {
         SQLGetter data = new SQLGetter(plugin);
 
         if (args.length < 3) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
             return false;
         }
 
         try {
             Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number"));
             return false;
         }
-        
+
         if (Integer.parseInt(args[2]) < 0) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a number that is greater than 0"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a number that is greater than 0"));
             return false;
         }
 
         OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
         if (player == null) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
             return false;
         }
         return true;

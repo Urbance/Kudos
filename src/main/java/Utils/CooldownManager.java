@@ -3,7 +3,6 @@ package Utils;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
