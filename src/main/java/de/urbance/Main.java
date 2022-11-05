@@ -14,6 +14,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.K;
+
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -53,8 +55,11 @@ public final class Main extends JavaPlugin implements Listener {
         }
         pluginManager.registerEvents(new GUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudos").setTabCompleter(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudo").setTabCompleter(new Kudo());
         getCommand("kudmin").setExecutor(new Kudmin());
+        getCommand("kudmin").setTabCompleter(new Kudmin());
     }
 
     public void setupSQL(){

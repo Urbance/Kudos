@@ -1,7 +1,6 @@
 package Commands;
 
 import Utils.CooldownManager;
-import Utils.LocaleManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -9,11 +8,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class Kudo implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Kudo implements CommandExecutor, TabCompleter {
     private final CooldownManager cooldownManager = new CooldownManager();
     public String prefix;
     public SQLGetter data;
@@ -94,4 +97,16 @@ public class Kudo implements CommandExecutor {
         return true;
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*")))
+            return list;
+        if (args.length == 1) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                list.add(player.getName());
+            }
+        }
+        return list;
+    }
 }

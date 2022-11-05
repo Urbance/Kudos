@@ -8,13 +8,16 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class Kudmin implements CommandExecutor {
+public class Kudmin implements CommandExecutor, TabCompleter {
     public String prefix = "&7[&cKudmin&7] ";
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale = plugin.locale;
@@ -136,5 +139,33 @@ public class Kudmin implements CommandExecutor {
             return false;
         }
         return true;
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+
+        if (!sender.hasPermission("kudmin"))
+            return list;
+        if (args.length == 1) {
+            list.add("help");
+            list.add("add");
+            list.add("remove");
+            list.add("set");
+            list.add("clear");
+            list.add("reload");
+        }
+        if (args.length == 2) {
+            switch (args[0]) {
+                case "add", "remove", "set", "clear":
+                    for (Player players : Bukkit.getOnlinePlayers())
+                        list.add(players.getName());
+            }
+        }
+        if (args.length == 3) {
+            switch (args[0]) {
+                case "add", "remove", "set" -> list.add("amount");
+            }
+        }
+        return list;
     }
 }
