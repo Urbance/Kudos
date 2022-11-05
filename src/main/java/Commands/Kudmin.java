@@ -140,7 +140,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         }
         return true;
     }
-
+    @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         ArrayList<String> list = new ArrayList<>();
 
