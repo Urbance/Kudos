@@ -87,7 +87,7 @@ public final class Main extends JavaPlugin implements Listener {
     public void reloadConfigs() {
         // Reload config
         reloadConfig();
-        saveConfig();
+        saveDefaultConfig();
 
         // Reload messages.yml
         LocaleManager localeManager = new LocaleManager(this);
