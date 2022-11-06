@@ -9,11 +9,15 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-public class Kudos implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Kudos implements CommandExecutor, TabCompleter {
     public static Inventory inventory;
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale;
@@ -77,5 +81,18 @@ public class Kudos implements CommandExecutor {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        ArrayList<String> list = new ArrayList<>();
+        if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*")))
+            return list;
+        if (args.length == 1) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                list.add(player.getName());
+            }
+        }
+        return list;
     }
 }
