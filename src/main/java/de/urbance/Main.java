@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.checker.units.qual.K;
 
 import java.sql.SQLException;
 
@@ -82,7 +81,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     public void setupConfigs() {
         config.options().copyDefaults(true);
-        saveConfig();
+        saveDefaultConfig();
     }
 
     public void reloadConfigs() {

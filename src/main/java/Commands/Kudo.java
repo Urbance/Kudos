@@ -98,7 +98,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void setCooldown(Player player) {
-        cooldownManager.setCooldown(player.getUniqueId(), CooldownManager.COOLDOWN);
+        cooldownManager.setCooldown(player.getUniqueId(), config.getInt("kudo_award_cooldown"));
 
         new BukkitRunnable() {
             @Override
