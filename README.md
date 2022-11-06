@@ -19,6 +19,7 @@ It includes a GUI, which can display various informations and statistics.
 * MySQL
 * Editable messages
 * Configurable
+* Item reward
 
 ## Requirements
 * MySQL Database
