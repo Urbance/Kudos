@@ -1,10 +1,12 @@
 package Commands;
 
 import Utils.CooldownManager;
+import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -48,9 +52,21 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        Player targetPlayer = Bukkit.getPlayer(args[0]);
+
+        if (isAwardItem()) {
+            if (!itemCanBeAdded(targetPlayer.getInventory())){
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player_inventory_is_full")
+                        .replaceAll("%targetplayer%", targetPlayer.getName())));
+                cooldownManager.setCooldown(player.getUniqueId(), 0);
+                return false;
+            }
+            Inventory inventory = targetPlayer.getInventory();
+            inventory.addItem(awardItem());
+        }
+
         setCooldown(player);
 
-        Player targetPlayer = Bukkit.getPlayer(args[0]);
         data = new SQLGetter(plugin);
         data.addKudos(targetPlayer.getUniqueId(), ((Player) sender).getUniqueId(), 1);
 
@@ -65,7 +81,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 players.playSound(players, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             }
         }
-
         return false;
     }
 
@@ -111,8 +126,36 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }.runTaskTimer(plugin, 20, 20);
     }
 
+    private ItemStack awardItem() {
+        Material material = Material.getMaterial(config.getString("award_item.item"));
+        String displayName = config.getString("award_item.item_name");
+        List<String> lore = config.getStringList("award_item.item_lore");
+        int amount = config.getInt("award_item.amount");
+        boolean setLore = config.getBoolean("award_item.use_lore");
+        ItemStack itemStack = new ItemCreator(material, displayName, lore, amount, setLore).create();
+
+        return itemStack;
+    }
+
     private boolean canAwardKudos() {
         return timeLeft == 0;
+    }
+
+    private boolean isAwardItem() {
+        return config.getBoolean("award_item.enabled");
+    }
+
+    private boolean itemCanBeAdded(Inventory inventory) {
+        ItemStack awardItem = awardItem();
+        for (int i = 0; i < 36; i++) {
+            if (inventory.getItem(i) == null) {
+                return true;
+            }
+            if (inventory.getItem(i).isSimilar(awardItem)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

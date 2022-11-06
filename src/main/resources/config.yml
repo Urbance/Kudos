@@ -1,4 +1,3 @@
-# Credentials for MySQL database
 SQL:
   hostname: "hostname"
   port: "port"
@@ -6,9 +5,17 @@ SQL:
   username: "username"
   password: ""
   useSSL: "true"
-# Determines the plugin prefix, supports basic formatting and color codes
 prefix: "&7[&eKudos&7] "
-# Sets time interval in which a player may award a kudo
 kudo_award_cooldown: 900
-# Determines if a sound should be played when a kudo is given to a player
 play_sound_on_kudo_award: true
+award_item:
+  enabled: true
+  use_lore: false
+  item: COOKIE
+  item_name: "&6Hot Baked Cookie"
+  item_lore:
+    - "&8Ingredients:"
+    - "&8- Wheat"
+    - "&8- Cocoa Beans"
+  amount: 1
+
