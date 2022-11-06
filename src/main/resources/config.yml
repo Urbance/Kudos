@@ -7,3 +7,4 @@ SQL:
   useSSL: "true"
 prefix: "&7[&eKudos&7] "
 kudo_award_cooldown: 900
+play_sound_on_kudo_award: true

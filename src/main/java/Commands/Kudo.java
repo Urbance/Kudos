@@ -5,6 +5,7 @@ import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,41 +23,34 @@ public class Kudo implements CommandExecutor, TabCompleter {
     public SQLGetter data;
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale;
+    public FileConfiguration config;
+    public int timeLeft;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.getConfig().getString("prefix");
         this.locale = plugin.locale;
+        this.config = plugin.getConfig();
+
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
             return false;
         }
-
         if (!validateInput(args, sender))
             return false;
 
         Player player = ((Player) sender).getPlayer();
-        int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
+        this.timeLeft = cooldownManager.getCooldown(player.getUniqueId());
 
-        if (timeLeft != 0) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must_wait_before_use_again").replaceAll("%seconds%", String.valueOf(timeLeft))));
+        if (!canAwardKudos()) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must_wait_before_use_again")
+                    .replaceAll("%seconds%", String.valueOf(timeLeft))));
             return false;
         }
 
-        cooldownManager.setCooldown(player.getUniqueId(), CooldownManager.COOLDOWN);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
-                cooldownManager.setCooldown(player.getUniqueId(), --timeLeft);
-                if (timeLeft == 0)
-                    this.cancel();
-            }
-        }.runTaskTimer(plugin, 20, 20);
+        setCooldown(player);
 
         Player targetPlayer = Bukkit.getPlayer(args[0]);
-
         data = new SQLGetter(plugin);
         data.addKudos(targetPlayer.getUniqueId(), ((Player) sender).getUniqueId(), 1);
 
@@ -65,6 +59,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
+
+        if (config.getBoolean("play_sound_on_kudo_award")) {
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                players.playSound(players, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            }
+        }
 
         return false;
     }
@@ -95,6 +95,24 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
         return true;
+    }
+
+    private void setCooldown(Player player) {
+        cooldownManager.setCooldown(player.getUniqueId(), CooldownManager.COOLDOWN);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
+                cooldownManager.setCooldown(player.getUniqueId(), --timeLeft);
+                if (timeLeft == 0)
+                    this.cancel();
+            }
+        }.runTaskTimer(plugin, 20, 20);
+    }
+
+    private boolean canAwardKudos() {
+        return timeLeft == 0;
     }
 
     @Override
