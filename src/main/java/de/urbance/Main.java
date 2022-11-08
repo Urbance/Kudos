@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -98,6 +97,9 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void UpdateChecker() {
+        if (!config.getBoolean("update_notification")){
+            return;
+        }
         new UpdateChecker(this, 106036).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("There is not a new update available.");

@@ -83,7 +83,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                }
 
                data.removeKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
+               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
             case "set":
