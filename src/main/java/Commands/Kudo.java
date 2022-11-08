@@ -89,22 +89,18 @@ public class Kudo implements CommandExecutor, TabCompleter {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
             return false;
         }
-
         if (args.length == 0) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.specify_player")));
             return false;
         }
-
         if (args.length > 1) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
             return false;
         }
-
         if (Bukkit.getPlayer(args[0]) == null) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player_not_online").replaceAll("%targetplayer%", args[0])));
             return false;
         }
-
         if (sender == Bukkit.getPlayer(args[0])) {
             Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant_give_yourself_kudo")));
             return false;

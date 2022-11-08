@@ -23,7 +23,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public FileConfiguration locale;
     public SQLGetter data;
     public String prefix;
-    public OfflinePlayer targetplayer;
+    public OfflinePlayer targetPlayer;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -62,10 +62,10 @@ public class Kudos implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
             return;
         }
-        String showKudosMessage = locale.getString("kudos.show_player_kudos");
-        showKudosMessage = showKudosMessage.replaceAll("%targetplayer%", this.targetplayer.getName());
-        showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(this.targetplayer.getUniqueId())));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + showKudosMessage));
+
+        String showKudosMessage = locale.getString("kudos.show_player_kudos").replaceAll("%targetplayer%", targetPlayer.getName());
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +
+                showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())))));
     }
 
     public boolean validateInput(String[] args, CommandSender sender) {
@@ -74,8 +74,8 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return false;
         }
         if (args.length == 1) {
-            this.targetplayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
-            if (targetplayer == null) {
+            targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
+            if (targetPlayer == null) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player_not_found").replaceAll("%targetplayer%", args[0])));
                 return false;
             }
