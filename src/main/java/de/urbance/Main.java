@@ -97,6 +97,9 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void UpdateChecker() {
+        if (!config.getBoolean("update_notification")){
+            return;
+        }
         new UpdateChecker(this, 106036).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 getLogger().info("There is not a new update available.");
