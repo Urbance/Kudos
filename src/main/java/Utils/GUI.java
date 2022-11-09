@@ -71,6 +71,9 @@ public class GUI implements Listener {
         Inventory inventory = Kudos.inventory;
         data = new SQLGetter(plugin);
 
+        if (!event.getInventory().equals(inventory))
+            return;
+
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
 
