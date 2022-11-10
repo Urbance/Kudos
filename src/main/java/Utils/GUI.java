@@ -1,7 +1,6 @@
 package Utils;
 
 import Commands.Kudos;
-import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -78,8 +77,9 @@ public class GUI implements Listener {
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
-
+        FileConfiguration locale = new LocaleManager(plugin).getConfig();
         List<String> lore = locale.getStringList("GUI.your_kudos.lore");
+
         lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
         lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
 
