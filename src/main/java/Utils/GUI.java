@@ -1,7 +1,6 @@
 package Utils;
 
 import Commands.Kudos;
-import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -37,7 +36,7 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your-kudos.item-name"), null));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.you.item-name"), null));
         inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item-name"), locale.getStringList("GUI.help.lore")));
         inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item-name"), data.getTopThreePlayers()));
     }
@@ -76,12 +75,13 @@ public class GUI implements Listener {
 
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
+        FileConfiguration locale = new FileManager("messages.yml", plugin).getConfig();
+        List<String> lore = locale.getStringList("GUI.you.lore");
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
-        List<String> lore = locale.getStringList("GUI.your-kudos.lore");
-        lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
-        lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
+        lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId())))));
+        lore.set(1, ChatColor.translateAlternateColorCodes('&', lore.get(1).replaceAll("%player_assigned_kudos%", String.valueOf(data.getAssignedKudo(player.getUniqueId())))));
 
         skullMeta.setLore(lore);
         playerHead.setItemMeta(skullMeta);

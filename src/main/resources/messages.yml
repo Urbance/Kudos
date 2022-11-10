@@ -1,8 +1,9 @@
 GUI:
-  your-kudos:
-    item-name: "&2&lYour Kudos"
+  you:
+    item-name: "&2&lYou.."
     lore:
-      - "&7You have &e%player_kudos% &7Kudos"
+      - "&7have &e%player_kudos% &7Kudos"
+      - "&7assigned &e%player_assigned_kudos% &7Kudos"
   help:
     item-name: "&e&lHelp"
     lore:
@@ -29,4 +30,3 @@ error:
   player-not-found: "&7The player &e%targetplayer% &7was not found!"
   cant-give-yourself-kudo: "&7You can't give yourself a Kudo!"
   must-wait-before-use-again: "&7You must wait &e%seconds% seconds &7before you can use it again!"
-
