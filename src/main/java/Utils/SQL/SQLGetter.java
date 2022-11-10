@@ -184,7 +184,7 @@ public class SQLGetter {
 
             for (int i = 0; i < topThree.size(); i++) {
                 if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%") ) {
-                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', locale.getString("GUI.top3.not_assigned")));
+                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', locale.getString("GUI.top3.not-assigned")));
                 }
             }
 

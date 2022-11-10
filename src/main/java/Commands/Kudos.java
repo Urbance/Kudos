@@ -48,7 +48,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
             return;
         }
 
@@ -59,24 +59,24 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public void showKudos(String[] args, CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no_permission")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
             return;
         }
 
-        String showKudosMessage = locale.getString("kudos.show_player_kudos").replaceAll("%targetplayer%", targetPlayer.getName());
+        String showKudosMessage = locale.getString("kudos.show-player-kudos").replaceAll("%targetplayer%", targetPlayer.getName());
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +
                 showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())))));
     }
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
             return false;
         }
         if (args.length == 1) {
             targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player_not_found").replaceAll("%targetplayer%", args[0])));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-found").replaceAll("%targetplayer%", args[0])));
                 return false;
             }
         }

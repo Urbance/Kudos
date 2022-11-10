@@ -27,7 +27,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         SQLGetter data = new SQLGetter(plugin);
 
         if (!sender.hasPermission("kudmin")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
 

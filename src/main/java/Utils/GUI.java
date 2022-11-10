@@ -37,9 +37,9 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your_kudos.item_name"), null));
-        inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item_name"), locale.getStringList("GUI.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item_name"), data.getTopThreePlayers()));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your-kudos.item-name"), null));
+        inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item-name"), locale.getStringList("GUI.help.lore")));
+        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item-name"), data.getTopThreePlayers()));
     }
 
     private ItemStack createItem(Material material, String displayname, List<String> lore) {
@@ -79,7 +79,7 @@ public class GUI implements Listener {
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
-        List<String> lore = locale.getStringList("GUI.your_kudos.lore");
+        List<String> lore = locale.getStringList("GUI.your-kudos.lore");
         lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
         lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
 

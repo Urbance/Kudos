@@ -47,7 +47,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.timeLeft = cooldownManager.getCooldown(player.getUniqueId());
 
         if (!canAwardKudos()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must_wait_before_use_again")
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must-wait-before-use-again")
                     .replaceAll("%seconds%", String.valueOf(timeLeft))));
             return false;
         }
@@ -56,7 +56,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         if (isAwardItem()) {
             if (!itemCanBeAdded(targetPlayer.getInventory())){
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player_inventory_is_full")
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player-inventory-is-full")
                         .replaceAll("%targetplayer%", targetPlayer.getName())));
                 cooldownManager.setCooldown(player.getUniqueId(), 0);
                 return false;
@@ -70,13 +70,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
         data = new SQLGetter(plugin);
         data.addKudos(targetPlayer.getUniqueId(), ((Player) sender).getUniqueId(), 1);
 
-        String awardMessage = locale.getString("kudo.player_award_kudo");
+        String awardMessage = locale.getString("kudo.player-award-kudo");
         awardMessage = awardMessage.replaceAll("%player%", player.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
 
-        if (config.getBoolean("play_sound_on_kudo_award")) {
+        if (config.getBoolean("play-sound-on-kudo-award")) {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.playSound(players, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             }
@@ -86,30 +86,30 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean validateInput(String[] args, CommandSender sender) {
         if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no_permission")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
         if (args.length == 0) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.specify_player")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.specify-player")));
             return false;
         }
         if (args.length > 1) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong_usage")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
             return false;
         }
         if (Bukkit.getPlayer(args[0]) == null) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player_not_online").replaceAll("%targetplayer%", args[0])));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-online").replaceAll("%targetplayer%", args[0])));
             return false;
         }
         if (sender == Bukkit.getPlayer(args[0])) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant_give_yourself_kudo")));
+            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant-give-yourself-kudo")));
             return false;
         }
         return true;
     }
 
     private void setCooldown(Player player) {
-        cooldownManager.setCooldown(player.getUniqueId(), config.getInt("kudo_award_cooldown"));
+        cooldownManager.setCooldown(player.getUniqueId(), config.getInt("kudo-award-cooldown"));
 
         new BukkitRunnable() {
             @Override
@@ -123,11 +123,11 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private ItemStack awardItem() {
-        Material material = Material.getMaterial(config.getString("award_item.item"));
-        String displayName = config.getString("award_item.item_name");
-        List<String> lore = config.getStringList("award_item.item_lore");
-        int amount = config.getInt("award_item.amount");
-        boolean setLore = config.getBoolean("award_item.use_lore");
+        Material material = Material.getMaterial(config.getString("award-item.item"));
+        String displayName = config.getString("award-item.item-name");
+        List<String> lore = config.getStringList("award-item.item-lore");
+        int amount = config.getInt("award-item.amount");
+        boolean setLore = config.getBoolean("award-item.use-lore");
         ItemStack itemStack = new ItemCreator(material, displayName, lore, amount, setLore).create();
 
         return itemStack;
@@ -138,7 +138,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean isAwardItem() {
-        return config.getBoolean("award_item.enabled");
+        return config.getBoolean("award-item.enabled");
     }
 
     private boolean itemCanBeAdded(Inventory inventory) {
