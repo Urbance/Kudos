@@ -28,7 +28,7 @@ public class GUI implements Listener {
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
-        this.locale = plugin.locale;
+        this.locale = plugin.localeConfig;
         setItems();
     }
 

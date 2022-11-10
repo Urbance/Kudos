@@ -4,8 +4,8 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import Utils.FileManager;
 import Utils.GUI;
-import Utils.LocaleManager;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import Utils.UpdateChecker;
@@ -19,16 +19,16 @@ import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
     public static String prefix;
-    public FileConfiguration locale;
+    public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
     public FileConfiguration config = getConfig();
+    public FileConfiguration mysqlConfig;
     public boolean isConnected;
 
     @Override
     public void onEnable() {
         prefix = config.getString("prefix");
-        this.locale = new LocaleManager(this).getConfig();
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
@@ -80,20 +80,27 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void setupConfigs() {
+        this.mysqlConfig = new FileManager("mysql.yml", this).getConfig();
+        this.localeConfig = new FileManager("messages.yml", this).getConfig();
+
         getConfig().options().copyDefaults(true);
         saveConfig();
     }
 
     public void reloadConfigs() {
-        // Reload config
+        // reload config.yml
         reloadConfig();
         saveDefaultConfig();
 
-        // Reload messages.yml
-        LocaleManager localeManager = new LocaleManager(this);
-        FileConfiguration locale = localeManager.getConfig();
-        localeManager.reloadLocale();
-        this.locale = locale;
+        // reload messages.yml
+        FileManager localeManager = new FileManager("messages.yml", this);
+        localeManager.reload();
+        this.localeConfig = localeManager.getConfig();
+
+        // reload mysql.yml
+        FileManager mysqlManager = new FileManager("mysql.yml", this);
+        mysqlManager.reload();
+        this.mysqlConfig = mysqlManager.getConfig();
     }
 
     public void UpdateChecker() {

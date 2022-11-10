@@ -1,6 +1,6 @@
 package Utils.SQL;
 
-import Utils.LocaleManager;
+import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +21,7 @@ public class SQLGetter {
 
     public SQLGetter(Main plugin) {
         this.plugin = plugin;
-        this.locale = new LocaleManager(plugin).getConfig();
+        this.locale = new FileManager("messages.yml", plugin).getConfig();
     }
 
     public void createTable() {

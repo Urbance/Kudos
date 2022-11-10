@@ -33,7 +33,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.getConfig().getString("prefix");
-        this.locale = plugin.locale;
+        this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
 
         if (!(sender instanceof Player)) {

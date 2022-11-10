@@ -1,5 +1,6 @@
 package Utils.SQL;
 
+import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -9,14 +10,14 @@ import java.sql.SQLException;
 
 public class SQL {
     private Connection connection;
-    private FileConfiguration config = Main.getPlugin(Main.class).getConfig();
+    private FileConfiguration mysqlConfig = new FileManager("mysql.yml", Main.getPlugin(Main.class)).getConfig();
 
-    private String host = config.getString("SQL.hostname");
-    private String port = config.getString("SQL.port");
-    private String database = config.getString("SQL.database");
-    private String username = config.getString("SQL.username");
-    private String password = config.getString("SQL.password");
-    private String useSSL = config.getString("SQL.useSSL");
+    private String host = mysqlConfig.getString("hostname");
+    private String port = mysqlConfig.getString("port");
+    private String database = mysqlConfig.getString("database");
+    private String username = mysqlConfig.getString("username");
+    private String password = mysqlConfig.getString("password");
+    private String useSSL = mysqlConfig.getString("useSSL");
 
     public boolean isConnected() {
         return (connection == null ? false : true);

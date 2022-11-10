@@ -20,7 +20,7 @@ import java.util.UUID;
 public class Kudmin implements CommandExecutor, TabCompleter {
     public String prefix = "&7[&cKudmin&7] ";
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale = plugin.locale;
+    public FileConfiguration locale = plugin.localeConfig;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

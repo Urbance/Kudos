@@ -1,0 +1,6 @@
+hostname: "hostname"
+port: "port"
+database: "database"
+username: "username"
+password: "password"
+useSSL: "true"
