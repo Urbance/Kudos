@@ -79,7 +79,9 @@ public class GUI implements Listener {
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
+        FileConfiguration locale = new LocaleManager(plugin).getConfig();
         List<String> lore = locale.getStringList("GUI.your_kudos.lore");
+
         lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
         lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
 
