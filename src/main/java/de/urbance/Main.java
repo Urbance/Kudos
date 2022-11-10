@@ -80,9 +80,19 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void setupConfigs() {
-        this.mysqlConfig = new FileManager("mysql.yml", this).getConfig();
-        this.localeConfig = new FileManager("messages.yml", this).getConfig();
+        // setup mysql.yml
+        FileManager mysqlManager = new FileManager("mysql.yml", this);
+        this.mysqlConfig = mysqlManager.getConfig();
+        mysqlConfig.options().copyDefaults(true);
+        mysqlManager.save();
 
+        // setup messages.yml
+        FileManager localeManager = new FileManager("messages.yml", this);
+        this.localeConfig = localeManager.getConfig();
+        localeConfig.options().copyDefaults(true);
+        localeManager.save();
+
+        // setup config.yml
         getConfig().options().copyDefaults(true);
         saveConfig();
     }

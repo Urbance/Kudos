@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -35,6 +36,16 @@ public class FileManager {
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.fileConfiguration.setDefaults(defaultConfig);
+        }
+    }
+
+    public void save() {
+        if (this.file == null)
+            saveDefaultConfig();
+        try {
+            fileConfiguration.save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
