@@ -1,9 +1,9 @@
 slot:
-  you:
-    item-name: "&2&lYou.."
+  statistics:
+    item-name: "&2&lStatistics"
     lore:
-      - "&7have &e%player_kudos% &7Kudos"
-      - "&7assigned &e%player_assigned_kudos% &7Kudos"
+      - "&7&e%player_kudos% &7Kudos received"
+      - "&7&e%player_assigned_kudos% &7Kudos assigned"
   help:
     item-name: "&e&lHelp"
     lore:

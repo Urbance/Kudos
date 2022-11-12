@@ -36,7 +36,7 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, guiConfig.getString("slot.you.item-name"), null));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, guiConfig.getString("slot.statistics.item-name"), null));
         inventory.setItem(4, createItem(Material.POPPY, guiConfig.getString("slot.help.item-name"), guiConfig.getStringList("slot.help.lore")));
         inventory.setItem(6, createItem(Material.EMERALD, guiConfig.getString("slot.top3.item-name"), data.getTopThreePlayers()));
     }
@@ -76,7 +76,7 @@ public class GUI implements Listener {
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
         FileConfiguration guiConfig = new FileManager("gui.yml", plugin).getConfig();
-        List<String> lore = guiConfig.getStringList("slot.you.lore");
+        List<String> lore = guiConfig.getStringList("slot.statistics.lore");
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 
