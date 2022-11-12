@@ -41,19 +41,27 @@ public class GUI implements Listener {
         inventory.setItem(6, createItem(Material.EMERALD, guiConfig.getString("slot.top3.item-name"), data.getTopThreePlayers()));
     }
 
-    private ItemStack createItem(Material material, String displayname, List<String> lore) {
+    private ItemStack createItem(Material material, String displayName, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
 
+        itemMeta.setLore(setLore(lore, null));
+        item.setItemMeta(itemMeta);
+        return item;
+    }
+
+    public List<String> setLore(List<String> lore, Player player) {
         if (lore != null) {
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+                if (player != null) {
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId())))));
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%player_assigned_kudos%", String.valueOf(data.getAssignedKudo(player.getUniqueId())))));
+                }
             }
         }
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        return item;
+        return lore;
     }
 
     @EventHandler
@@ -79,11 +87,8 @@ public class GUI implements Listener {
         List<String> lore = guiConfig.getStringList("slot.statistics.lore");
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
+        skullMeta.setLore(setLore(lore, player));
 
-        lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId())))));
-        lore.set(1, ChatColor.translateAlternateColorCodes('&', lore.get(1).replaceAll("%player_assigned_kudos%", String.valueOf(data.getAssignedKudo(player.getUniqueId())))));
-
-        skullMeta.setLore(lore);
         playerHead.setItemMeta(skullMeta);
     }
 }
