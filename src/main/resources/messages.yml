@@ -1,22 +1,3 @@
-GUI:
-  you:
-    item-name: "&2&lYou.."
-    lore:
-      - "&7have &e%player_kudos% &7Kudos"
-      - "&7assigned &e%player_assigned_kudos% &7Kudos"
-  help:
-    item-name: "&e&lHelp"
-    lore:
-      - "&7/kudo [player] - Award a player a Kudo"
-      - "&7/kudos - Opens GUI"
-      - "&7/kudos [player] - Displays the player's Kudos"
-  top3:
-    item-name: "&c&lTop3"
-    lore:
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-    not-assigned: "&eNot assigned"
 kudo:
   player-award-kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
 kudos:

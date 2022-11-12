@@ -22,12 +22,12 @@ import java.util.List;
 public class GUI implements Listener {
     private final Inventory inventory;
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale;
+    public FileConfiguration guiConfig;
     public SQLGetter data = new SQLGetter(plugin);
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
-        this.locale = plugin.localeConfig;
+        this.guiConfig = plugin.guiConfig;
         setItems();
     }
 
@@ -36,9 +36,9 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.you.item-name"), null));
-        inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item-name"), locale.getStringList("GUI.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item-name"), data.getTopThreePlayers()));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, guiConfig.getString("slot.you.item-name"), null));
+        inventory.setItem(4, createItem(Material.POPPY, guiConfig.getString("slot.help.item-name"), guiConfig.getStringList("slot.help.lore")));
+        inventory.setItem(6, createItem(Material.EMERALD, guiConfig.getString("slot.top3.item-name"), data.getTopThreePlayers()));
     }
 
     private ItemStack createItem(Material material, String displayname, List<String> lore) {
@@ -75,8 +75,8 @@ public class GUI implements Listener {
 
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
-        FileConfiguration locale = new FileManager("messages.yml", plugin).getConfig();
-        List<String> lore = locale.getStringList("GUI.you.lore");
+        FileConfiguration guiConfig = new FileManager("gui.yml", plugin).getConfig();
+        List<String> lore = guiConfig.getStringList("slot.you.lore");
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
 

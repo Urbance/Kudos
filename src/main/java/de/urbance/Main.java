@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
@@ -24,6 +25,7 @@ public final class Main extends JavaPlugin implements Listener {
     public SQLGetter data;
     public FileConfiguration config = getConfig();
     public FileConfiguration mysqlConfig;
+    public FileConfiguration guiConfig;
     public boolean isConnected;
 
     @Override
@@ -80,6 +82,10 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void setupConfigs() {
+        // setup config.yml
+        getConfig().options().copyDefaults(true);
+        saveConfig();
+
         // setup mysql.yml
         FileManager mysqlManager = new FileManager("mysql.yml", this);
         this.mysqlConfig = mysqlManager.getConfig();
@@ -92,9 +98,11 @@ public final class Main extends JavaPlugin implements Listener {
         localeConfig.options().copyDefaults(true);
         localeManager.save();
 
-        // setup config.yml
-        getConfig().options().copyDefaults(true);
-        saveConfig();
+        // setup gui.yml
+        FileManager guiManager = new FileManager("gui.yml", this);
+        this.guiConfig = guiManager.getConfig();
+        guiConfig.options().copyDefaults(true);
+        guiManager.save();
     }
 
     public void reloadConfigs() {
@@ -111,6 +119,11 @@ public final class Main extends JavaPlugin implements Listener {
         FileManager mysqlManager = new FileManager("mysql.yml", this);
         mysqlManager.reload();
         this.mysqlConfig = mysqlManager.getConfig();
+
+        // reload gui.yml
+        FileManager guiManager = new FileManager("gui.yml", this);
+        guiManager.reload();
+        this.guiConfig = guiManager.getConfig();
     }
 
     public void UpdateChecker() {
