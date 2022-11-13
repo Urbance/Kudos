@@ -9,7 +9,7 @@ slot:
     lore:
       - "&7/kudo [player] - Award a player a Kudo"
       - "&7/kudos - Opens GUI"
-      - "&7/kudos [player] - Displays the player's Kudos"
+      - "&7/kudos [player] - Displays the players Kudos"
   top3:
     item-name: "&c&lTop3"
     lore:
