@@ -18,7 +18,7 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.getConfig().getString("prefix");
         if (!plugin.isConnected) {
             if (player.hasPermission("kudmin"))
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. Please setup a database in the config.yml file!"));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. Please setup a database in the mysql.yml file!"));
             return;
         }
         data = new SQLGetter(plugin);

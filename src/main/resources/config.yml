@@ -1,20 +1,13 @@
-SQL:
-  hostname: "hostname"
-  port: "port"
-  database: "database"
-  username: "username"
-  password: ""
-  useSSL: "true"
-update_notification: true
+update-notification: true
 prefix: "&7[&eKudos&7] "
-kudo_award_cooldown: 900
-play_sound_on_kudo_award: true
-award_item:
+kudo-award-cooldown: 900
+play-sound-on-kudo-award: true
+award-item:
   enabled: true
-  use_lore: false
+  use-lore: false
   item: COOKIE
-  item_name: "&6Hot Baked Cookie"
-  item_lore:
+  item-name: "&6Hot Baked Cookie"
+  item-lore:
     - "&8Ingredients:"
     - "&8- Wheat"
     - "&8- Cocoa Beans"

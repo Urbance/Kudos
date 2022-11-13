@@ -1,0 +1,19 @@
+slot:
+  statistics:
+    item-name: "&2&lStatistics"
+    lore:
+      - "&7&e%player_kudos% &7Kudos received"
+      - "&7&e%player_assigned_kudos% &7Kudos assigned"
+  help:
+    item-name: "&e&lHelp"
+    lore:
+      - "&7/kudo [player] - Award a player a Kudo"
+      - "&7/kudos - Opens GUI"
+      - "&7/kudos [player] - Displays the players Kudos"
+  top3:
+    item-name: "&c&lTop3"
+    lore:
+      - "&e%top_kudos% &7%top_player%"
+      - "&e%top_kudos% &7%top_player%"
+      - "&e%top_kudos% &7%top_player%"
+    not-assigned: "&eNot assigned"

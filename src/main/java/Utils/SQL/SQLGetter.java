@@ -1,6 +1,6 @@
 package Utils.SQL;
 
-import Utils.LocaleManager;
+import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,11 +17,11 @@ import java.util.UUID;
 public class SQLGetter {
 
     private Main plugin;
-    public FileConfiguration locale;
+    public FileConfiguration guiConfig;
 
     public SQLGetter(Main plugin) {
         this.plugin = plugin;
-        this.locale = new LocaleManager(plugin).getConfig();
+        this.guiConfig = new FileManager("gui.yml", plugin).getConfig();
     }
 
     public void createTable() {
@@ -173,7 +173,7 @@ public class SQLGetter {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3");
             ResultSet results = preparedStatement.executeQuery();
-            List<String> topThree = locale.getStringList("GUI.top3.lore");
+            List<String> topThree = guiConfig.getStringList("slot.top3.lore");
 
             int counter = 0;
             while (results.next()) {
@@ -184,7 +184,7 @@ public class SQLGetter {
 
             for (int i = 0; i < topThree.size(); i++) {
                 if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%") ) {
-                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', locale.getString("GUI.top3.not_assigned")));
+                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top3.not-assigned")));
                 }
             }
 

@@ -1,32 +1,13 @@
-GUI:
-  your_kudos:
-    item_name: "&2&lYour Kudos"
-    lore:
-      - "&7You have &e%player_kudos% &7Kudos"
-  help:
-    item_name: "&e&lHelp"
-    lore:
-      - "&7/kudo [player] - Award a player a Kudo"
-      - "&7/kudos - Opens GUI"
-      - "&7/kudos [player] - Displays the player's Kudos"
-  top3:
-    item_name: "&c&lTop3"
-    lore:
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-    not_assigned: "&eNot assigned"
 kudo:
-  player_award_kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
+  player-award-kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
 kudos:
-  show_player_kudos: "&7The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
+  show-player-kudos: "&7The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
 error:
-  no_permission: "&7You don't have the permission to do this!"
-  wrong_usage: "&7Wrong usage! Type &e/kudos &7for more informations"
-  specify_player: "&7Please specify a player!"
-  player_inventory_is_full: "The inventory of &e%targetplayer% &7is full!"
-  player_not_online: "&7The player &e%targetplayer% &7is not online!"
-  player_not_found: "&7The player &e%targetplayer% &7was not found!"
-  cant_give_yourself_kudo: "&7You can't give yourself a Kudo!"
-  must_wait_before_use_again: "&7You must wait &e%seconds% seconds &7before you can use it again!"
-
+  no-permission: "&7You don't have the permission to do this!"
+  wrong-usage: "&7Wrong usage! Type &e/kudos &7for more informations"
+  specify-player: "&7Please specify a player!"
+  player-inventory-is-full: "The inventory of &e%targetplayer% &7is full!"
+  player-not-online: "&7The player &e%targetplayer% &7is not online!"
+  player-not-found: "&7The player &e%targetplayer% &7was not found!"
+  cant-give-yourself-kudo: "&7You can't give yourself a Kudo!"
+  must-wait-before-use-again: "&7You must wait &e%seconds% seconds &7before you can use it again!"

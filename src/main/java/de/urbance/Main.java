@@ -4,8 +4,8 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import Utils.FileManager;
 import Utils.GUI;
-import Utils.LocaleManager;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import Utils.UpdateChecker;
@@ -15,20 +15,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
     public static String prefix;
-    public FileConfiguration locale;
+    public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
     public FileConfiguration config = getConfig();
+    public FileConfiguration mysqlConfig;
+    public FileConfiguration guiConfig;
     public boolean isConnected;
 
     @Override
     public void onEnable() {
         prefix = config.getString("prefix");
-        this.locale = new LocaleManager(this).getConfig();
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
@@ -80,20 +82,48 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void setupConfigs() {
+        // setup config.yml
         getConfig().options().copyDefaults(true);
         saveConfig();
+
+        // setup mysql.yml
+        FileManager mysqlManager = new FileManager("mysql.yml", this);
+        this.mysqlConfig = mysqlManager.getConfig();
+        mysqlConfig.options().copyDefaults(true);
+        mysqlManager.save();
+
+        // setup messages.yml
+        FileManager localeManager = new FileManager("messages.yml", this);
+        this.localeConfig = localeManager.getConfig();
+        localeConfig.options().copyDefaults(true);
+        localeManager.save();
+
+        // setup gui.yml
+        FileManager guiManager = new FileManager("gui.yml", this);
+        this.guiConfig = guiManager.getConfig();
+        guiConfig.options().copyDefaults(true);
+        guiManager.save();
     }
 
     public void reloadConfigs() {
-        // Reload config
+        // reload config.yml
         reloadConfig();
         saveDefaultConfig();
 
-        // Reload messages.yml
-        LocaleManager localeManager = new LocaleManager(this);
-        FileConfiguration locale = localeManager.getConfig();
-        localeManager.reloadLocale();
-        this.locale = locale;
+        // reload messages.yml
+        FileManager localeManager = new FileManager("messages.yml", this);
+        localeManager.reload();
+        this.localeConfig = localeManager.getConfig();
+
+        // reload mysql.yml
+        FileManager mysqlManager = new FileManager("mysql.yml", this);
+        mysqlManager.reload();
+        this.mysqlConfig = mysqlManager.getConfig();
+
+        // reload gui.yml
+        FileManager guiManager = new FileManager("gui.yml", this);
+        guiManager.reload();
+        this.guiConfig = guiManager.getConfig();
     }
 
     public void UpdateChecker() {

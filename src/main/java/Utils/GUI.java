@@ -1,7 +1,6 @@
 package Utils;
 
 import Commands.Kudos;
-import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -23,12 +22,12 @@ import java.util.List;
 public class GUI implements Listener {
     private final Inventory inventory;
     public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale;
+    public FileConfiguration guiConfig;
     public SQLGetter data = new SQLGetter(plugin);
 
     public GUI() {
         inventory = Bukkit.createInventory(null, 9, "Kudos");
-        this.locale = plugin.locale;
+        this.guiConfig = plugin.guiConfig;
         setItems();
     }
 
@@ -37,24 +36,32 @@ public class GUI implements Listener {
     }
 
     private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, locale.getString("GUI.your_kudos.item_name"), null));
-        inventory.setItem(4, createItem(Material.POPPY, locale.getString("GUI.help.item_name"), locale.getStringList("GUI.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, locale.getString("GUI.top3.item_name"), data.getTopThreePlayers()));
+        inventory.setItem(2, createItem(Material.PLAYER_HEAD, guiConfig.getString("slot.statistics.item-name"), null));
+        inventory.setItem(4, createItem(Material.POPPY, guiConfig.getString("slot.help.item-name"), guiConfig.getStringList("slot.help.lore")));
+        inventory.setItem(6, createItem(Material.EMERALD, guiConfig.getString("slot.top3.item-name"), data.getTopThreePlayers()));
     }
 
-    private ItemStack createItem(Material material, String displayname, List<String> lore) {
+    private ItemStack createItem(Material material, String displayName, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
 
+        itemMeta.setLore(setLore(lore, null));
+        item.setItemMeta(itemMeta);
+        return item;
+    }
+
+    public List<String> setLore(List<String> lore, Player player) {
         if (lore != null) {
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
+                if (player != null) {
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId())))));
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%player_assigned_kudos%", String.valueOf(data.getAssignedKudo(player.getUniqueId())))));
+                }
             }
         }
-        itemMeta.setLore(lore);
-        item.setItemMeta(itemMeta);
-        return item;
+        return lore;
     }
 
     @EventHandler
@@ -76,16 +83,14 @@ public class GUI implements Listener {
 
         ItemStack playerHead = inventory.getItem(2);
         SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
+        FileConfiguration guiConfig = new FileManager("gui.yml", plugin).getConfig();
+        List<String> lore = guiConfig.getStringList("slot.statistics.lore");
 
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
+        skullMeta.setLore(setLore(lore, player));
 
         FileConfiguration locale = new LocaleManager(plugin).getConfig();
-        List<String> lore = locale.getStringList("GUI.your_kudos.lore");
 
-        lore.set(0, ChatColor.translateAlternateColorCodes('&', lore.get(0)));
-        lore.set(0, lore.get(0).replaceAll("%player_kudos%", String.valueOf(data.getKudos(player.getUniqueId()))));
-
-        skullMeta.setLore(lore);
         playerHead.setItemMeta(skullMeta);
     }
 }
