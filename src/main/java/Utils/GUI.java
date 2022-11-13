@@ -89,8 +89,6 @@ public class GUI implements Listener {
         skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
         skullMeta.setLore(setLore(lore, player));
 
-        FileConfiguration locale = new LocaleManager(plugin).getConfig();
-
         playerHead.setItemMeta(skullMeta);
     }
 }
