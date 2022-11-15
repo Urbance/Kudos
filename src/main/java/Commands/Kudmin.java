@@ -60,14 +60,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                if (!validateInput(args, sender))
                    return false;
 
-               UUID uuid;
-               if (!(sender instanceof Player)) {
-                   uuid = null;
-               } else {
-                   uuid = ((Player) sender).getUniqueId();
-               }
-
-               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), uuid, Integer.parseInt(args[2]));
+               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), null, Integer.parseInt(args[2]));
                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
                break;
 
