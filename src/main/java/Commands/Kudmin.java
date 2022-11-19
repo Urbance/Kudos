@@ -51,6 +51,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     "All player commands are listed on &c/kudos"));
                break;
             case "reload":
+                if (args.length > 1) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+                    return false;
+                }
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
                 break;
@@ -88,19 +92,16 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                break;
 
             case "clear":
-               if (args.length != 2) {
-                   sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
-                   return false;
-               }
-
-                OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                if (player == null) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+                if (args.length > 2) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
                     return false;
                 }
-               data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+                if (!ifTargetPlayerExists(sender, args)) {
+                   return false;
+                }
+                data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
-               break;
+                break;
 
             default:
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
@@ -109,6 +110,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
+        if (args.length > 3) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+            return false;
+        }
         if (!ifTargetPlayerExists(sender, args)) {
             return false;
         }
