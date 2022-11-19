@@ -15,7 +15,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
     public String prefix = "&7[&cKudmin&7] ";
@@ -52,6 +51,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     "All player commands are listed on &c/kudos"));
                break;
             case "reload":
+                if (args.length > 1) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+                    return false;
+                }
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
                 break;
@@ -89,50 +92,69 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                break;
 
             case "clear":
-               if (args.length != 2) {
-                   sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
-                   return false;
-               }
-
-                OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                if (player == null) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+                if (args.length > 2) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
                     return false;
                 }
-               data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
+                if (!ifTargetPlayerExists(sender, args)) {
+                   return false;
+                }
+                data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
-               break;
-       }
+                break;
+
+            default:
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
+        }
     return false;
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
-        SQLGetter data = new SQLGetter(plugin);
-
-        if (args.length < 3) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Please try &e/kudmin help"));
+        if (args.length > 3) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
             return false;
         }
-
-        try {
-            Integer.parseInt(args[2]);
-        } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number"));
+        if (!ifTargetPlayerExists(sender, args)) {
             return false;
         }
-
-        if (Integer.parseInt(args[2]) < 0) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a number that is greater than 0"));
-            return false;
-        }
-
-        OfflinePlayer player = data.getPlayer(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-        if (player == null) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Wrong usage! Player &e" + args[1] + " &7not found"));
+        if (!isValueAnInteger(sender, args)) {
             return false;
         }
         return true;
     }
+
+    private boolean isValueAnInteger(CommandSender sender, String[] args) {
+        if (args.length < 3 || !isValueAnInteger(args[2]) || !(Integer.parseInt(args[2]) >= 0)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValueAnInteger(String rawValue) {
+        try {
+            Integer.parseInt(rawValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean ifTargetPlayerExists(CommandSender sender, String[] args) {
+        SQLGetter data = new SQLGetter(plugin);
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a target player!"));
+            return false;
+        }
+        String targetPlayerName = args[1];
+        OfflinePlayer targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(targetPlayerName).getUniqueId());
+        if (targetPlayer == null) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Player &e" + targetPlayerName + " &7not found!"));
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         ArrayList<String> list = new ArrayList<>();
