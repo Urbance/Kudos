@@ -15,11 +15,13 @@ import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
     public String prefix = "&7[&cKudmin&7] ";
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale = plugin.localeConfig;
+    public String optionValue;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -37,94 +39,140 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0]) {
-            case "help":
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-        "&7========= &c&lKudmin Commands &7=========\n" +
-                    " \n" +
-                    "/kudmin help &7- Shows all kudmin commands\n" +
-                    "/kudmin add &e[player] [amount] &7- Add Kudos\n" +
-                    "/kudmin remove &e[player] [amount] &7- Remove Kudos\n" +
-                    "/kudmin set &e[player] [amount] &7- Set Kudos\n" +
-                    "/kudmin clear &e[player] &7- Clear all Kudos\n" +
-                    "/kudmin reload - Reloads config and locales\n" +
-                    " \n" +
-                    "All player commands are listed on &c/kudos"));
-               break;
-            case "reload":
-                if (args.length > 1) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+            case "help" -> {
+                if (!validateInput(args, sender, 1,false, false, false))
                     return false;
-                }
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&7========= &c&lKudmin Commands &7=========\n" +
+                                " \n" +
+                                "&7/kudmin help\n" +
+                                "&7/kudmin add &e[kudos/assigned_kudos] [player] [amount]\n" +
+                                "&7/kudmin remove &e[kudos/assigned_kudos] [player] [amount]\n" +
+                                "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
+                                "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
+                                "&7/kudmin reload\n" +
+                                " \n" +
+                                "All player commands are listed on &c/kudos"));
+            }
+            case "reload" -> {
+                if (!validateInput(args, sender, 1,false, false, false))
+                    return false;
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
-                break;
-
-            case "add":
-               if (!validateInput(args, sender))
-                   return false;
-
-               data.addKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), null, Integer.parseInt(args[2]));
-               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
-               break;
-
-            case "remove":
-               if (!validateInput(args, sender)) {
-                   return false;
-               }
-
-               if (Integer.parseInt(args[2]) > data.getKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId())) {
-                   data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                   sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
-                   return false;
-               }
-
-               data.removeKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
-               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
-               break;
-
-            case "set":
-               if (!validateInput(args, sender)) {
-                   return false;
-               }
-
-               data.setKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId(), Integer.parseInt(args[2]));
-               sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + args[2] + " Kudos &7" + "to &e" + args[1]));
-               break;
-
-            case "clear":
-                if (args.length > 2) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+            }
+            case "clear" -> {
+                if (!validateInput(args, sender, 3, true, true, false)) {
                     return false;
                 }
-                if (!ifTargetPlayerExists(sender, args)) {
-                   return false;
+                String playerName = args[2];
+                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+                switch (optionValue) {
+                    case "kudos" -> {
+                        data.clearKudos(player);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + playerName));
+                    }
+                    case "assigned_kudos" -> {
+                        data.clearAssignedKudos(player);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared assigned Kudos from &e" + playerName));
+                    }
                 }
-                data.clearKudos(Bukkit.getOfflinePlayer(args[1]).getUniqueId());
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + args[1]));
-                break;
+            }
+            case "add" -> {
+                if (!validateInput(args, sender, 4,true, true, true))
+                    return false;
 
-            default:
+                int amount = Integer.parseInt(args[3]);
+                String playerName = args[2];
+                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+                switch (optionValue) {
+                    case "kudos" -> {
+                        data.addKudos(player, null, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
+                    }
+                    case "assigned_kudos" -> {
+                        data.addAssignedKudos(player, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
+                    }
+                }
+            }
+            case "remove" -> {
+                if (!validateInput(args, sender, 4, true, true, true)) {
+                    return false;
+                }
+                int amount = Integer.parseInt(args[3]);
+                String playerName = args[2];
+                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+                switch (optionValue) {
+                    case "kudos" -> {
+                        if (amount > data.getKudos(player)) {
+                            data.clearKudos(player);
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+                            return false;
+                        }
+                        data.removeKudos(player, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+                    }
+                    case "assigned_kudos" -> {
+                        if (amount > data.getAssignedKudo(player)) {
+                            data.clearAssignedKudos(player);
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
+                            return false;
+                        }
+                        data.removeAssignedKudos(player, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
+                    }
+                }
+            }
+            case "set" -> {
+                if (!validateInput(args, sender, 4, true, true, true)) {
+                    return false;
+                }
+                int amount = Integer.parseInt(args[3]);
+                String playerName = args[2];
+                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+                switch (optionValue) {
+                    case "kudos" -> {
+                        data.setKudos(player, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + amount + " Kudos &7" + "to &e" + playerName));
+                    }
+                    case "assigned_kudos" -> {
+                        data.setAssignedKudos(player, amount);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
+                    }
+                }
+            }
+            default ->
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
     return false;
     }
 
-    private boolean validateInput(String[] args, CommandSender sender) {
-        if (args.length > 3) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help&7!"));
+    private boolean validateInput(String[] args, CommandSender sender, int maxArgs, boolean validateOptionValue, boolean validateTargetPlayer, boolean validateValue) {
+        if (args.length > maxArgs) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
             return false;
         }
-        if (!ifTargetPlayerExists(sender, args)) {
-            return false;
+        if (validateOptionValue) {
+            if (!setAndValidateOptionValue(sender, args))
+                return false;
         }
-        if (!isValueAnInteger(sender, args)) {
-            return false;
+        if (validateTargetPlayer) {
+            if (!ifTargetPlayerExists(sender, args))
+                return false;
+        }
+        if (validateValue) {
+            if (!isValueAnInteger(sender, args))
+                return false;
         }
         return true;
     }
 
+
     private boolean isValueAnInteger(CommandSender sender, String[] args) {
-        if (args.length < 3 || !isValueAnInteger(args[2]) || !(Integer.parseInt(args[2]) >= 0)) {
+        if (args.length < 4 || !isValueAnInteger(args[3]) || !(Integer.parseInt(args[3]) >= 0)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
             return false;
         }
@@ -140,13 +188,26 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean setAndValidateOptionValue(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
+            return false;
+        }
+        optionValue = args[1];
+        if (!(optionValue.equals("kudos") || optionValue.equals("assigned_kudos"))) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
+            return false;
+        }
+        return true;
+    }
+
     private boolean ifTargetPlayerExists(CommandSender sender, String[] args) {
         SQLGetter data = new SQLGetter(plugin);
-        if (args.length < 2) {
+        if (args.length < 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a target player!"));
             return false;
         }
-        String targetPlayerName = args[1];
+        String targetPlayerName = args[2];
         OfflinePlayer targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(targetPlayerName).getUniqueId());
         if (targetPlayer == null) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Player &e" + targetPlayerName + " &7not found!"));
@@ -171,12 +232,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         }
         if (args.length == 2) {
             switch (args[0]) {
+                case "add", "remove", "set", "clear" -> {
+                    list.add("kudos");
+                    list.add("assigned_kudos");
+                }
+            }
+        }
+        if (args.length == 3) {
+            switch (args[0]) {
                 case "add", "remove", "set", "clear":
                     for (Player players : Bukkit.getOnlinePlayers())
                         list.add(players.getName());
             }
         }
-        if (args.length == 3) {
+        if (args.length == 4) {
             switch (args[0]) {
                 case "add", "remove", "set" -> list.add("amount");
             }
