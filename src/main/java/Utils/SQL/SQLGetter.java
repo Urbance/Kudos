@@ -153,6 +153,28 @@ public class SQLGetter {
         }
     }
 
+    public void removeAssignedKudos(UUID uuid, int kudos) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?");
+            preparedStatement.setInt(1, (getKudos(uuid) - kudos));
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setAssignedKudos(UUID uuid, int kudos) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?");
+            preparedStatement.setInt(1, (kudos));
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getAssignedKudo(UUID uuid) {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Assigned from kudos WHERE UUID=?");
@@ -168,6 +190,18 @@ public class SQLGetter {
         }
         return 0;
     }
+
+    public void clearAssignedKudos(UUID uuid) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?");
+            preparedStatement.setInt(1, 0);
+            preparedStatement.setString(2, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public List<String> getTopThreePlayers() {
         try {
