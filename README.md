@@ -26,6 +26,7 @@ It includes a GUI, which can display various informations and statistics.
 * Requires Java 17 or later
 
 ## Installation
+* Stop your server
 * Download the plugin .jar 
 * Drag the .jar into your plugin folder
 * Start your server
