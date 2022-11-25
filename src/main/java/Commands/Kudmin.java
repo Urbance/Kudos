@@ -40,7 +40,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
         switch (args[0]) {
             case "help" -> {
-                if (!validateInput(args, sender, 1,false, false, false))
+                if (!validateInput(args, sender, 1, 0, false, false, false))
                     return false;
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
                         "&7========= &c&lKudmin Commands &7=========\n" +
@@ -50,18 +50,19 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                                 "&7/kudmin remove &e[kudos/assigned_kudos] [player] [amount]\n" +
                                 "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
                                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
+                                "&7/kudmin clearall &e[player]\n" +
                                 "&7/kudmin reload\n" +
                                 " \n" +
                                 "All player commands are listed on &c/kudos"));
             }
             case "reload" -> {
-                if (!validateInput(args, sender, 1,false, false, false))
+                if (!validateInput(args, sender, 1, 0, false, false, false))
                     return false;
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
                 plugin.reloadConfigs();
             }
             case "clear" -> {
-                if (!validateInput(args, sender, 3, true, true, false)) {
+                if (!validateInput(args, sender, 3, 2, true, true, false)) {
                     return false;
                 }
                 String playerName = args[2];
@@ -77,8 +78,18 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     }
                 }
             }
+            case "clearall" -> {
+                if (!validateInput(args, sender, 2, 1, false, true, false)) {
+                    return false;
+                }
+                String playerName = args[1];
+                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+                data.clearKudosAndAssignedKudos(player);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
+            }
             case "add" -> {
-                if (!validateInput(args, sender, 4,true, true, true))
+                if (!validateInput(args, sender, 4, 2, true, true, true))
                     return false;
 
                 int amount = Integer.parseInt(args[3]);
@@ -97,7 +108,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 }
             }
             case "remove" -> {
-                if (!validateInput(args, sender, 4, true, true, true)) {
+                if (!validateInput(args, sender, 4, 2, true, true, true)) {
                     return false;
                 }
                 int amount = Integer.parseInt(args[3]);
@@ -126,7 +137,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 }
             }
             case "set" -> {
-                if (!validateInput(args, sender, 4, true, true, true)) {
+                if (!validateInput(args, sender, 4, 2, true, true, true)) {
                     return false;
                 }
                 int amount = Integer.parseInt(args[3]);
@@ -150,7 +161,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     return false;
     }
 
-    private boolean validateInput(String[] args, CommandSender sender, int maxArgs, boolean validateOptionValue, boolean validateTargetPlayer, boolean validateValue) {
+    private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateOptionValue, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
             return false;
@@ -160,7 +171,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 return false;
         }
         if (validateTargetPlayer) {
-            if (!ifTargetPlayerExists(sender, args))
+            if (!TargetPlayerExists(sender, args, playerArgumentPosition))
                 return false;
         }
         if (validateValue) {
@@ -201,13 +212,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean ifTargetPlayerExists(CommandSender sender, String[] args) {
+    private boolean TargetPlayerExists(CommandSender sender, String[] args, int playerArgumentPosition) {
         SQLGetter data = new SQLGetter(plugin);
-        if (args.length < 3) {
+        if (args.length < playerArgumentPosition + 1) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a target player!"));
             return false;
         }
-        String targetPlayerName = args[2];
+        String targetPlayerName = args[playerArgumentPosition];
         OfflinePlayer targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(targetPlayerName).getUniqueId());
         if (targetPlayer == null) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Player &e" + targetPlayerName + " &7not found!"));
@@ -228,6 +239,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             list.add("remove");
             list.add("set");
             list.add("clear");
+            list.add("clearall");
             list.add("reload");
         }
         if (args.length == 2) {
@@ -235,6 +247,11 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 case "add", "remove", "set", "clear" -> {
                     list.add("kudos");
                     list.add("assigned_kudos");
+                }
+                case "clearall" -> {
+                    for (Player players : Bukkit.getOnlinePlayers()) {
+                        list.add(players.getName());
+                    }
                 }
             }
         }

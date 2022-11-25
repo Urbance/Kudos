@@ -202,6 +202,15 @@ public class SQLGetter {
         }
     }
 
+    public void clearKudosAndAssignedKudos(UUID uuid) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=0, Assigned=0 WHERE UUID=?");
+            preparedStatement.setString(1, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public List<String> getTopThreePlayers() {
         try {
@@ -228,5 +237,4 @@ public class SQLGetter {
         }
         return null;
     }
-
 }
