@@ -41,10 +41,11 @@ It includes a GUI, which can display various informations and statistics.
 | <b>⚙️ Administrator  | kudmin | |
 | kudmin | | Show plugin version |
 | kudmin help  | | Show help page |
-| kudmin add [player] [amount] | | Add Kudos for a player |
-| kudmin remove [player] [amount] | | Remove Kudos from a player|
-| kudmin set [player] [value] | | Set Kudos for a player |
-| kudmin clear [player] | | Clear all Kudos from a player|
+| kudmin add [kudos/assigned_kudos] [player] [amount] | | Add Kudos for a player|
+| kudmin remove [kudos/assigned_kudos] [player] [amount] | | Remove Kudos from a player|
+| kudmin set [kudos/assigned_kudos] [player] [value] | | Set Kudos for a player|
+| kudmin clear [kudos/assigned_kudos] [player] | | Clear all Kudos from a player|
+| kudmin clearall [player] | | Clear all Kudos and assigned Kudos from a player|
 | kudmin reload | | Reload plugin files |
 
 ## FAQs
