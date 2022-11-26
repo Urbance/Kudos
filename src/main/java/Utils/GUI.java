@@ -26,13 +26,18 @@ public class GUI implements Listener {
     public SQLGetter data = new SQLGetter(plugin);
 
     public GUI() {
-        inventory = Bukkit.createInventory(null, 9, "Kudos");
         this.guiConfig = plugin.guiConfig;
+        inventory = createInventory();
         setItems();
     }
 
     public Inventory getInventory() {
         return inventory;
+    }
+
+    private Inventory createInventory() {
+        String title = guiConfig.getString("title");
+        return Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', title));
     }
 
     private void setItems() {

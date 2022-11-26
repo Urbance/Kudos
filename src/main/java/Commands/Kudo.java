@@ -78,7 +78,14 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         if (config.getBoolean("play-sound-on-kudo-award")) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                players.playSound(players, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                String playSoundType = config.getString("play-sound-type");
+                try {
+                    players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
+                }
+                catch (Exception e) {
+                    Bukkit.getLogger().warning("Error in the config: play-sound-type \"" + playSoundType + "\" isn't a valid playsound!");
+                    return false;
+                }
             }
         }
         return false;
