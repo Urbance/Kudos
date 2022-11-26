@@ -54,3 +54,7 @@ It includes a GUI, which can display various informations and statistics.
 Q: I have Questions, Suggestions or Issues. How can I contact you?
 
 A: I am glad that you want to contact me. Join my [Discord Server](https://discord.gg/hDqPms3MbH) and open a ticket or write me a PM. 
+
+Q: What playsounds are available?
+
+A: You can find all available playsounds [here](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html)!
