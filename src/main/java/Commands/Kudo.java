@@ -93,23 +93,23 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean validateInput(String[] args, CommandSender sender) {
         if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
         if (args.length == 0) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.specify-player")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.specify-player")));
             return false;
         }
         if (args.length > 1) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
             return false;
         }
         if (Bukkit.getPlayer(args[0]) == null) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-online").replaceAll("%targetplayer%", args[0])));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-online").replaceAll("%targetplayer%", args[0])));
             return false;
         }
         if (sender == Bukkit.getPlayer(args[0])) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant-give-yourself-kudo")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant-give-yourself-kudo")));
             return false;
         }
         return true;
