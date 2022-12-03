@@ -2,6 +2,8 @@ kudo:
   player-award-kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
 kudos:
   show-player-kudos: "&7The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
+milestone:
+  player-reaches-milestone: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! &e%targetplayer% &7has now incredible &e%player_kudos% &7Kudos!"
 error:
   no-permission: "&7You don't have the permission to do this!"
   wrong-usage: "&7Wrong usage! Type &e/kudos &7for more informations"
