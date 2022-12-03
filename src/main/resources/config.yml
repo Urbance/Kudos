@@ -17,4 +17,4 @@ milestone:
   enabled: true
   span-between-kudos: 10
   enable-playsound: true
-  playsound-type: "ENTITY_PLAYER_LEVELUP"
+  playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
