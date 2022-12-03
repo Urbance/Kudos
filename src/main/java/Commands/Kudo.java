@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Kudo implements CommandExecutor, TabCompleter {
     private final CooldownManager cooldownManager = new CooldownManager();
@@ -32,9 +33,9 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        this.prefix = plugin.getConfig().getString("prefix");
         this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
+        this.prefix = config.getString("prefix");
 
         if (!(sender instanceof Player)) {
             Bukkit.getServer().getLogger().info("You can't execute this command as console!");
@@ -43,52 +44,33 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!validateInput(args, sender))
             return false;
 
+        foo(sender, args);
+
+        return false;
+    }
+
+    private void foo(CommandSender sender, String[] args) {
         Player player = ((Player) sender).getPlayer();
-        this.timeLeft = cooldownManager.getCooldown(player.getUniqueId());
-
-        if (!canAwardKudos()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must-wait-before-use-again")
-                    .replaceAll("%seconds%", String.valueOf(timeLeft))));
-            return false;
-        }
-
+        UUID playerUUID = player.getUniqueId();
         Player targetPlayer = Bukkit.getPlayer(args[0]);
+        UUID targetPlayerUUID = targetPlayer.getUniqueId();
+        data = new SQLGetter(plugin);
+        timeLeft = cooldownManager.getCooldown(playerUUID);
 
-        if (isAwardItem()) {
-            if (!itemCanBeAdded(targetPlayer.getInventory())){
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player-inventory-is-full")
-                        .replaceAll("%targetplayer%", targetPlayer.getName())));
-                cooldownManager.setCooldown(player.getUniqueId(), 0);
-                return false;
-            }
-            Inventory inventory = targetPlayer.getInventory();
-            inventory.addItem(awardItem());
-        }
+        if (!validatePlayerCooldown(sender))
+            return;
+        if (!validateAwardItem(sender, player, targetPlayer))
+            return;
 
         setCooldown(player);
-
-        data = new SQLGetter(plugin);
-        data.addKudos(targetPlayer.getUniqueId(), ((Player) sender).getUniqueId(), 1);
+        playSound();
+        data.addKudos(targetPlayerUUID, playerUUID, 1);
 
         String awardMessage = locale.getString("kudo.player-award-kudo");
         awardMessage = awardMessage.replaceAll("%player%", player.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
-        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
-
-        if (config.getBoolean("play-sound-on-kudo-award")) {
-            for (Player players : Bukkit.getOnlinePlayers()) {
-                String playSoundType = config.getString("play-sound-type");
-                try {
-                    players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
-                }
-                catch (Exception e) {
-                    Bukkit.getLogger().warning("Error in the config: play-sound-type \"" + playSoundType + "\" isn't a valid playsound!");
-                    return false;
-                }
-            }
-        }
-        return false;
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
@@ -112,6 +94,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant-give-yourself-kudo")));
             return false;
         }
+
         return true;
     }
 
@@ -129,7 +112,46 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }.runTaskTimer(plugin, 20, 20);
     }
 
-    private ItemStack awardItem() {
+    private boolean validateAwardItem(CommandSender sender, Player player, Player targetPlayer) {
+        Inventory targetPlayerInventory = targetPlayer.getInventory();
+
+        if (isAwardItem()) {
+            if (!itemCanBeAdded(targetPlayerInventory)){
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player-inventory-is-full")
+                        .replaceAll("%targetplayer%", targetPlayer.getName())));
+                cooldownManager.setCooldown(player.getUniqueId(), 0);
+                return false;
+            }
+            targetPlayerInventory.addItem(createAwardItem());
+        }
+        return true;
+    }
+
+    private boolean validatePlayerCooldown(CommandSender sender) {
+        if (!canAwardKudos()) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.must-wait-before-use-again")
+                    .replaceAll("%seconds%", String.valueOf(timeLeft))));
+            return false;
+        }
+
+        return true;
+    }
+
+    private void playSound() {
+        if (config.getBoolean("play-sound-on-kudo-award")) {
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                String playSoundType = config.getString("play-sound-type");
+                try {
+                    players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
+                }
+                catch (Exception e) {
+                    Bukkit.getLogger().warning("Error in the config: play-sound-type \"" + playSoundType + "\" isn't a valid playsound!");
+                    return;
+                }
+            }
+        }
+    }
+    private ItemStack createAwardItem() {
         Material material = Material.getMaterial(config.getString("award-item.item"));
         String displayName = config.getString("award-item.item-name");
         List<String> lore = config.getStringList("award-item.item-lore");
@@ -149,7 +171,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean itemCanBeAdded(Inventory inventory) {
-        ItemStack awardItem = awardItem();
+        ItemStack awardItem = createAwardItem();
         for (int i = 0; i < 36; i++) {
             if (inventory.getItem(i) == null) {
                 return true;
