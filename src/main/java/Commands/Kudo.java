@@ -165,7 +165,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!config.getBoolean("milestone.enabled")) {
             return false;
         }
-        return targetPlayerKudos % config.getInt("milestone.span-between_kudos") == 0;
+        return targetPlayerKudos % config.getInt("milestone.span-between-kudos") == 0;
     }
     private ItemStack createAwardItem() {
         Material material = Material.getMaterial(config.getString("award-item.item"));
