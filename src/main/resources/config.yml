@@ -13,4 +13,8 @@ award-item:
     - "&8- Wheat"
     - "&8- Cocoa Beans"
   amount: 1
-
+milestone:
+  enabled: true
+  span-between_kudos: 25
+  enable-playsound: true
+  playsound-type: "ENTITY_PLAYER_LEVELUP"

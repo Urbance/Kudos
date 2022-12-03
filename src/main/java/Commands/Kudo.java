@@ -63,9 +63,20 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return;
 
         setCooldown(player);
-        playSound();
         data.addKudos(targetPlayerUUID, playerUUID, 1);
 
+        // TODO Clean Code -> PlaceholderAPI?
+        if (validateMilestone(targetPlayer)) {
+            String awardMessage = locale.getString("milestone.player-reaches-milestone");
+            awardMessage = awardMessage.replaceAll("%player%", player.getName());
+            awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
+            awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
+            playSound(config.getString("milestone.playsound-type"));
+            return;
+        }
+
+        playSound(config.getString("play-sound-type"));
         String awardMessage = locale.getString("kudo.player-award-kudo");
         awardMessage = awardMessage.replaceAll("%player%", player.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
@@ -94,7 +105,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.cant-give-yourself-kudo")));
             return false;
         }
-
         return true;
     }
 
@@ -133,14 +143,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
                     .replaceAll("%seconds%", String.valueOf(timeLeft))));
             return false;
         }
-
         return true;
     }
 
-    private void playSound() {
+    private void playSound(String playSoundType) {
         if (config.getBoolean("play-sound-on-kudo-award")) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                String playSoundType = config.getString("play-sound-type");
                 try {
                     players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
                 }
@@ -150,6 +158,14 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 }
             }
         }
+    }
+
+    private boolean validateMilestone(Player targetPlayer) {
+        int targetPlayerKudos = data.getKudos(targetPlayer.getUniqueId());
+        if (!config.getBoolean("milestone.enabled")) {
+            return false;
+        }
+        return targetPlayerKudos % config.getInt("milestone.span-between_kudos") == 0;
     }
     private ItemStack createAwardItem() {
         Material material = Material.getMaterial(config.getString("award-item.item"));
