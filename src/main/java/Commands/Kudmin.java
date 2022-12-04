@@ -1,5 +1,6 @@
 package Commands;
 
+import Utils.FileManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -51,6 +52,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                                 "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
                                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                                 "&7/kudmin clearall &e[player]\n" +
+                                "&7/kudmin workaround\n" +
                                 "&7/kudmin reload\n" +
                                 " \n" +
                                 "All player commands are listed on &c/kudos"));
@@ -155,6 +157,30 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     }
                 }
             }
+            case "workaround" -> {
+                if (!validateInput(args, sender, 1, 0, false, false, false)) {
+                    return false;
+                }
+                if (!plugin.workaroundChecker()) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "There is no workaround available"));
+                    return false;
+                }
+                FileConfiguration config = plugin.getConfig();
+                Boolean playSoundOnKudoAward = config.getBoolean("play-sound-on-kudo-award");
+                String playSoundType = config.getString("play-sound-type");
+
+                // set old key values into the new keys
+                config.set("kudo-award-notification.playsound-on-kudo-award", playSoundOnKudoAward);
+                config.set("kudo-award-notification.playsound-type", playSoundType);
+
+                // remove unused keys
+                config.set("play-sound-on-kudo-award", null);
+                config.set("play-sound-type", null);
+
+                plugin.saveConfig();
+
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Workaround was successfully executed"));
+            }
             default ->
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
@@ -240,6 +266,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             list.add("clear");
             list.add("clearall");
             list.add("reload");
+            list.add("workaround");
         }
         if (args.length == 2) {
             switch (args[0]) {

@@ -76,7 +76,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return;
         }
 
-        playSound(config.getString("play-sound-type"));
+        playSound(config.getString("kudo-award-notification.playsound-type"));
         String awardMessage = locale.getString("kudo.player-award-kudo");
         awardMessage = awardMessage.replaceAll("%player%", player.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
@@ -147,13 +147,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void playSound(String playSoundType) {
-        if (config.getBoolean("play-sound-on-kudo-award")) {
+        if (config.getBoolean("kudo-award-notification.playsound-on-kudo-award")) {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 try {
                     players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
                 }
                 catch (Exception e) {
-                    Bukkit.getLogger().warning("Error in the config: play-sound-type \"" + playSoundType + "\" isn't a valid playsound!");
+                    Bukkit.getLogger().warning("Error in the config: playsound-type \"" + playSoundType + "\" isn't a valid playsound!");
                     return;
                 }
             }
