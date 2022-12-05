@@ -44,12 +44,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!validateInput(args, sender))
             return false;
 
-        foo(sender, args);
+        addKudo(sender, args);
 
         return false;
     }
 
-    private void foo(CommandSender sender, String[] args) {
+    private void addKudo(CommandSender sender, String[] args) {
         Player player = ((Player) sender).getPlayer();
         UUID playerUUID = player.getUniqueId();
         Player targetPlayer = Bukkit.getPlayer(args[0]);
