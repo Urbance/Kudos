@@ -8,10 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -37,10 +34,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.config = plugin.getConfig();
         this.prefix = config.getString("prefix");
 
-        if (!(sender instanceof Player)) {
-            Bukkit.getServer().getLogger().info("You can't execute this command as console!");
-            return false;
-        }
         if (!validateInput(args, sender))
             return false;
 
@@ -50,25 +43,35 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void addKudo(CommandSender sender, String[] args) {
-        Player player = ((Player) sender).getPlayer();
-        UUID playerUUID = player.getUniqueId();
+        data = new SQLGetter(plugin);
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
-        data = new SQLGetter(plugin);
-        timeLeft = cooldownManager.getCooldown(playerUUID);
+
+        // TODO Clean Code -> PlaceholderAPI? | Refactoring!
+        if (sender instanceof ConsoleCommandSender) {
+            String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
+            awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
+            data.addKudos(targetPlayerUUID, null, 1);
+            playSound(config.getString("kudo-award-notification.playsound-type"));
+
+            return;
+        }
+
+        UUID senderUUID = ((Player) sender).getPlayer().getUniqueId();
+        timeLeft = cooldownManager.getCooldown(senderUUID);
 
         if (!validatePlayerCooldown(sender))
             return;
-        if (!validateAwardItem(sender, player, targetPlayer))
+        if (!validateAwardItem(sender, targetPlayer))
             return;
 
-        setCooldown(player);
-        data.addKudos(targetPlayerUUID, playerUUID, 1);
+        setCooldown(senderUUID);
+        data.addKudos(targetPlayerUUID, senderUUID, 1);
 
-        // TODO Clean Code -> PlaceholderAPI?
         if (validateMilestone(targetPlayer)) {
             String awardMessage = locale.getString("milestone.player-reaches-milestone");
-            awardMessage = awardMessage.replaceAll("%player%", player.getName());
+            awardMessage = awardMessage.replaceAll("%player%", sender.getName());
             awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
             awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
@@ -78,7 +81,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         playSound(config.getString("kudo-award-notification.playsound-type"));
         String awardMessage = locale.getString("kudo.player-award-kudo");
-        awardMessage = awardMessage.replaceAll("%player%", player.getName());
+        awardMessage = awardMessage.replaceAll("%player%", sender.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
@@ -108,28 +111,29 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void setCooldown(Player player) {
-        cooldownManager.setCooldown(player.getUniqueId(), config.getInt("kudo-award-cooldown"));
+    private void setCooldown(UUID senderUUID) {
+        cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award-cooldown"));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                int timeLeft = cooldownManager.getCooldown(player.getUniqueId());
-                cooldownManager.setCooldown(player.getUniqueId(), --timeLeft);
+                int timeLeft = cooldownManager.getCooldown(senderUUID);
+                cooldownManager.setCooldown(senderUUID, --timeLeft);
                 if (timeLeft == 0)
                     this.cancel();
             }
         }.runTaskTimer(plugin, 20, 20);
     }
 
-    private boolean validateAwardItem(CommandSender sender, Player player, Player targetPlayer) {
+    private boolean validateAwardItem(CommandSender sender, Player targetPlayer) {
         Inventory targetPlayerInventory = targetPlayer.getInventory();
+        UUID playerUUID = ((Player) sender).getPlayer().getUniqueId();
 
         if (isAwardItem()) {
             if (!itemCanBeAdded(targetPlayerInventory)){
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player-inventory-is-full")
                         .replaceAll("%targetplayer%", targetPlayer.getName())));
-                cooldownManager.setCooldown(player.getUniqueId(), 0);
+                cooldownManager.setCooldown(playerUUID, 0);
                 return false;
             }
             targetPlayerInventory.addItem(createAwardItem());

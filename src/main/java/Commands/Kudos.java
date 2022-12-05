@@ -44,7 +44,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public void openGUI(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            Bukkit.getServer().getLogger().info("You can't execute this command as console!");
+            Bukkit.getServer().getLogger().info("Please use /kudos [player]");
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
