@@ -1,5 +1,6 @@
 kudo:
   player-award-kudo: "&7The player &e%player% &7gave &e%targetplayer% &7a Kudo! The player has now&e %player_kudos% &7Kudos!"
+  player-award-kudo-from-console: "&7A higher power honors you, &e%targetplayer%&7! The player &e%targetplayer% &7has now &e%player_kudos% &7Kudos"
 kudos:
   show-player-kudos: "&7The player &e%targetplayer% &7has &e%targetplayer_kudos% &7Kudos"
 milestone:

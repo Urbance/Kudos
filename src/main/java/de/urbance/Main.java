@@ -138,4 +138,8 @@ public final class Main extends JavaPlugin implements Listener {
             }
         });
     }
+
+    public boolean workaroundChecker() {
+        return config.getString("play-sound-on-kudo-award") != null || config.getString("play-sound-type") != null;
+    }
 }
