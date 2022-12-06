@@ -49,11 +49,15 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         // TODO Clean Code -> PlaceholderAPI? | Refactoring!
         if (sender instanceof ConsoleCommandSender) {
+            data.addKudos(targetPlayerUUID, null, 1);
+            playSound(config.getString("kudo-award-notification.playsound-type"));
+
+            if (!isKudoAwardNotificationEnabled())
+                return;
+
             String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
             awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
-            data.addKudos(targetPlayerUUID, null, 1);
-            playSound(config.getString("kudo-award-notification.playsound-type"));
 
             return;
         }
@@ -80,6 +84,10 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
 
         playSound(config.getString("kudo-award-notification.playsound-type"));
+
+        if (!isKudoAwardNotificationEnabled())
+            return;
+
         String awardMessage = locale.getString("kudo.player-award-kudo");
         awardMessage = awardMessage.replaceAll("%player%", sender.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
@@ -171,6 +179,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
         return targetPlayerKudos % config.getInt("milestone.span-between-kudos") == 0;
     }
+
     private ItemStack createAwardItem() {
         Material material = Material.getMaterial(config.getString("award-item.item"));
         String displayName = config.getString("award-item.item-name");
@@ -188,6 +197,10 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean isAwardItem() {
         return config.getBoolean("award-item.enabled");
+    }
+
+    private boolean isKudoAwardNotificationEnabled() {
+        return config.getBoolean("kudo-award-notification.enabled");
     }
 
     private boolean itemCanBeAdded(Inventory inventory) {

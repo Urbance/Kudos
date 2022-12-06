@@ -2,6 +2,7 @@ update-notification: true
 prefix: "&7[&eKudos&7] "
 kudo-award-cooldown: 900
 kudo-award-notification:
+  enabled: true
   playsound-on-kudo-award: true
   playsound-type: "ENTITY_PLAYER_LEVELUP"
 award-item:
