@@ -74,12 +74,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         data.addKudos(targetPlayerUUID, senderUUID, 1);
 
         if (validateMilestone(targetPlayer)) {
-            String awardMessage = locale.getString("milestone.player-reaches-milestone");
-            awardMessage = awardMessage.replaceAll("%player%", sender.getName());
-            awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
-            awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
-            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
-            playSound(config.getString("milestone.playsound-type"));
+            sendMilestone(sender, targetPlayer, targetPlayerUUID);
             return;
         }
 
@@ -93,6 +88,15 @@ public class Kudo implements CommandExecutor, TabCompleter {
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',prefix + awardMessage));
+    }
+
+    private void sendMilestone(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+        String awardMessage = locale.getString("milestone.player-reaches-milestone");
+        awardMessage = awardMessage.replaceAll("%player%", sender.getName());
+        awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
+        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
+        playSound(config.getString("milestone.playsound-type"));
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
