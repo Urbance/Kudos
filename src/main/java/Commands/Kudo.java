@@ -55,6 +55,10 @@ public class Kudo implements CommandExecutor, TabCompleter {
             data.addKudos(targetPlayerUUID, null, 1);
             playSound(config.getString("kudo-award-notification.playsound-type"));
 
+            // Added for patch 1.4.1 -> no longer exists in 1.5.0
+            if (!validateAwardItem(sender, targetPlayer))
+                return;
+
             return;
         }
 
@@ -127,13 +131,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean validateAwardItem(CommandSender sender, Player targetPlayer) {
         Inventory targetPlayerInventory = targetPlayer.getInventory();
-        UUID playerUUID = ((Player) sender).getPlayer().getUniqueId();
 
         if (isAwardItem()) {
             if (!itemCanBeAdded(targetPlayerInventory)){
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +  locale.getString("error.player-inventory-is-full")
                         .replaceAll("%targetplayer%", targetPlayer.getName())));
-                cooldownManager.setCooldown(playerUUID, 0);
+                if (sender instanceof Player)
+                    cooldownManager.setCooldown(((Player) sender).getPlayer().getUniqueId(), 0);
                 return false;
             }
             targetPlayerInventory.addItem(createAwardItem());
