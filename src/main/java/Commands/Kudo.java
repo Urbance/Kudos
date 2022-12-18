@@ -49,6 +49,10 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         // TODO Clean Code -> PlaceholderAPI? | Refactoring!
         if (sender instanceof ConsoleCommandSender) {
+            // Added for patch 1.4.1 -> no longer exists in 1.5.0
+            if (!validateAwardItem(sender, targetPlayer))
+                return;
+
             String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
             awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
@@ -196,7 +200,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             if (inventory.getItem(i) == null) {
                 return true;
             }
-            if (inventory.getItem(i).isSimilar(awardItem)) {
+            if (inventory.getItem(i).isSimilar(awardItem) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
                 return true;
             }
         }
