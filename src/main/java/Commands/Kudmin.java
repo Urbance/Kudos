@@ -161,16 +161,18 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 if (!validateInput(args, sender, 1, 0, false, false, false)) {
                     return false;
                 }
+
                 if (!plugin.workaroundChecker()) {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "There is no workaround available"));
                     return false;
                 }
+
                 FileConfiguration config = plugin.getConfig();
                 Boolean playSoundOnKudoAward = config.getBoolean("play-sound-on-kudo-award");
                 String playSoundType = config.getString("play-sound-type");
 
                 // set old key values into the new keys
-                config.set("kudo-award-notification.playsound-on-kudo-award", playSoundOnKudoAward);
+                config.set("kudo-award-notification.enable-playsound", playSoundOnKudoAward);
                 config.set("kudo-award-notification.playsound-type", playSoundType);
 
                 // remove unused keys

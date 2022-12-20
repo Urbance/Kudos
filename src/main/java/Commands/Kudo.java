@@ -56,7 +56,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         String notificationMode = getNotificationMode();
 
         addKudo(sender, targetPlayerUUID);
-
         if (sender instanceof Player)
             setCooldown(sender);
 
@@ -76,6 +75,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (notificationMode.equals("private")) {
             sendPrivate(sender, targetPlayer, targetPlayerUUID);
         }
+
     }
 
     private boolean preValidation(CommandSender sender, Player targetPlayer) {
@@ -311,7 +311,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean isKudoAwardPlaysoundEnabled() {
-        return config.getBoolean("kudo-award-notification.playsound-on-kudo-award");
+        return config.getBoolean("kudo-award-notification.enable-playsound");
     }
 
     private boolean canAwardKudos() {
