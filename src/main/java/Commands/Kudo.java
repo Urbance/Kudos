@@ -49,25 +49,19 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         if (sender instanceof Player)
             this.timeLeft = cooldownManager.getCooldown(((Player) sender).getUniqueId());
-        Bukkit.broadcastMessage("Before setted: " + timeLeft);
 
-        if (!validatePlayerCooldown(sender))
-            return;
-        if (!itemCanBeAdded(sender, targetPlayer))
+        if (!preValidation(sender, targetPlayer))
             return;
 
         String notificationMode = getNotificationMode();
 
         addKudo(sender, targetPlayerUUID);
+
         if (sender instanceof Player)
             setCooldown(sender);
-        Bukkit.broadcastMessage("After: " + timeLeft);
-        addAwardItem(targetPlayer.getInventory());
 
-        if (!isKudoAwardNotificationEnabled())
+        if (!postValidation(sender, targetPlayer, notificationMode))
             return;
-
-        handlePlaySound(sender, targetPlayer, notificationMode);
 
         if (!(sender instanceof Player)) {
             sendConsole(sender, targetPlayer, targetPlayerUUID);
@@ -84,6 +78,38 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
     }
 
+    private boolean preValidation(CommandSender sender, Player targetPlayer) {
+        if (!validatePlayerCooldown(sender))
+            return false;
+
+        if (!isAwardItemEnabled())
+            return false;
+
+        if (!addAwardItem(sender, targetPlayer)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.player-inventory-is-full")
+                    .replaceAll("%targetplayer%", targetPlayer.getName())));
+
+            if (sender instanceof Player)
+                cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean postValidation(CommandSender sender, Player targetPlayer, String notificationMode) {
+        if (!isKudoAwardNotificationEnabled())
+            return false;
+
+        handlePlaySound(sender, targetPlayer, notificationMode);
+
+        if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
+            return false;
+
+        return true;
+    }
+
     private void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
             data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), 1);
@@ -93,26 +119,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void sendConsole(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        if (isMilestoneEnabled()) {
-            if (validateMilestone(targetPlayer)) {
-                sendMilestone(sender, targetPlayer, targetPlayerUUID);
-                return;
-            }
-        }
-
         String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
     }
 
     private void sendBroadcast(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        if (isMilestoneEnabled()) {
-            if (validateMilestone(targetPlayer)) {
-                sendMilestone(sender, targetPlayer, targetPlayerUUID);
-                return;
-            }
-        }
-
         String awardMessage = locale.getString("kudo.player-award-kudo-broadcast");
         awardMessage = awardMessage.replaceAll("%player%", sender.getName());
         awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
@@ -121,13 +133,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void sendPrivate(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        if (isMilestoneEnabled()) {
-            if (validateMilestone(targetPlayer)) {
-                sendMilestone(sender, targetPlayer, targetPlayerUUID);
-                return;
-            }
-        }
-
         // Prepare message for sender
         String senderMessage = locale.getString("kudo.player-assigned-kudo").replaceAll("%targetplayer%", targetPlayer.getName());
 
@@ -141,19 +146,29 @@ public class Kudo implements CommandExecutor, TabCompleter {
         targetPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + targetPlayerMessage));
     }
 
-    private void sendMilestone(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+    private boolean sendMilestone(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+        if (!isMilestone(targetPlayer)) {
+            return false;
+        }
+
         if (sender instanceof Player) {
             String awardMessage = locale.getString("milestone.player-reaches-milestone");
             awardMessage = awardMessage.replaceAll("%player%", sender.getName());
             awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
             awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
-            return;
+            return true;
         }
-        String awardMessage = locale.getString("milestone.player-reaches-milestone-through-console");
-        awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
-        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
+
+        if (sender instanceof ConsoleCommandSender) {
+            String awardMessage = locale.getString("milestone.player-reaches-milestone-through-console");
+            awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
+            awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
+            return true;
+        }
+
+        return false;
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
@@ -186,7 +201,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         UUID senderUUID = ((Player) sender).getUniqueId();
         cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award-cooldown"));
-        Bukkit.broadcastMessage("Config Cooldown Value" + config.getInt("kudo-award-cooldown"));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -198,12 +212,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }.runTaskTimer(plugin, 20, 20);
     }
 
-    private void addAwardItem(Inventory targetPlayerInventory) {
-        if (!isAwardItemEnabled()) {
-            return;
-        }
+    private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
+        if (!itemCanBeAdded(targetPlayer.getInventory()))
+            return false;
 
-        targetPlayerInventory.addItem(createAwardItem());
+        targetPlayer.getInventory().addItem(createAwardItem());
+
+        return true;
     }
 
     private String getNotificationMode() {
@@ -214,6 +229,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return "broadcast";
     }
 
+    private boolean isMilestone(Player targetPlayer) {
+        if (isMilestoneEnabled()) {
+            return validateMilestone(targetPlayer);
+        }
+        return false;
+    }
     private boolean isAwardItemEnabled() {
         return config.getBoolean("award-item.enabled");
     }
@@ -305,23 +326,16 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return config.getBoolean("kudo-award-notification.enabled");
     }
 
-    private boolean itemCanBeAdded(CommandSender sender, Player targetPlayer) {
+    private boolean itemCanBeAdded(Inventory inventory) {
         ItemStack awardItem = createAwardItem();
         for (int i = 0; i < 36; i++) {
-            if (targetPlayer.getInventory().getItem(i) == null) {
+            if (inventory.getItem(i) == null) {
                 return true;
             }
-            if (targetPlayer.getInventory().getItem(i).isSimilar(awardItem)) {
+            if (inventory.getItem(i).isSimilar(awardItem) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
                 return true;
             }
         }
-
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.player-inventory-is-full")
-                .replaceAll("%targetplayer%", targetPlayer.getName())));
-
-        if (sender instanceof Player)
-            cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
-
         return false;
     }
 
