@@ -19,10 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    public String prefix = "&7[&cKudmin&7] ";
-    public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale = plugin.localeConfig;
-    public String optionValue;
+    private String prefix = "&7[&cKudmin&7] ";
+    private Main plugin = Main.getPlugin(Main.class);
+    private FileManager localeManager = new FileManager("messages.yml", plugin);
+    private FileConfiguration locale = localeManager.getConfig();
+    private String optionValue;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -171,14 +172,19 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 Boolean playSoundOnKudoAward = config.getBoolean("play-sound-on-kudo-award");
                 String playSoundType = config.getString("play-sound-type");
 
-                // set old key values into the new keys
+                // Workaround 1.4.0 Minor Release
                 config.set("kudo-award-notification.enable-playsound", playSoundOnKudoAward);
                 config.set("kudo-award-notification.playsound-type", playSoundType);
-
-                // remove unused keys
                 config.set("play-sound-on-kudo-award", null);
                 config.set("play-sound-type", null);
 
+                // Workaround 1.5.0 Minor Release
+                config.set("kudo-award-notification.enable-playsound", config.getString("kudo-award-notification.playsound-on-kudo-award"));
+                locale.set("kudo.player-award-kudo-broadcast", config.getString("kudo.player-award-kudo"));
+                locale.set("kudo.player-award-kudo", null);
+                config.set("kudo-award-notification.playsound-on-kudo-award", null);
+
+                localeManager.save();
                 plugin.saveConfig();
 
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Workaround was successfully executed"));
