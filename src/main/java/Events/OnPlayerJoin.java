@@ -27,7 +27,6 @@ public class OnPlayerJoin implements Listener {
         createDatabasePlayer(player);
     }
 
-
     private boolean databaseIsConnected(Player player, String prefix) {
         if (!plugin.isConnected) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. Please setup a database in the mysql.yml file!"));
