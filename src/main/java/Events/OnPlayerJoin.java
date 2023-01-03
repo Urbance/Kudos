@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class OnPlayerJoin implements Listener {
-    SQLGetter data;
     Main plugin = Main.getPlugin(Main.class);
 
     @EventHandler
@@ -46,7 +45,7 @@ public class OnPlayerJoin implements Listener {
     }
 
     private void createDatabasePlayer(Player player) {
-        data = new SQLGetter(plugin);
+        SQLGetter data = new SQLGetter(plugin);
         data.createPlayer(player);
     }
 }
