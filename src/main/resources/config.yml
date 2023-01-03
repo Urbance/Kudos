@@ -1,7 +1,8 @@
-update-notification: true
-prefix: "&7[&eKudos&7] "
-kudo-award-cooldown: 900
-debug-mode: false
+general:
+  update-notification: true
+  prefix: "&7[&eKudos&7] "
+  kudo-award-cooldown: 900
+  debug-mode: false
 kudo-award-notification:
   enabled: true
   notification-mode: "broadcast"

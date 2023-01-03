@@ -179,10 +179,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 config.set("play-sound-type", null);
 
                 // Workaround 1.5.0 Minor Release
-                config.set("kudo-award-notification.enable-playsound", config.getString("kudo-award-notification.playsound-on-kudo-award"));
+                config.set("kudo-award-notification.enable-playsound", config.getBoolean("kudo-award-notification.playsound-on-kudo-award"));
                 locale.set("kudo.player-award-kudo-broadcast", config.getString("kudo.player-award-kudo"));
                 locale.set("kudo.player-award-kudo", null);
                 config.set("kudo-award-notification.playsound-on-kudo-award", null);
+
+                // Workaround for 1.7.0 Minor Release
+                config.set("general.update-notification", config.getBoolean("update-notification"));
+                config.set("general.prefix", config.getString("prefix"));
+                config.set("general.kudo-award-cooldown", config.getInt("kudo-award-cooldown"));
+                config.set("general.debug-mode", config.getBoolean("debug-mode"));
+                config.set("update-notification", null);
+                config.set("prefix", null);
+                config.set("kudo-award-cooldown", null);
+                config.set("debug-mode", null);
 
                 localeManager.save();
                 plugin.saveConfig();

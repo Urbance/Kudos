@@ -142,6 +142,13 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public boolean workaroundChecker() {
-        return config.getString("play-sound-on-kudo-award") != null || config.getString("play-sound-type") != null || config.getString("kudo-award-notification.playsound-on-kudo-award") != null || localeConfig.getString("kudo.player-award-kudo") != null;
+        return config.getString("play-sound-on-kudo-award") != null
+                || config.getString("play-sound-type") != null
+                || config.getString("kudo-award-notification.playsound-on-kudo-award") != null
+                || localeConfig.getString("kudo.player-award-kudo") != null
+                || config.getString("update-notification") != null
+                || config.getString("prefix") != null
+                || config.getString("kudo-award-cooldown") != null
+                || config.getString("debug-mode") != null;
     }
 }
