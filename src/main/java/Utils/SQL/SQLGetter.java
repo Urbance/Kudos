@@ -46,6 +46,19 @@ public class SQLGetter {
                 addKudos(uuid, null, 0);
                 addAssignedKudos(uuid, 0);
             }
+            // TODO Query which checks username with username on database?
+            updateUsername(player, uuid);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateUsername(Player player, UUID uuid) {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Name=? WHERE UUID=?");
+            preparedStatement.setString(1, player.getName());
+            preparedStatement.setString(2, String.valueOf(uuid));
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
