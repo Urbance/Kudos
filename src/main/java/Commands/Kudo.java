@@ -32,7 +32,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
-        this.prefix = config.getString("prefix");
+        this.prefix = plugin.prefix;
 
         if (!validateInput(args, sender))
             return false;
@@ -200,7 +200,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
-        cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award-cooldown"));
+        cooldownManager.setCooldown(senderUUID, config.getInt("general.kudo-award-cooldown"));
         new BukkitRunnable() {
             @Override
             public void run() {
