@@ -18,15 +18,15 @@ Es ermöglicht, dass Spieler sich Lobe, auch Kudos, geben können.
 Zusätzlich wird ein GUI mitgeliefert, worin verschiedene Statistiken dargestellt werden können. 
 
 ## Das bringt es mit
-- Hohe Anpassbarkeit 
-- Meilensteine
-- Item Awards 
-- Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
+* Hohe Anpassbarkeit 
+* Meilensteine
+* Item Awards 
+* Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
 
 ## Voraussetzungen
-- MySQL Datenbank
-- Java 17 oder neuer 
-- Spigot 1.19.X
+* MySQL Datenbank
+* Java 17 oder neuer 
+* Spigot 1.19.X
 
 ## Hilfe und Kontakt
 Du benötigst Hilfe oder hast Fragen? 
