@@ -1,0 +1,46 @@
+specVersion: 1
+type: plugin
+name: Kudos
+authors:
+  - Urbance
+supportedPlatforms:
+  - spigot
+supportedGameVersions: ^1.19
+category: misc
+introduction: Ein Plugin, womit Spieler sich loben können.
+description: |
+[Spigot Plugin Page](https://www.spigotmc.org/resources/kudos-1-19-x-gui-open-source-mysql.106036/)
+[bStats](https://bstats.org/plugin/bukkit/Kudos/16627)
+
+## Überblick
+**Kudos** ist ein Open Source Plugin für Minecraft 1.19 Spigot Server. 
+Es ermöglicht, dass Spieler sich Lobe, auch Kudos, geben können.
+Zusätzlich wird ein GUI mitgeliefert, worin verschiedene Statistiken dargestellt werden können. 
+
+## Das bringt es mit
+- Hohe Anpassbarkeit 
+- Meilensteine
+- Item Awards 
+- Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
+
+## Voraussetzungen
+- MySQL Datenbank
+- Java 17 oder neuer 
+- Spigot 1.19.X
+
+## Hilfe und Kontakt
+Du benötigst Hilfe oder hast Fragen? 
+Dann kontaktiere mich per [Discord](https://discord.com/invite/hDqPms3MbH)!
+
+installation: |
+Eine Anleitung mit Video für die Installation und für die Ersteinrichtung findest du [hier](https://github.com/Urbance/Kudos/wiki/How-To-Start)!
+tags:
+  - fun
+	- SMP
+images:
+  - https://media.giphy.com/media/eRbdrIr3xzpGkM75dZ/giphy.gif
+  - https://media.giphy.com/media/zg1JlSMlPyK0iuLH9i/giphy.gif
+	- https://camo.githubusercontent.com/6886102453a4214ed531b9aefc21b45a7bc1a91aefab4dc7e9f7fa70e53223ca/68747470733a2f2f692e6962622e636f2f42737830786a532f41776172642d4974656d2e706e67
+icon: https://github.com/Urbance/Kudos/blob/main/logo.hereo-of-the-village.png?raw=true
+videoSources:
+  - https://www.youtube.com/watch?v=hmIXCLzd1JQ&feature=emb_title
