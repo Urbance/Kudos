@@ -9,30 +9,30 @@ supportedGameVersions: ^1.19
 category: misc
 introduction: Ein Plugin, womit Spieler sich loben können.
 description: |
-[Spigot Plugin Page](https://www.spigotmc.org/resources/kudos-1-19-x-gui-open-source-mysql.106036/)
-[bStats](https://bstats.org/plugin/bukkit/Kudos/16627)
+    # Überblick
+    [Spigot Plugin Page](https://www.spigotmc.org/resources/kudos-1-19-x-gui-open-source-mysql.106036/)
+    [bStats](https://bstats.org/plugin/bukkit/Kudos/16627)
 
-## Überblick
-**Kudos** ist ein Open Source Plugin für Minecraft 1.19 Spigot Server. 
-Es ermöglicht, dass Spieler sich Lobe, auch Kudos, geben können.
-Zusätzlich wird ein GUI mitgeliefert, worin verschiedene Statistiken dargestellt werden können. 
+    **Kudos** ist ein Open Source Plugin für Minecraft 1.19 Spigot Server. 
+    Es ermöglicht, dass Spieler sich Lobe, auch Kudos, geben können.
+    Zusätzlich wird ein GUI mitgeliefert, worin verschiedene Statistiken dargestellt werden können. 
 
-## Das bringt es mit
-* Hohe Anpassbarkeit 
-* Meilensteine
-* Item Awards 
-* Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
+    # Das bringt es mit
+    * Hohe Anpassbarkeit 
+    * Meilensteine
+    * Item Awards 
+    * Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
 
-## Voraussetzungen
-* MySQL Datenbank
-* Java 17 oder neuer 
-* Spigot 1.19.X
+    # Voraussetzungen
+    * MySQL Datenbank
+    * Java 17 oder neuer 
+    * Spigot 1.19.X
 
-## Hilfe und Kontakt
-Du benötigst Hilfe oder hast Fragen? 
-Dann kontaktiere mich per [Discord](https://discord.com/invite/hDqPms3MbH)!
+    # Hilfe und Kontakt
+    Du benötigst Hilfe oder hast Fragen? 
+    Dann kontaktiere mich per [Discord](https://discord.com/invite/hDqPms3MbH)!
 installation: |
-Eine Anleitung mit Video für die Installation und für die Ersteinrichtung findest du [hier](https://github.com/Urbance/Kudos/wiki/How-To-Start)!
+    Eine Anleitung mit Video für die Installation und für die Ersteinrichtung findest du [hier](https://github.com/Urbance/Kudos/wiki/How-To-Start)!
 tags:
   - fun
   - SMP
