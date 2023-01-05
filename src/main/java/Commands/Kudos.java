@@ -27,7 +27,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        prefix = plugin.getConfig().getString("prefix");
+        this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
 

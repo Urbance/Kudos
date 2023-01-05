@@ -15,22 +15,22 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
-    public static String prefix;
+    public String prefix;
     public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
     public SQLGetter data;
-    public FileConfiguration config = getConfig();
+    public FileConfiguration config;
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
     public boolean isConnected;
 
     @Override
     public void onEnable() {
-        prefix = config.getString("prefix");
+        this.config = getConfig();
+        this.prefix = config.getString("general.prefix");
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
@@ -72,7 +72,7 @@ public final class Main extends JavaPlugin implements Listener {
         } catch (ClassNotFoundException | SQLException e) {
             Bukkit.getLogger().info("Database not connected");
             this.isConnected = false;
-            if (config.getBoolean("debug-mode"))
+            if (config.getBoolean("general.debug-mode"))
                 e.printStackTrace();
         }
 
@@ -87,6 +87,7 @@ public final class Main extends JavaPlugin implements Listener {
         // setup config.yml
         getConfig().options().copyDefaults(true);
         saveConfig();
+        this.config = getConfig();
 
         // setup mysql.yml
         FileManager mysqlManager = new FileManager("mysql.yml", this);
@@ -111,6 +112,7 @@ public final class Main extends JavaPlugin implements Listener {
         // reload config.yml
         reloadConfig();
         saveDefaultConfig();
+        this.config = getConfig();
 
         // reload messages.yml
         FileManager localeManager = new FileManager("messages.yml", this);
@@ -126,10 +128,12 @@ public final class Main extends JavaPlugin implements Listener {
         FileManager guiManager = new FileManager("gui.yml", this);
         guiManager.reload();
         this.guiConfig = guiManager.getConfig();
+
+        this.prefix = config.getString("general.prefix");
     }
 
     public void UpdateChecker() {
-        if (!config.getBoolean("update_notification")){
+        if (!config.getBoolean("general.update-notification")){
             return;
         }
         new UpdateChecker(this, 106036).getVersion(version -> {

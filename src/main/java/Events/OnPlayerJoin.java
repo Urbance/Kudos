@@ -14,7 +14,7 @@ public class OnPlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String prefix = plugin.getConfig().getString("prefix");
+        String prefix = plugin.prefix;
 
         if (player.hasPermission("kudmin")) {
             if (!databaseIsConnected(player, prefix))
