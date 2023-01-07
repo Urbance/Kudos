@@ -54,7 +54,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!preValidation(sender))
             return;
 
-
         if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID))
             return;
         sendKudoAwardNotification(sender, targetPlayer, targetPlayerUUID, notificationMode);
@@ -243,7 +242,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean validatePlayerCooldown(CommandSender sender) {
-        if (!canAwardKudos()) {
+        if (!canAwardKudos() && sender instanceof Player) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.must-wait-before-use-again")
                     .replaceAll("%seconds%", String.valueOf(playerCooldown))));
             return false;
