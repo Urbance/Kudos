@@ -11,9 +11,9 @@ public class CooldownManager {
     public void setCooldown(UUID player, int time){
         if(time < 1) {
             cooldowns.remove(player);
-        } else {
-            cooldowns.put(player, time);
+            return;
         }
+        cooldowns.put(player, time);
     }
 
     public int getCooldown(UUID player){

@@ -188,6 +188,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private void setCooldown(CommandSender sender) {
         if (!(sender instanceof Player))
             return;
+        if (config.getInt("general.kudo-award-cooldown") == 0)
+            return;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
         cooldownManager.setCooldown(senderUUID, config.getInt("general.kudo-award-cooldown"));
@@ -199,7 +201,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 if (timeLeft == 0)
                     this.cancel();
             }
-        }.runTaskTimer(plugin, 20, 20);
+        }.runTaskTimer(plugin, 0, 20);
     }
 
     private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
