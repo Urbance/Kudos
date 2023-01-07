@@ -26,7 +26,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration locale;
     public FileConfiguration config;
-    public int timeLeft;
+    public int playerCooldown;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -46,79 +46,62 @@ public class Kudo implements CommandExecutor, TabCompleter {
         data = new SQLGetter(plugin);
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
-
-        if (sender instanceof Player)
-            this.timeLeft = cooldownManager.getCooldown(((Player) sender).getUniqueId());
-
-        if (!preValidation(sender, targetPlayer))
-            return;
-
         String notificationMode = getNotificationMode();
 
-        addKudo(sender, targetPlayerUUID);
         if (sender instanceof Player)
-            setCooldown(sender);
+            this.playerCooldown = cooldownManager.getCooldown(((Player) sender).getUniqueId());
 
-        if (!postValidation(sender, targetPlayer, notificationMode))
+        if (!preValidation(sender))
             return;
 
-        if (!(sender instanceof Player)) {
-            sendConsole(sender, targetPlayer, targetPlayerUUID);
+
+        if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID))
             return;
-        }
-
-        if (notificationMode.equals("broadcast")) {
-            sendBroadcast(sender, targetPlayer, targetPlayerUUID);
-            return;
-        }
-
-        if (notificationMode.equals("private")) {
-            sendPrivate(sender, targetPlayer, targetPlayerUUID);
-        }
-
+        sendKudoAwardNotification(sender, targetPlayer, targetPlayerUUID, notificationMode);
+        setCooldown(sender);
     }
 
-    private boolean preValidation(CommandSender sender, Player targetPlayer) {
-        if (!validatePlayerCooldown(sender))
-            return false;
-
-        if (!isAwardItemEnabled())
-            return false;
-
-        if (!addAwardItem(sender, targetPlayer)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.player-inventory-is-full")
-                    .replaceAll("%targetplayer%", targetPlayer.getName())));
-
-            if (sender instanceof Player)
-                cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
-
-            return false;
+    private boolean addKudoAndAwardItem(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+        if (isAwardItemEnabled()) {
+            if (!addAwardItem(sender, targetPlayer)) {
+                return false;
+            }
         }
 
-        return true;
-    }
-
-    private boolean postValidation(CommandSender sender, Player targetPlayer, String notificationMode) {
-        if (!isKudoAwardNotificationEnabled())
-            return false;
-
-        handlePlaySound(sender, targetPlayer, notificationMode);
-
-        if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
-            return false;
-
-        return true;
-    }
-
-    private void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
             data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), 1);
         } else {
             data.addKudos(targetPlayerUUID, null, 1);
         }
+        return true;
     }
 
-    private void sendConsole(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+    private void sendKudoAwardNotification(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID, String notificationMode) {
+        if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
+            return;
+        if (!isKudoAwardNotificationEnabled())
+            return;
+
+        playNotificationSound(sender, targetPlayer, notificationMode);
+
+        if (!(sender instanceof Player)) {
+            sendConsole(targetPlayer, targetPlayerUUID);
+            return;
+        }
+        if (notificationMode.equals("broadcast")) {
+            sendBroadcast(sender, targetPlayer, targetPlayerUUID);
+            return;
+        }
+        if (notificationMode.equals("private")) {
+            sendPrivate(sender, targetPlayer, targetPlayerUUID);
+        }
+    }
+
+    private boolean preValidation(CommandSender sender) {
+        return validatePlayerCooldown(sender);
+    }
+
+    private void sendConsole(Player targetPlayer, UUID targetPlayerUUID) {
         String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
         awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
@@ -151,6 +134,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        playMilestoneSound(sender, targetPlayer);
+
         if (sender instanceof Player) {
             String awardMessage = locale.getString("milestone.player-reaches-milestone");
             awardMessage = awardMessage.replaceAll("%player%", sender.getName());
@@ -167,8 +152,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
             Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
             return true;
         }
-
         return false;
+    }
+
+    private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
+        if (!isMilestonePlaysoundEnabled())
+            return;
+        playSound(sender, targetPlayer, config.getString("milestone.playsound-type"));
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
@@ -213,11 +203,22 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
-        if (!itemCanBeAdded(targetPlayer.getInventory()))
+        if (!validateAwardItem(sender, targetPlayer))
             return false;
 
         targetPlayer.getInventory().addItem(createAwardItem());
+        return true;
+    }
 
+    private boolean validateAwardItem(CommandSender sender, Player targetPlayer) {
+        if (!itemCanBeAdded(targetPlayer.getInventory())) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.player-inventory-is-full")
+                    .replaceAll("%targetplayer%", targetPlayer.getName())));
+
+            if (sender instanceof Player)
+                cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
+            return false;
+        }
         return true;
     }
 
@@ -234,6 +235,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
         return false;
     }
+
     private boolean isAwardItemEnabled() {
         return config.getBoolean("award-item.enabled");
     }
@@ -241,23 +243,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private boolean validatePlayerCooldown(CommandSender sender) {
         if (!canAwardKudos()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.must-wait-before-use-again")
-                    .replaceAll("%seconds%", String.valueOf(timeLeft))));
+                    .replaceAll("%seconds%", String.valueOf(playerCooldown))));
             return false;
         }
-
         return true;
     }
 
-    private void handlePlaySound(CommandSender sender, Player targetPlayer, String notificationMode) {
-        if (isMilestoneEnabled()) {
-            if (!isMilestonePlaysoundEnabled())
-                return;
-            if (validateMilestone(targetPlayer)) {
-                playSound(sender, targetPlayer, config.getString("milestone.playsound-type"));
-                return;
-            }
-        }
-
+    private void playNotificationSound(CommandSender sender, Player targetPlayer, String notificationMode) {
         if (!isKudoAwardPlaysoundEnabled())
             return;
 
@@ -314,7 +306,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean canAwardKudos() {
-        return timeLeft == 0;
+        return playerCooldown == 0;
     }
 
     private boolean isKudoAwardNotificationEnabled() {
