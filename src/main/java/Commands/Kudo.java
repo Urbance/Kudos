@@ -75,6 +75,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    // TODO: Will be replaced with NotificationManager
     private void sendKudoAwardNotification(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID, String notificationMode) {
         if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
             return;
