@@ -239,7 +239,7 @@ public class SQLGetter {
             }
 
             for (int i = 0; i < topThree.size(); i++) {
-                if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%") ) {
+                if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%")) {
                     topThree.set(i, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top3.not-assigned")));
                 }
             }
@@ -249,5 +249,14 @@ public class SQLGetter {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void keepAlive() {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT 1 FROM kudos");
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
