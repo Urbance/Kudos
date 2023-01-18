@@ -1,6 +1,7 @@
 package Commands;
 
 import Utils.GUI;
+import Utils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -24,12 +25,14 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public SQLGetter data;
     public String prefix;
     public OfflinePlayer targetPlayer;
+    public KudosMessage kudosMessage;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
+        this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
             return false;
@@ -37,7 +40,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             openGUI(sender);
         }
         if (args.length == 1) {
-            showKudos(args, sender);
+            showKudos(sender);
         }
         return false;
     }
@@ -48,7 +51,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.send(((Player) sender).getPlayer(), locale.getString("error.no-permission"));
             return;
         }
 
@@ -57,26 +60,27 @@ public class Kudos implements CommandExecutor, TabCompleter {
         player.openInventory(inventory);
     }
 
-    public void showKudos(String[] args, CommandSender sender) {
+    public void showKudos(CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.send((Player) sender, locale.getString("error.no-permission"));
             return;
         }
 
         String showKudosMessage = locale.getString("kudos.show-player-kudos").replaceAll("%targetplayer%", targetPlayer.getName());
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +
-                showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())))));
+        showKudosMessage = showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        kudosMessage.send((Player) sender, showKudosMessage);
     }
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
+            kudosMessage.send((Player) sender, locale.getString("error.wrong-usage"));
             return false;
         }
         if (args.length == 1) {
             targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-found").replaceAll("%targetplayer%", args[0])));
+                String playerNotFoundMessage = locale.getString("error.player-not-found").replaceAll("%targetplayer%", args[0]);
+                kudosMessage.send((Player) sender, playerNotFoundMessage);
                 return false;
             }
         }
