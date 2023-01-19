@@ -42,7 +42,6 @@ public final class Main extends JavaPlugin implements Listener {
 
         // bStats
         Metrics metrics = new Metrics(this, 16627);
-        keepAliveDatabaseConnection();
     }
 
     @Override
@@ -83,6 +82,8 @@ public final class Main extends JavaPlugin implements Listener {
             data.createTable();
             this.isConnected = true;
         }
+        if (isConnected)
+            keepAliveDatabaseConnection();
     }
 
     public void setupConfigs() {
