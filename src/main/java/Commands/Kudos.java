@@ -57,7 +57,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.noPermission((Player) sender);
             return;
         }
 
