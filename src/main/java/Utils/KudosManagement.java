@@ -26,9 +26,6 @@ public class KudosManagement {
         this.kudosMessage = new KudosMessage(plugin);
     }
 
-    public void addKudo() {
-    }
-
     public void showKudos(CommandSender sender, OfflinePlayer targetPlayer) {
         Map<String, String> values = new HashMap<>();
         values.put("targetplayer", targetPlayer.getName());
