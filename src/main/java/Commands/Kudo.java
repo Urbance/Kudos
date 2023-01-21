@@ -265,7 +265,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void playSound(CommandSender sender, Player targetPlayer, String playSoundType) {
-        if (getNotificationMode().equals("private") && !validateMilestone(targetPlayer)) {
         if (getNotificationMode().equals("private") && !validateMilestone(targetPlayer) && sender instanceof Player) {
             Player player = (Player) sender;
             player.playSound(player.getLocation(), Sound.valueOf(playSoundType), 1, 1);
