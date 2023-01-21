@@ -1,0 +1,47 @@
+package Utils;
+
+import Utils.SQL.SQLGetter;
+import de.urbance.Main;
+import org.apache.commons.text.StringSubstitutor;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
+
+/*
+ * New util for all messages that belongs to Kudos.
+ * It sets the plugin prefix, placeholders (later) and formatting codes are considered.
+ */
+public class KudosMessage {
+    public Main plugin;
+    public String prefix;
+    public SQLGetter data;
+
+    public KudosMessage(Main plugin) {
+        this.plugin = Main.getPlugin(Main.class);
+        this.prefix = plugin.prefix;
+        this.data = new SQLGetter(plugin);
+    }
+
+    public void send(Player player, String message) {
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+    }
+
+    public void sendConsole(CommandSender sender, String message) {
+        if (!(sender instanceof Player)) return;
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+    }
+
+    public void broadcast(String message) {
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+    }
+
+    public String setPlaceholders(String message, Map<String, String> values) {
+        return StringSubstitutor.replace(message, values, "%", "%");
+    }
+
+    private void playSound() {
+    }
+}
