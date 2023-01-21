@@ -1,6 +1,8 @@
 package Commands;
 
 import Utils.GUI;
+import Utils.KudosManagement;
+import Utils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -15,21 +17,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Kudos implements CommandExecutor, TabCompleter {
     public static Inventory inventory;
-    public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale;
-    public SQLGetter data;
-    public String prefix;
-    public OfflinePlayer targetPlayer;
+    Main plugin = Main.getPlugin(Main.class);
+    FileConfiguration locale;
+    SQLGetter data;
+    String prefix;
+    OfflinePlayer targetPlayer;
+    KudosManagement kudosManagement;
+    KudosMessage kudosMessage;
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
+        this.kudosManagement = new KudosManagement(plugin);
+        this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
             return false;
@@ -37,7 +46,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             openGUI(sender);
         }
         if (args.length == 1) {
-            showKudos(args, sender);
+            showKudos(sender);
         }
         return false;
     }
@@ -48,7 +57,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
-            Bukkit.getPlayer(sender.getName()).sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.noPermission((Player) sender);
             return;
         }
 
@@ -57,26 +66,25 @@ public class Kudos implements CommandExecutor, TabCompleter {
         player.openInventory(inventory);
     }
 
-    public void showKudos(String[] args, CommandSender sender) {
+    public void showKudos(CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.noPermission((Player) sender);
             return;
         }
-
-        String showKudosMessage = locale.getString("kudos.show-player-kudos").replaceAll("%targetplayer%", targetPlayer.getName());
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +
-                showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())))));
-    }
+        kudosManagement.showKudos(sender, targetPlayer);
+}
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
+            kudosMessage.wrongUsage((Player) sender);
             return false;
         }
         if (args.length == 1) {
             targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-found").replaceAll("%targetplayer%", args[0])));
+                Map<String, String> values = new HashMap<>();
+                values.put("targetplayer", args[0]);
+                kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
                 return false;
             }
         }

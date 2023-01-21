@@ -2,6 +2,7 @@ package Commands;
 
 import Utils.CooldownManager;
 import Utils.ItemCreator;
+import Utils.KudosNotification;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -21,18 +22,20 @@ import java.util.UUID;
 
 public class Kudo implements CommandExecutor, TabCompleter {
     private final CooldownManager cooldownManager = new CooldownManager();
-    public String prefix;
-    public SQLGetter data;
-    public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale;
-    public FileConfiguration config;
-    public int playerCooldown;
+    String prefix;
+    SQLGetter data;
+    Main plugin = Main.getPlugin(Main.class);
+    KudosNotification kudosNotification;
+    FileConfiguration locale;
+    FileConfiguration config;
+    int playerCooldown;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
         this.prefix = plugin.prefix;
+        this.kudosNotification = new KudosNotification(plugin);
 
         if (!validateInput(args, sender))
             return false;
@@ -48,23 +51,17 @@ public class Kudo implements CommandExecutor, TabCompleter {
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         String notificationMode = getNotificationMode();
 
-        if (sender instanceof Player)
-            this.playerCooldown = cooldownManager.getCooldown(((Player) sender).getUniqueId());
+        if (sender instanceof Player) this.playerCooldown = cooldownManager.getCooldown(((Player) sender).getUniqueId());
+        if (!preValidation(sender)) return;
+        if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID)) return;
 
-        if (!preValidation(sender))
-            return;
-
-        if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID))
-            return;
         sendKudoAwardNotification(sender, targetPlayer, targetPlayerUUID, notificationMode);
         setCooldown(sender);
     }
 
     private boolean addKudoAndAwardItem(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
         if (isAwardItemEnabled()) {
-            if (!addAwardItem(sender, targetPlayer)) {
-                return false;
-            }
+            if (!addAwardItem(sender, targetPlayer)) return false;
         }
 
         if (sender instanceof Player) {
@@ -75,7 +72,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    // TODO: Will be replaced with NotificationManager
     private void sendKudoAwardNotification(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID, String notificationMode) {
         if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
             return;
@@ -85,48 +81,20 @@ public class Kudo implements CommandExecutor, TabCompleter {
         playNotificationSound(sender, targetPlayer, notificationMode);
 
         if (!(sender instanceof Player)) {
-            sendConsole(targetPlayer, targetPlayerUUID);
+            kudosNotification.fromConsole(targetPlayer);
             return;
         }
         if (notificationMode.equals("broadcast")) {
-            sendBroadcast(sender, targetPlayer, targetPlayerUUID);
+            kudosNotification.sendBroadcast(sender, targetPlayer);
             return;
         }
         if (notificationMode.equals("private")) {
-            sendPrivate(sender, targetPlayer, targetPlayerUUID);
+            kudosNotification.sendPrivate(sender, targetPlayer);
         }
     }
 
     private boolean preValidation(CommandSender sender) {
         return validatePlayerCooldown(sender);
-    }
-
-    private void sendConsole(Player targetPlayer, UUID targetPlayerUUID) {
-        String awardMessage = locale.getString("kudo.player-award-kudo-from-console").replaceAll("%targetplayer%", targetPlayer.getName());
-        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
-    }
-
-    private void sendBroadcast(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        String awardMessage = locale.getString("kudo.player-award-kudo-broadcast");
-        awardMessage = awardMessage.replaceAll("%player%", sender.getName());
-        awardMessage = awardMessage.replaceAll("%targetplayer%", targetPlayer.getName());
-        awardMessage = awardMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + awardMessage));
-    }
-
-    private void sendPrivate(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        // Prepare message for sender
-        String senderMessage = locale.getString("kudo.player-assigned-kudo").replaceAll("%targetplayer%", targetPlayer.getName());
-
-        // Prepare message for targetplayer
-        String targetPlayerMessage = locale.getString("kudo.player-award-kudo-from-player");
-        targetPlayerMessage = targetPlayerMessage.replaceAll("%player%", sender.getName());
-        targetPlayerMessage = targetPlayerMessage.replaceAll("%player_kudos%", String.valueOf(data.getKudos(targetPlayerUUID)));
-
-        // Send messages
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + senderMessage));
-        targetPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + targetPlayerMessage));
     }
 
     private boolean sendMilestone(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
@@ -265,7 +233,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void playSound(CommandSender sender, Player targetPlayer, String playSoundType) {
-        if (getNotificationMode().equals("private") && !validateMilestone(targetPlayer)) {
+        if (getNotificationMode().equals("private") && !validateMilestone(targetPlayer) && sender instanceof Player) {
             Player player = (Player) sender;
             player.playSound(player.getLocation(), Sound.valueOf(playSoundType), 1, 1);
             targetPlayer.playSound(targetPlayer.getLocation(), Sound.valueOf(playSoundType), 1, 1);
