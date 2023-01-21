@@ -51,7 +51,7 @@ public class KudosNotification {
         // send message to sender
         Map<String, String> valuesSender = new HashMap<>();
         valuesSender.put("targetplayer", targetPlayer.getName());
-        kudosMessage.send((Player) sender, kudosMessage.setPlaceholders(locale.getString("kudo.player-assigned-kudo"), valuesSender));
+        kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudo.player-assigned-kudo"), valuesSender));
 
         // send message to target player
         Map<String, String> valuesTargetPlayer = new HashMap<>();

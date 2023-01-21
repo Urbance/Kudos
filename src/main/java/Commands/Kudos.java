@@ -71,8 +71,8 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission((Player) sender);
             return;
         }
-        kudosManagement.showKudos((Player) sender, targetPlayer);
-    }
+        kudosManagement.showKudos(sender, targetPlayer);
+}
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
@@ -84,7 +84,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             if (targetPlayer == null) {
                 Map<String, String> values = new HashMap<>();
                 values.put("targetplayer", args[0]);
-                kudosMessage.send((Player) sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
+                kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
                 return false;
             }
         }

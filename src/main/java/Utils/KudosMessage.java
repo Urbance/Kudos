@@ -21,7 +21,6 @@ public class KudosMessage {
     SQLGetter data;
     FileConfiguration locale;
 
-
     public KudosMessage(Main plugin) {
         this.plugin = Main.getPlugin(Main.class);
         this.prefix = plugin.prefix;
@@ -33,8 +32,7 @@ public class KudosMessage {
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
     }
 
-    public void sendConsole(CommandSender sender, String message) {
-        if (!(sender instanceof Player)) return;
+    public void sendSender(CommandSender sender, String message) {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
     }
 
