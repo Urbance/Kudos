@@ -23,12 +23,14 @@ import java.util.Map;
 
 public class Kudos implements CommandExecutor, TabCompleter {
     public static Inventory inventory;
-    public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration locale;
-    public SQLGetter data;
-    public String prefix;
-    public OfflinePlayer targetPlayer;
-    public KudosManagement kudosManagement;
+    Main plugin = Main.getPlugin(Main.class);
+    FileConfiguration locale;
+    SQLGetter data;
+    String prefix;
+    OfflinePlayer targetPlayer;
+    KudosManagement kudosManagement;
+    KudosMessage kudosMessage;
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -36,6 +38,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
         this.kudosManagement = new KudosManagement(plugin);
+        this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
             return false;
@@ -65,7 +68,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public void showKudos(CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
+            kudosMessage.noPermission((Player) sender);
             return;
         }
         kudosManagement.showKudos((Player) sender, targetPlayer);
@@ -73,13 +76,15 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.wrong-usage")));
+            kudosMessage.wrongUsage((Player) sender);
             return false;
         }
         if (args.length == 1) {
             targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetPlayer == null) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.player-not-found").replaceAll("%targetplayer%", args[0])));
+                Map<String, String> values = new HashMap<>();
+                values.put("targetplayer", args[0]);
+                kudosMessage.send((Player) sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
                 return false;
             }
         }
