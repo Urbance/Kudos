@@ -16,25 +16,14 @@ public class OnPlayerJoin implements Listener {
         Player player = event.getPlayer();
         String prefix = plugin.prefix;
 
-        if (player.hasPermission("kudmin")) {
-            if (!databaseIsConnected(player, prefix))
-                return;
-
-            workaroundChecker(player);
-        }
-
+        sendWorkaroundAvailableMessage(player);
+        sendNoDatabaseFoundMessage(player, prefix);
         createDatabasePlayer(player);
     }
 
-    private boolean databaseIsConnected(Player player, String prefix) {
-        if (!plugin.isConnected) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. Please setup a database in the mysql.yml file!"));
-            return false;
-        }
-        return true;
-    }
+    private void sendWorkaroundAvailableMessage(Player player) {
+        if (!player.hasPermission("kudmin") && !plugin.isConnected) return;
 
-    private void workaroundChecker(Player player) {
         if (plugin.workaroundChecker())
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7========= &c&lKudos Information&7=========\n" +
                     " \n" +
@@ -44,7 +33,14 @@ public class OnPlayerJoin implements Listener {
                     "and execute &e/kudmin workaround&7!"));
     }
 
+    private void sendNoDatabaseFoundMessage(Player player, String prefix) {
+        if (!plugin.isConnected && player.hasPermission("kudmin")) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. Please setup a database in the mysql.yml file!"));
+        }
+    }
+
     private void createDatabasePlayer(Player player) {
+        if (!plugin.isConnected) return;
         SQLGetter data = new SQLGetter(plugin);
         data.createPlayer(player);
     }
