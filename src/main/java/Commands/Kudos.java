@@ -1,6 +1,8 @@
 package Commands;
 
 import Utils.GUI;
+import Utils.KudosManagement;
+import Utils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -15,7 +17,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Kudos implements CommandExecutor, TabCompleter {
     public static Inventory inventory;
@@ -24,12 +28,14 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public SQLGetter data;
     public String prefix;
     public OfflinePlayer targetPlayer;
+    public KudosManagement kudosManagement;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
+        this.kudosManagement = new KudosManagement(plugin);
 
         if (!validateInput(args, sender))
             return false;
@@ -37,7 +43,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             openGUI(sender);
         }
         if (args.length == 1) {
-            showKudos(args, sender);
+            showKudos(sender);
         }
         return false;
     }
@@ -57,15 +63,12 @@ public class Kudos implements CommandExecutor, TabCompleter {
         player.openInventory(inventory);
     }
 
-    public void showKudos(String[] args, CommandSender sender) {
+    public void showKudos(CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + locale.getString("error.no-permission")));
             return;
         }
-
-        String showKudosMessage = locale.getString("kudos.show-player-kudos").replaceAll("%targetplayer%", targetPlayer.getName());
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix +
-                showKudosMessage.replaceAll("%targetplayer_kudos%", String.valueOf(data.getKudos(targetPlayer.getUniqueId())))));
+        kudosManagement.showKudos((Player) sender, targetPlayer);
     }
 
     public boolean validateInput(String[] args, CommandSender sender) {
