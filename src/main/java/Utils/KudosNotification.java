@@ -2,9 +2,6 @@ package Utils;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;

@@ -40,18 +40,15 @@ public class KudosMessage {
         Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
     }
 
-    public void noPermission(Player player) {
-        send(player, locale.getString("error.no-permission"));
+    public void noPermission(CommandSender sender) {
+        sendSender(sender, locale.getString("error.no-permission"));
     }
 
-    public void wrongUsage(Player player) {
-        send(player, locale.getString("error.wrong-usage"));
+    public void wrongUsage(CommandSender sender) {
+        sendSender(sender, locale.getString("error.wrong-usage"));
     }
 
     public String setPlaceholders(String message, Map<String, String> values) {
         return StringSubstitutor.replace(message, values, "%", "%");
-    }
-
-    private void playSound() {
     }
 }
