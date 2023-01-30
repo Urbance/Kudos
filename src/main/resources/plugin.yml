@@ -4,6 +4,7 @@ main: de.urbance.Main
 api-version: 1.19
 authors: [ Urbance ]
 website: https://github.com/Urbance
+softdepend: [PlaceholderAPI]
 commands:
   kudos:
     description: Opens GUI or shows Kudos from a player

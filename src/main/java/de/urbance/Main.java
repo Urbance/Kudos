@@ -6,6 +6,7 @@ import Commands.Kudos;
 import Events.OnPlayerJoin;
 import Utils.FileManager;
 import Utils.GUI;
+import Utils.KudosExpansion;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import Utils.UpdateChecker;
@@ -62,6 +63,9 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("kudo").setTabCompleter(new Kudo());
         getCommand("kudmin").setExecutor(new Kudmin());
         getCommand("kudmin").setTabCompleter(new Kudmin());
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new KudosExpansion().register();
+        }
     }
 
     public void setupSQL(){
