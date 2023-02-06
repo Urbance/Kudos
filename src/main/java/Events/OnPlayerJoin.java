@@ -16,21 +16,8 @@ public class OnPlayerJoin implements Listener {
         Player player = event.getPlayer();
         String prefix = plugin.prefix;
 
-        sendWorkaroundAvailableMessage(player);
         sendNoDatabaseFoundMessage(player, prefix);
         createDatabasePlayer(player);
-    }
-
-    private void sendWorkaroundAvailableMessage(Player player) {
-        if (!player.hasPermission("kudmin") && !plugin.isConnected) return;
-
-        if (plugin.workaroundChecker())
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7========= &c&lKudos Information&7=========\n" +
-                    " \n" +
-                    "&7It looks like you've used an older plugin version before:\n" +
-                    "There are some changes on the config.yml structure.\n" +
-                    "Please create a &e&lbackup &7from the config.yml\n" +
-                    "and execute &e/kudmin workaround&7!"));
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {

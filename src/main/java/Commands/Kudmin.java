@@ -53,7 +53,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                                 "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
                                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                                 "&7/kudmin clearall &e[player]\n" +
-                                "&7/kudmin workaround\n" +
                                 "&7/kudmin reload\n" +
                                 " \n" +
                                 "All player commands are listed on &c/kudos"));
@@ -158,47 +157,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     }
                 }
             }
-            case "workaround" -> {
-                if (!validateInput(args, sender, 1, 0, false, false, false)) {
-                    return false;
-                }
-
-                if (!plugin.workaroundChecker()) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "There is no workaround available"));
-                    return false;
-                }
-
-                FileConfiguration config = plugin.getConfig();
-                Boolean playSoundOnKudoAward = config.getBoolean("play-sound-on-kudo-award");
-                String playSoundType = config.getString("play-sound-type");
-
-                // Workaround 1.4.0 Minor Release
-                config.set("kudo-award-notification.enable-playsound", playSoundOnKudoAward);
-                config.set("kudo-award-notification.playsound-type", playSoundType);
-                config.set("play-sound-on-kudo-award", null);
-                config.set("play-sound-type", null);
-
-                // Workaround 1.5.0 Minor Release
-                config.set("kudo-award-notification.enable-playsound", config.getBoolean("kudo-award-notification.playsound-on-kudo-award"));
-                locale.set("kudo.player-award-kudo-broadcast", config.getString("kudo.player-award-kudo"));
-                locale.set("kudo.player-award-kudo", null);
-                config.set("kudo-award-notification.playsound-on-kudo-award", null);
-
-                // Workaround for 1.7.0 Minor Release
-                config.set("general.update-notification", config.getBoolean("update-notification"));
-                config.set("general.prefix", config.getString("prefix"));
-                config.set("general.kudo-award-cooldown", config.getInt("kudo-award-cooldown"));
-                config.set("general.debug-mode", config.getBoolean("debug-mode"));
-                config.set("update-notification", null);
-                config.set("prefix", null);
-                config.set("kudo-award-cooldown", null);
-                config.set("debug-mode", null);
-
-                localeManager.save();
-                plugin.saveConfig();
-
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Workaround was successfully executed"));
-            }
             default ->
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
@@ -284,7 +242,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             list.add("clear");
             list.add("clearall");
             list.add("reload");
-            list.add("workaround");
         }
         if (args.length == 2) {
             switch (args[0]) {
