@@ -75,14 +75,14 @@ public final class Main extends JavaPlugin implements Listener {
         try {
             SQL.connect();
         } catch (ClassNotFoundException | SQLException e) {
-            Bukkit.getLogger().info("Database not connected");
+            getLogger().info("Database not connected");
             this.isConnected = false;
             if (config.getBoolean("general.debug-mode"))
                 e.printStackTrace();
         }
 
         if (SQL.isConnected()) {
-            Bukkit.getLogger().info("Database is connected");
+            getLogger().info("Database is connected");
             data.createTable();
             this.isConnected = true;
         }
