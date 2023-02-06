@@ -105,11 +105,11 @@ public class Kudo implements CommandExecutor, TabCompleter {
         playMilestoneSound(sender, targetPlayer);
 
         Map<String, String> placeholderValues = new HashMap<>();
-        placeholderValues.put("targetplayer", targetPlayer.getName());
-        placeholderValues.put("player_kudos", String.valueOf(data.getKudos(targetPlayerUUID)));
+        placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+        placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayerUUID)));
 
         if (sender instanceof Player) {
-            placeholderValues.put("player", sender.getName());
+            placeholderValues.put("kudos_player_name", sender.getName());
             kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone"), placeholderValues));
             return true;
         }
@@ -142,7 +142,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
         if (Bukkit.getPlayer(args[0]) == null) {
             Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("targetplayer", args[0]);
+            placeholderValues.put("kudos_targetplayer_name", args[0]);
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-online"), placeholderValues));
             return false;
         }
@@ -183,7 +183,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private boolean validateAwardItem(CommandSender sender, Player targetPlayer) {
         if (!itemCanBeAdded(targetPlayer.getInventory())) {
             Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("targetplayer", targetPlayer.getName());
+            placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
 
             if (sender instanceof Player)
@@ -214,7 +214,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private boolean validatePlayerCooldown(CommandSender sender) {
         if (!canAwardKudos() && sender instanceof Player) {
             Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("seconds", String.valueOf(playerCooldown));
+            placeholderValues.put("kudos_cooldown", String.valueOf(playerCooldown));
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.must-wait-before-use-again"), placeholderValues));
             return false;
         }

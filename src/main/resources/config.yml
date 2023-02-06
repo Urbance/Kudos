@@ -3,6 +3,7 @@ general:
   prefix: "&7[&eKudos&7] "
   kudo-award-cooldown: 900
   debug-mode: false
+  useSQL: true
 kudo-award-notification:
   enabled: true
   notification-mode: "broadcast"

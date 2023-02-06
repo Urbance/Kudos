@@ -3,8 +3,8 @@ slot:
   statistics:
     item-name: "&2&lStatistics"
     lore:
-      - "&7&e%player_kudos% &7Kudos received"
-      - "&7&e%player_assigned_kudos% &7Kudos assigned"
+      - "&7&e%kudos_player_kudos% &7Kudos received"
+      - "&7&e%kudos_player_assigned_kudos% &7Kudos assigned"
   help:
     item-name: "&e&lHelp"
     lore:

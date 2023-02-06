@@ -24,8 +24,8 @@ public class KudosManagement {
 
     public void showKudos(CommandSender sender, OfflinePlayer targetPlayer) {
         Map<String, String> values = new HashMap<>();
-        values.put("targetplayer", targetPlayer.getName());
-        values.put("targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        values.put("kudos_targetplayer_name", targetPlayer.getName());
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
 }
