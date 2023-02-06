@@ -40,6 +40,7 @@ public final class Main extends JavaPlugin implements Listener {
         setupConfigs();
         UpdateChecker();
         registerListenerAndCommands();
+        useSQL();
 
         // bStats
         Metrics metrics = new Metrics(this, 16627);
@@ -50,6 +51,13 @@ public final class Main extends JavaPlugin implements Listener {
         SQL.disconnect();
     }
 
+    public void useSQL() {
+        if (!config.getBoolean("general.useSQL")) {
+            getLogger().warning("In the config.yml \"useSQL\" is set to false. Currently there is only the possibility to store data via MySQL. Value is set back to true.");
+            config.set("general.useSQL", true);
+            saveConfig();
+        }
+    }
     public void registerListenerAndCommands() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new OnPlayerJoin(), this);
@@ -120,6 +128,7 @@ public final class Main extends JavaPlugin implements Listener {
         reloadConfig();
         saveDefaultConfig();
         this.config = getConfig();
+        useSQL();
 
         // reload messages.yml
         FileManager localeManager = new FileManager("messages.yml", this);
