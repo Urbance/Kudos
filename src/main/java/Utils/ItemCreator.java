@@ -8,32 +8,35 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 public class ItemCreator {
-    public Material material;
-    public String displayName;
-    public List<String> lore;
-    public int amount;
-    public boolean setLore;
 
-    public ItemCreator(Material material, String displayName, List<String> lore, int amount, boolean setLore) {
+    ItemStack itemStack;
+    ItemMeta itemMeta;
+    Material material;
+    int amount;
+
+    public ItemCreator(Material material) {
         this.material = material;
-        this.displayName = displayName;
-        this.lore = lore;
-        this.amount = amount;
-        this.setLore = setLore;
+        this.itemStack = new ItemStack(material);
+        this.itemMeta = itemStack.getItemMeta();
+        this.amount = 1;
     }
 
-    public ItemStack create() {
-        ItemStack itemStack = new ItemStack(material);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (!(displayName == null))
-            itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
-        if (setLore) {
-            lore.replaceAll(s -> ChatColor.translateAlternateColorCodes('&', s));
-            itemMeta.setLore(lore);
-        }
-        itemStack.setItemMeta(itemMeta);
-        itemStack.setAmount(amount);
+    public void setDisplayName(String displayName) {
+        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+    }
 
+    public void setLore(List<String> lore) {
+        lore.replaceAll(s -> ChatColor.translateAlternateColorCodes('&', s));
+        itemMeta.setLore(lore);
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+        itemStack.setAmount(this.amount);
+    }
+
+    public ItemStack get() {
+        itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 }

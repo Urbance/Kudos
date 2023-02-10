@@ -24,3 +24,11 @@ milestone:
   span-between-kudos: 10
   enable-playsound: true
   playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
+  reward:
+    enabled: true
+    use-lore: false
+    item: MILK_BUCKET
+    item-name: "&6Cold milk"
+    item-lore:
+      - "&7Suitable for cookies"
+    amount: 1
