@@ -15,9 +15,9 @@ award-item:
   item: COOKIE
   item-name: "&6Hot Baked Cookie"
   item-lore:
-    - "&8Ingredients:"
-    - "&8- Wheat"
-    - "&8- Cocoa Beans"
+    - "&7Ingredients:"
+    - "&7- Wheat"
+    - "&7- Cocoa Beans"
   amount: 1
 milestone:
   enabled: true
