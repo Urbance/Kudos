@@ -101,6 +101,9 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!isMilestone(targetPlayer)) {
             return false;
         }
+        if (!awardMilestoneReward(sender, targetPlayer)) {
+            return true;
+        }
 
         playMilestoneSound(sender, targetPlayer);
 
@@ -119,6 +122,36 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return true;
         }
         return false;
+    }
+
+    private boolean awardMilestoneReward(CommandSender sender, Player targetPlayer) {
+        if (!config.getBoolean("milestone.reward.enabled")) {
+            return false;
+        }
+
+        Inventory inventory = targetPlayer.getInventory();
+        ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("milestone.reward.item")));
+
+        itemCreator.setDisplayName(config.getString("milestone.reward.item-name"));
+        itemCreator.setAmount(config.getInt("milestone.reward.amount"));
+        if (config.getBoolean("milestone.reward.use-lore"))
+            itemCreator.setLore(config.getStringList("milestone.reward.item-lore"));
+
+        ItemStack awardItem = itemCreator.get();
+
+        if (!itemCanBeAddedToInventory(awardItem, inventory)) {
+            Map<String, String> placeholderValues = new HashMap<>();
+            placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+
+            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
+
+            if (sender instanceof Player)
+                cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
+            return false;
+        }
+
+        inventory.addItem(awardItem);
+        return true;
     }
 
     private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
@@ -173,23 +206,31 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
-        if (!validateAwardItem(sender, targetPlayer))
+        if (!config.getBoolean("award-item.enabled")) {
             return false;
+        }
 
-        targetPlayer.getInventory().addItem(createAwardItem());
-        return true;
-    }
+        Inventory inventory = targetPlayer.getInventory();
+        ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("award-item.item")));
 
-    private boolean validateAwardItem(CommandSender sender, Player targetPlayer) {
-        if (!itemCanBeAdded(targetPlayer.getInventory())) {
+        itemCreator.setDisplayName(config.getString("award-item.item-name"));
+        itemCreator.setAmount(config.getInt("award-item.amount"));
+        if (config.getBoolean("award-item.use-lore"))
+            itemCreator.setLore(config.getStringList("award-item.item-lore"));
+        ItemStack awardItem = itemCreator.get();
+
+        if (!itemCanBeAddedToInventory(awardItem, inventory)) {
             Map<String, String> placeholderValues = new HashMap<>();
             placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
 
             if (sender instanceof Player)
                 cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
+
+        inventory.addItem(awardItem);
         return true;
     }
 
@@ -254,17 +295,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
     }
 
-    private ItemStack createAwardItem() {
-        Material material = Material.getMaterial(config.getString("award-item.item"));
-        String displayName = config.getString("award-item.item-name");
-        List<String> lore = config.getStringList("award-item.item-lore");
-        int amount = config.getInt("award-item.amount");
-        boolean setLore = config.getBoolean("award-item.use-lore");
-        ItemStack itemStack = new ItemCreator(material, displayName, lore, amount, setLore).create();
-
-        return itemStack;
-    }
-
     private boolean isMilestoneEnabled() {
         return config.getBoolean("milestone.enabled");
     }
@@ -285,13 +315,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return config.getBoolean("kudo-award-notification.enabled");
     }
 
-    private boolean itemCanBeAdded(Inventory inventory) {
-        ItemStack awardItem = createAwardItem();
+    private boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
         for (int i = 0; i < 36; i++) {
             if (inventory.getItem(i) == null) {
                 return true;
             }
-            if (inventory.getItem(i).isSimilar(awardItem) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
+            if (inventory.getItem(i).isSimilar(itemStack) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
                 return true;
             }
         }
