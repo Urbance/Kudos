@@ -1,9 +1,6 @@
 package Commands;
 
-import Utils.CooldownManager;
-import Utils.ItemCreator;
-import Utils.KudosMessage;
-import Utils.KudosNotification;
+import Utils.*;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -19,18 +16,20 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class Kudo implements CommandExecutor, TabCompleter {
-    private final CooldownManager cooldownManager = new CooldownManager();
+    Main plugin;
     String prefix;
     SQLGetter data;
-    Main plugin = Main.getPlugin(Main.class);
     KudosNotification kudosNotification;
     KudosMessage kudosMessage;
     FileConfiguration locale;
     FileConfiguration config;
     int playerCooldown;
+    private final CooldownManager cooldownManager = new CooldownManager();
+    private final LimitationManager limitationManager = new LimitationManager();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        this.plugin = Main.getPlugin(Main.class);
         this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
         this.prefix = plugin.prefix;
@@ -55,11 +54,21 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (!preValidation(sender)) return;
         if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID)) return;
 
-        sendKudoAwardNotification(sender, targetPlayer, targetPlayerUUID, notificationMode);
+        sendKudoAwardNotification(sender, targetPlayer, notificationMode);
         setCooldown(sender);
     }
 
+    private boolean addLimitation(CommandSender sender, Player targetPlayer) {
+        return limitationManager.setLimitation(sender, targetPlayer);
+    }
+
     private boolean addKudoAndAwardItem(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
+        if (config.getBoolean("kudo-award-limitation.enabled")) {
+            if (!addLimitation(sender, targetPlayer)) {
+                return false;
+            }
+        }
+
         if (isAwardItemEnabled()) {
             if (!addAwardItem(sender, targetPlayer)) return false;
         }
@@ -72,7 +81,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void sendKudoAwardNotification(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID, String notificationMode) {
+    private void sendKudoAwardNotification(CommandSender sender, Player targetPlayer, String notificationMode) {
         if (sendMilestone(sender, targetPlayer, targetPlayer.getUniqueId()))
             return;
         if (!isKudoAwardNotificationEnabled())

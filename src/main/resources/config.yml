@@ -9,6 +9,10 @@ kudo-award-notification:
   notification-mode: "broadcast"
   enable-playsound: true
   playsound-type: "ENTITY_PLAYER_LEVELUP"
+kudo-award-limitation:
+  enabled: true
+  cooldown: 86400
+  max-kudos-to-receive: 5
 award-item:
   enabled: true
   use-lore: false

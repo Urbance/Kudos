@@ -8,7 +8,7 @@ public class CooldownManager {
 
     private final Map<UUID, Integer> cooldowns = new HashMap<>();
 
-    public void setCooldown(UUID player, int time){
+    public void setCooldown(UUID player, int time) {
         if(time < 1) {
             cooldowns.remove(player);
             return;
