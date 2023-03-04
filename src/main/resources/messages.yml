@@ -15,5 +15,6 @@ error:
   player-inventory-is-full: "The inventory of &e%kudos_targetplayer_name% &7is full!"
   player-not-online: "&7The player &e%kudos_targetplayer_name% &7is not online!"
   player-not-found: "&7The player &e%kudos_targetplayer_name% &7was not found!"
+  player-received-too-many-kudos-last-time: "&7The player &e%kudos_targetplayer_name% &7received too many Kudos last time!"
   cant-give-yourself-kudo: "&7You can't give yourself a Kudo!"
   must-wait-before-use-again: "&7You must wait &e%kudos_cooldown% seconds &7before you can use it again!"
