@@ -1,8 +1,10 @@
 package Commands;
 
+import Utils.ComponentCreator;
 import Utils.FileManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private String prefix = "&7[&cKudmin&7] ";
+    private String prefix = "&7» &cKudmin&7: ";
     private Main plugin = Main.getPlugin(Main.class);
     private FileManager localeManager = new FileManager("messages.yml", plugin);
     private FileConfiguration locale = localeManager.getConfig();
@@ -44,8 +46,8 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "help" -> {
                 if (!validateInput(args, sender, 1, 0, false, false, false))
                     return false;
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&7========= &c&lKudmin Commands &7=========\n" +
+
+                String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
                                 " \n" +
                                 "&7/kudmin help\n" +
                                 "&7/kudmin add &e[kudos/assigned_kudos] [player] [amount]\n" +
@@ -55,7 +57,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                                 "&7/kudmin clearall &e[player]\n" +
                                 "&7/kudmin reload\n" +
                                 " \n" +
-                                "All player commands are listed on &c/kudos"));
+                                "&7You can find all commands and permissions " ;
+                ComponentBuilder helpTextComponent = new ComponentCreator(helpText).createPlainTextComponent(false, null);
+                ComponentBuilder wiki = new ComponentCreator("&chere&7!")
+                        .createLinkTextComponent("&l&o&cClick!","https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions", false);
+                sender.spigot().sendMessage(helpTextComponent
+                        .append(wiki.create())
+                        .create());
             }
             case "reload" -> {
                 if (!validateInput(args, sender, 1, 0, false, false, false))
