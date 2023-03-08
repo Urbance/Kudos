@@ -4,9 +4,7 @@ import Utils.ComponentCreator;
 import Utils.FileManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -18,13 +16,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private String prefix = "&7[&cKudmin&7] ";
+    private String prefix = "&7» &cKudmin&7: ";
     private Main plugin = Main.getPlugin(Main.class);
     private FileManager localeManager = new FileManager("messages.yml", plugin);
     private FileConfiguration locale = localeManager.getConfig();
