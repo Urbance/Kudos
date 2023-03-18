@@ -123,31 +123,6 @@ public final class Main extends JavaPlugin implements Listener {
         guiManager.save();
     }
 
-    public void reloadConfigs() {
-        // reload config.yml
-        reloadConfig();
-        saveDefaultConfig();
-        this.config = getConfig();
-        useSQL();
-
-        // reload messages.yml
-        FileManager localeManager = new FileManager("messages.yml", this);
-        localeManager.reload();
-        this.localeConfig = localeManager.getConfig();
-
-        // reload mysql.yml
-        FileManager mysqlManager = new FileManager("mysql.yml", this);
-        mysqlManager.reload();
-        this.mysqlConfig = mysqlManager.getConfig();
-
-        // reload gui.yml
-        FileManager guiManager = new FileManager("gui.yml", this);
-        guiManager.reload();
-        this.guiConfig = guiManager.getConfig();
-
-        this.prefix = config.getString("general.prefix");
-    }
-
     public void UpdateChecker() {
         if (!config.getBoolean("general.update-notification")){
             return;

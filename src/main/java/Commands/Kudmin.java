@@ -55,7 +55,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 sendHelpMessage(sender, args);
             }
             case "reload" -> {
-                performReloadConfigs(sender, args);
+                reloadConfigs(sender, args);
             }
             case "clear" -> {
                 performClear(sender, args);
@@ -100,11 +100,15 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 .create());
     }
 
-    private void performReloadConfigs(CommandSender sender, String[] args) {
+    private void reloadConfigs(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 1, 0, false, false, false))
             return;
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
-        plugin.reloadConfigs();
+
+        new FileManager("config.yml", plugin).reload();
+        new FileManager("messages.yml", plugin).reload();
+        new FileManager("mysql.yml", plugin).reload();
+        new FileManager("gui.yml", plugin).reload();
     }
 
     private void performClear(CommandSender sender, String[] args) {

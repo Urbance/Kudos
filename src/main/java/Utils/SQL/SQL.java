@@ -11,7 +11,6 @@ import java.sql.SQLException;
 public class SQL {
     private Connection connection;
     private FileConfiguration mysqlConfig = new FileManager("mysql.yml", Main.getPlugin(Main.class)).getConfig();
-
     private String host = mysqlConfig.getString("hostname");
     private String port = mysqlConfig.getString("port");
     private String database = mysqlConfig.getString("database");
