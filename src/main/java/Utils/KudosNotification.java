@@ -11,15 +11,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class KudosNotification {
-    Main plugin;
-    String prefix;
-    KudosMessage kudosMessage;
-    SQLGetter data;
-    FileConfiguration locale;
+    private KudosMessage kudosMessage;
+    private SQLGetter data;
+    private FileConfiguration locale;
 
     public KudosNotification(Main plugin) {
-        this.plugin = plugin;
-        this.prefix = plugin.prefix;
         this.kudosMessage = new KudosMessage(plugin);
         this.data = new SQLGetter(plugin);
         this.locale = plugin.localeConfig;
@@ -33,7 +29,7 @@ public class KudosNotification {
         kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console"), values));
     }
 
-    public void sendBroadcast(CommandSender sender, Player targetPlayer) {
+    public void sendBroadcastMessage(CommandSender sender, Player targetPlayer) {
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         Map<String, String> values = new HashMap<>();
         values.put("kudos_player_name", sender.getName());
@@ -43,17 +39,20 @@ public class KudosNotification {
     }
 
     public void sendPrivate(CommandSender sender, Player targetPlayer) {
-        UUID targetPlayerUUID = targetPlayer.getUniqueId();
+        sendPrivateMessageToSender(sender, targetPlayer);
+        sendPrivateMessageToTargetPlayer(sender, targetPlayer);
+    }
 
-        // send message to sender
+    private void sendPrivateMessageToSender(CommandSender sender, Player targetPlayer) {
         Map<String, String> valuesSender = new HashMap<>();
         valuesSender.put("kudos_targetplayer_name", targetPlayer.getName());
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudo.player-assigned-kudo"), valuesSender));
+    }
 
-        // send message to target player
+    private void sendPrivateMessageToTargetPlayer(CommandSender sender, Player targetPlayer) {
         Map<String, String> valuesTargetPlayer = new HashMap<>();
         valuesTargetPlayer.put("kudos_player_name", sender.getName());
-        valuesTargetPlayer.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayerUUID)));
+        valuesTargetPlayer.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         kudosMessage.send(targetPlayer, kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player"), valuesTargetPlayer));
     }
 

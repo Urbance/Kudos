@@ -21,154 +21,198 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private String prefix = "&7» &cKudmin&7: ";
-    private Main plugin = Main.getPlugin(Main.class);
-    private FileManager localeManager = new FileManager("messages.yml", plugin);
-    private FileConfiguration locale = localeManager.getConfig();
+    private String prefix;
+    private Main plugin;
+    private FileConfiguration locale;
     private String optionValue;
+    private SQLGetter data;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        SQLGetter data = new SQLGetter(plugin);
+        this.prefix = "&7» &cKudmin&7: ";
+        this.plugin = Main.getPlugin(Main.class);
+        this.locale = new FileManager("messages.yml", plugin).getConfig();
+        this.data = new SQLGetter(plugin);
 
         if (!sender.hasPermission("kudmin")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
-
         if (args.length == 0) {
             PluginDescriptionFile pluginDescriptionFile = plugin.getDescription();
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }
 
+        performAction(sender, args);
+
+        return false;
+    }
+
+    private void performAction(CommandSender sender, String[] args) {
         switch (args[0]) {
             case "help" -> {
-                if (!validateInput(args, sender, 1, 0, false, false, false))
-                    return false;
-
-                String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
-                                " \n" +
-                                "&7/kudmin help\n" +
-                                "&7/kudmin add &e[kudos/assigned_kudos] [player] [amount]\n" +
-                                "&7/kudmin remove &e[kudos/assigned_kudos] [player] [amount]\n" +
-                                "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
-                                "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
-                                "&7/kudmin clearall &e[player]\n" +
-                                "&7/kudmin reload\n" +
-                                " \n" +
-                                "&7You can find all commands and permissions " ;
-                ComponentBuilder helpTextComponent = new ComponentCreator(helpText).createPlainTextComponent(false, null);
-                ComponentBuilder wiki = new ComponentCreator("&chere&7!")
-                        .createLinkTextComponent("&l&o&cClick!","https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions", false);
-                sender.spigot().sendMessage(helpTextComponent
-                        .append(wiki.create())
-                        .create());
+                sendHelpMessage(sender, args);
             }
             case "reload" -> {
-                if (!validateInput(args, sender, 1, 0, false, false, false))
-                    return false;
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
-                plugin.reloadConfigs();
+                reloadConfigs(sender, args);
             }
             case "clear" -> {
-                if (!validateInput(args, sender, 3, 2, true, true, false)) {
-                    return false;
-                }
-                String playerName = args[2];
-                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-                switch (optionValue) {
-                    case "kudos" -> {
-                        data.clearKudos(player);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + playerName));
-                    }
-                    case "assigned_kudos" -> {
-                        data.clearAssignedKudos(player);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared assigned Kudos from &e" + playerName));
-                    }
-                }
+                performClear(sender, args);
             }
             case "clearall" -> {
-                if (!validateInput(args, sender, 2, 1, false, true, false)) {
-                    return false;
-                }
-                String playerName = args[1];
-                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-
-                data.clearKudosAndAssignedKudos(player);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
+                performClearAll(sender, args);
             }
             case "add" -> {
-                if (!validateInput(args, sender, 4, 2, true, true, true))
-                    return false;
-
-                int amount = Integer.parseInt(args[3]);
-                String playerName = args[2];
-                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-
-                switch (optionValue) {
-                    case "kudos" -> {
-                        data.addKudos(player, null, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
-                    }
-                    case "assigned_kudos" -> {
-                        data.addAssignedKudos(player, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
-                    }
-                }
+                performAdd(sender, args);
             }
             case "remove" -> {
-                if (!validateInput(args, sender, 4, 2, true, true, true)) {
-                    return false;
-                }
-                int amount = Integer.parseInt(args[3]);
-                String playerName = args[2];
-                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-
-                switch (optionValue) {
-                    case "kudos" -> {
-                        if (amount > data.getKudos(player)) {
-                            data.clearKudos(player);
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-                            return false;
-                        }
-                        data.removeKudos(player, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-                    }
-                    case "assigned_kudos" -> {
-                        if (amount > data.getAssignedKudo(player)) {
-                            data.clearAssignedKudos(player);
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
-                            return false;
-                        }
-                        data.removeAssignedKudos(player, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
-                    }
-                }
+                performRemove(sender, args);
             }
             case "set" -> {
-                if (!validateInput(args, sender, 4, 2, true, true, true)) {
-                    return false;
-                }
-                int amount = Integer.parseInt(args[3]);
-                String playerName = args[2];
-                UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-
-                switch (optionValue) {
-                    case "kudos" -> {
-                        data.setKudos(player, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + amount + " Kudos &7" + "to &e" + playerName));
-                    }
-                    case "assigned_kudos" -> {
-                        data.setAssignedKudos(player, amount);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
-                    }
-                }
+                performSet(sender, args);
             }
             default ->
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
-    return false;
+    }
+
+    private void sendHelpMessage(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 1, 0, false, false, false))
+            return;
+
+        String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
+                " \n" +
+                "&7/kudmin help\n" +
+                "&7/kudmin add &e[kudos/assigned_kudos] [player] [amount]\n" +
+                "&7/kudmin remove &e[kudos/assigned_kudos] [player] [amount]\n" +
+                "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
+                "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
+                "&7/kudmin clearall &e[player]\n" +
+                "&7/kudmin reload\n" +
+                " \n" +
+                "&7You can find all commands and permissions " ;
+        ComponentBuilder helpTextComponent = new ComponentCreator(helpText).createPlainTextComponent(false, null);
+        ComponentBuilder wiki = new ComponentCreator("&chere&7!")
+                .createLinkTextComponent("&l&o&cClick!","https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions", false);
+        sender.spigot().sendMessage(helpTextComponent
+                .append(wiki.create())
+                .create());
+    }
+
+    private void reloadConfigs(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 1, 0, false, false, false))
+            return;
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
+
+        new FileManager("config.yml", plugin).reload();
+        new FileManager("messages.yml", plugin).reload();
+        new FileManager("mysql.yml", plugin).reload();
+        new FileManager("gui.yml", plugin).reload();
+    }
+
+    private void performClear(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 3, 2, true, true, false)) {
+            return;
+        }
+
+        String playerName = args[2];
+        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        switch (optionValue) {
+            case "kudos" -> {
+                data.clearKudos(playerUUID);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + playerName));
+            }
+            case "assigned_kudos" -> {
+                data.clearAssignedKudos(playerUUID);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared assigned Kudos from &e" + playerName));
+            }
+        }
+    }
+
+    private void performClearAll(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 2, 1, false, true, false)) {
+            return;
+        }
+
+        String playerName = args[1];
+        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        data.clearKudosAndAssignedKudos(playerUUID);
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
+    }
+
+    private void performSet(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 4, 2, true, true, true)) {
+            return;
+        }
+
+        int amount = Integer.parseInt(args[3]);
+        String playerName = args[2];
+        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        switch (optionValue) {
+            case "kudos" -> {
+                data.setKudos(playerUUID, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + amount + " Kudos &7" + "to &e" + playerName));
+            }
+            case "assigned_kudos" -> {
+                data.setAssignedKudos(playerUUID, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
+            }
+        }
+    }
+
+    private void performAdd(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 4, 2, true, true, true))
+            return;
+
+        int amount = Integer.parseInt(args[3]);
+        String playerName = args[2];
+        UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        switch (optionValue) {
+            case "kudos" -> {
+                data.addKudos(player, null, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
+            }
+            case "assigned_kudos" -> {
+                data.addAssignedKudos(player, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
+            }
+        }
+    }
+
+    private void performRemove(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 4, 2, true, true, true)) {
+            return;
+        }
+
+        int amount = Integer.parseInt(args[3]);
+        String playerName = args[2];
+        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        switch (optionValue) {
+            case "kudos" -> {
+                if (amount > data.getKudos(playerUUID)) {
+                    data.clearKudos(playerUUID);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+                    return;
+                }
+                data.removeKudos(playerUUID, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+            }
+            case "assigned_kudos" -> {
+                if (amount > data.getAssignedKudo(playerUUID)) {
+                    data.clearAssignedKudos(playerUUID);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
+                    return;
+                }
+                data.removeAssignedKudos(playerUUID, amount);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
+            }
+        }
     }
 
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateOptionValue, boolean validateTargetPlayer, boolean validateValue) {
@@ -181,7 +225,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 return false;
         }
         if (validateTargetPlayer) {
-            if (!TargetPlayerExists(sender, args, playerArgumentPosition))
+            if (!targetPlayerExists(sender, args, playerArgumentPosition))
                 return false;
         }
         if (validateValue) {
@@ -221,8 +265,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean TargetPlayerExists(CommandSender sender, String[] args, int playerArgumentPosition) {
-        SQLGetter data = new SQLGetter(plugin);
+    private boolean targetPlayerExists(CommandSender sender, String[] args, int playerArgumentPosition) {
         if (args.length < playerArgumentPosition + 1) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a target player!"));
             return false;

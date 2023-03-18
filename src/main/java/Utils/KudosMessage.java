@@ -16,15 +16,11 @@ import java.util.Map;
  * It sets the plugin prefix, placeholders (later) and formatting codes are considered.
  */
 public class KudosMessage {
-    Main plugin;
-    String prefix;
-    SQLGetter data;
-    FileConfiguration locale;
+    private String prefix;
+    private FileConfiguration locale;
 
     public KudosMessage(Main plugin) {
-        this.plugin = Main.getPlugin(Main.class);
         this.prefix = plugin.prefix;
-        this.data = new SQLGetter(plugin);
         this.locale = plugin.localeConfig;
     }
 

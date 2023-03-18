@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.urbance</groupId>
-    <artifactId>kudos</artifactId>
-    <version>2.3.0</version>
+    <artifactId>Kudos</artifactId>
+    <version>2.4.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>

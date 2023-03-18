@@ -37,6 +37,17 @@ public class FileManager {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.fileConfiguration.setDefaults(defaultConfig);
         }
+
+        switch (fileName) {
+            case "config.yml" -> {
+                plugin.config = fileConfiguration;
+                plugin.useSQL();
+                plugin.prefix = fileConfiguration.getString("general.prefix");
+            }
+            case "messages.yml" -> plugin.localeConfig = fileConfiguration;
+            case "mysql.yml" -> plugin.mysqlConfig = fileConfiguration;
+            case "gui.yml" -> plugin.guiConfig = fileConfiguration;
+        }
     }
 
     public void save() {

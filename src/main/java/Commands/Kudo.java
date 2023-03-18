@@ -1,6 +1,7 @@
 package Commands;
 
 import Utils.*;
+import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.locale = plugin.localeConfig;
         this.config = plugin.getConfig();
         this.prefix = plugin.prefix;
+        this.data = new SQLGetter(plugin);
         this.kudosNotification = new KudosNotification(plugin);
         this.kudosMessage = new KudosMessage(plugin);
 
@@ -45,7 +47,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private void awardKudo(CommandSender sender, String[] args) {
-        data = new SQLGetter(plugin);
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         String notificationMode = getNotificationMode();
@@ -94,7 +95,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return;
         }
         if (notificationMode.equals("broadcast")) {
-            kudosNotification.sendBroadcast(sender, targetPlayer);
+            kudosNotification.sendBroadcastMessage(sender, targetPlayer);
             return;
         }
         if (notificationMode.equals("private")) {
@@ -143,6 +144,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         itemCreator.setDisplayName(config.getString("milestone.reward.item-name"));
         itemCreator.setAmount(config.getInt("milestone.reward.amount"));
+
         if (config.getBoolean("milestone.reward.use-lore"))
             itemCreator.setLore(config.getStringList("milestone.reward.item-lore"));
 
@@ -224,8 +226,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         itemCreator.setDisplayName(config.getString("award-item.item-name"));
         itemCreator.setAmount(config.getInt("award-item.amount"));
-        if (config.getBoolean("award-item.use-lore"))
-            itemCreator.setLore(config.getStringList("award-item.item-lore"));
+        if (config.getBoolean("award-item.use-lore")) itemCreator.setLore(config.getStringList("award-item.item-lore"));
         ItemStack awardItem = itemCreator.get();
 
         if (!itemCanBeAddedToInventory(awardItem, inventory)) {
@@ -304,21 +305,14 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
     }
 
-    private boolean isMilestoneEnabled() {
-        return config.getBoolean("milestone.enabled");
+    private boolean isMilestoneEnabled() { return config.getBoolean("milestone.enabled");
     }
 
-    private boolean isMilestonePlaysoundEnabled() {
-        return config.getBoolean("milestone.enable-playsound");
-    }
+    private boolean isMilestonePlaysoundEnabled() { return config.getBoolean("milestone.enable-playsound"); }
 
-    private boolean isKudoAwardPlaysoundEnabled() {
-        return config.getBoolean("kudo-award-notification.enable-playsound");
-    }
+    private boolean isKudoAwardPlaysoundEnabled() { return config.getBoolean("kudo-award-notification.enable-playsound"); }
 
-    private boolean canAwardKudos() {
-        return playerCooldown == 0;
-    }
+    private boolean canAwardKudos() { return playerCooldown == 0; }
 
     private boolean isKudoAwardNotificationEnabled() {
         return config.getBoolean("kudo-award-notification.enabled");

@@ -9,13 +9,11 @@ import java.util.List;
 
 public class ItemCreator {
 
-    ItemStack itemStack;
-    ItemMeta itemMeta;
-    Material material;
-    int amount;
+    private ItemStack itemStack;
+    private ItemMeta itemMeta;
+    private int amount;
 
     public ItemCreator(Material material) {
-        this.material = material;
         this.itemStack = new ItemStack(material);
         this.itemMeta = itemStack.getItemMeta();
         this.amount = 1;
