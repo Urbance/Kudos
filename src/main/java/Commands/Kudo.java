@@ -1,7 +1,6 @@
 package Commands;
 
 import Utils.*;
-import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -17,14 +16,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class Kudo implements CommandExecutor, TabCompleter {
-    Main plugin;
-    String prefix;
-    SQLGetter data;
-    KudosNotification kudosNotification;
-    KudosMessage kudosMessage;
-    FileConfiguration locale;
-    FileConfiguration config;
-    int playerCooldown;
+    private Main plugin;
+    private String prefix;
+    private SQLGetter data;
+    private KudosNotification kudosNotification;
+    private KudosMessage kudosMessage;
+    private FileConfiguration locale;
+    private FileConfiguration config;
+    private int playerCooldown;
     private final CooldownManager cooldownManager = new CooldownManager();
     private final LimitationManager limitationManager = new LimitationManager();
 
@@ -32,7 +31,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.plugin = Main.getPlugin(Main.class);
         this.locale = plugin.localeConfig;
-        this.config = plugin.getConfig();
+        this.config = plugin.config;
         this.prefix = plugin.prefix;
         this.data = new SQLGetter(plugin);
         this.kudosNotification = new KudosNotification(plugin);
