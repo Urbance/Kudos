@@ -1,12 +1,11 @@
 package Commands;
 
 import Utils.GUI;
-import Utils.KudosManagement;
+import Utils.KudosManager;
 import Utils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +27,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     SQLGetter data;
     String prefix;
     OfflinePlayer targetPlayer;
-    KudosManagement kudosManagement;
+    KudosManager kudosManager;
     KudosMessage kudosMessage;
 
 
@@ -37,7 +36,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
-        this.kudosManagement = new KudosManagement(plugin);
+        this.kudosManager = new KudosManager(plugin);
         this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
@@ -71,7 +70,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission((Player) sender);
             return;
         }
-        kudosManagement.showKudos(sender, targetPlayer);
+        kudosManager.showPlayerKudos(sender, targetPlayer);
 }
 
     public boolean validateInput(String[] args, CommandSender sender) {
