@@ -38,12 +38,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         setupSQL();
         setupConfigs();
-        UpdateChecker();
+        updateChecker();
         registerListenerAndCommands();
         useSQL();
-
-        // bStats
-        Metrics metrics = new Metrics(this, 16627);
+        setupMetrics();
     }
 
     @Override
@@ -123,7 +121,11 @@ public final class Main extends JavaPlugin implements Listener {
         guiManager.save();
     }
 
-    public void UpdateChecker() {
+    private void setupMetrics() {
+        new Metrics(this, 16627);
+    }
+
+    public void updateChecker() {
         if (!config.getBoolean("general.update-notification")){
             return;
         }
@@ -143,11 +145,6 @@ public final class Main extends JavaPlugin implements Listener {
      */
     private void keepAliveDatabaseConnection() {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                data.keepAlive();
-            }
-        }, 0L, 1200);
+        scheduler.scheduleSyncRepeatingTask(this, () -> data.keepAlive(), 0L, 1200);
     }
 }

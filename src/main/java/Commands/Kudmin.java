@@ -23,7 +23,6 @@ import java.util.UUID;
 public class Kudmin implements CommandExecutor, TabCompleter {
     private String prefix;
     private Main plugin;
-    private FileConfiguration locale;
     private String optionValue;
     private SQLGetter data;
 
@@ -31,8 +30,8 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = "&7» &cKudmin&7: ";
         this.plugin = Main.getPlugin(Main.class);
-        this.locale = new FileManager("messages.yml", plugin).getConfig();
         this.data = new SQLGetter(plugin);
+        FileConfiguration locale = new FileManager("messages.yml", plugin).getConfig();
 
         if (!sender.hasPermission("kudmin")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
@@ -51,29 +50,14 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
     private void performAction(CommandSender sender, String[] args) {
         switch (args[0]) {
-            case "help" -> {
-                sendHelpMessage(sender, args);
-            }
-            case "reload" -> {
-                reloadConfigs(sender, args);
-            }
-            case "clear" -> {
-                performClear(sender, args);
-            }
-            case "clearall" -> {
-                performClearAll(sender, args);
-            }
-            case "add" -> {
-                performAdd(sender, args);
-            }
-            case "remove" -> {
-                performRemove(sender, args);
-            }
-            case "set" -> {
-                performSet(sender, args);
-            }
-            default ->
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
+            case "help" -> sendHelpMessage(sender, args);
+            case "reload" -> reloadConfigs(sender, args);
+            case "clear" -> performClear(sender, args);
+            case "clearall" -> performClearAll(sender, args);
+            case "add" -> performAdd(sender, args);
+            case "remove" -> performRemove(sender, args);
+            case "set" -> performSet(sender, args);
+            default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
     }
 
@@ -220,18 +204,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
             return false;
         }
-        if (validateOptionValue) {
-            if (!setAndValidateOptionValue(sender, args))
-                return false;
-        }
-        if (validateTargetPlayer) {
-            if (!targetPlayerExists(sender, args, playerArgumentPosition))
-                return false;
-        }
-        if (validateValue) {
-            if (!isValueAnInteger(sender, args))
-                return false;
-        }
+        if (validateOptionValue && (!setAndValidateOptionValue(sender, args))) return false;
+        if (validateTargetPlayer && (!targetPlayerExists(sender, args, playerArgumentPosition))) return false;
+        if (validateValue && (!isValueAnInteger(sender, args))) return false;
+
         return true;
     }
 

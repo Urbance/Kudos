@@ -56,7 +56,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
-            kudosMessage.noPermission((Player) sender);
+            kudosMessage.noPermission(sender);
             return;
         }
 
@@ -67,7 +67,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public void showKudos(CommandSender sender) {
         if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
-            kudosMessage.noPermission((Player) sender);
+            kudosMessage.noPermission(sender);
             return;
         }
         kudosManager.showPlayerKudos(sender, targetPlayer);
@@ -75,7 +75,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {
-            kudosMessage.wrongUsage((Player) sender);
+            kudosMessage.wrongUsage(sender);
             return false;
         }
         if (args.length == 1) {
