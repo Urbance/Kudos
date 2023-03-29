@@ -35,7 +35,7 @@ public class LimitationManager {
             initFirstKudo();
             return true;
         }
-        if (receivedKudos.get(targetPlayerUUID).equals(config.getInt("kudo-award-limitation.max-kudos-to-receive"))) {
+        if (receivedKudos.get(targetPlayerUUID).equals(config.getInt("kudo-award.limitation.max-kudos-to-receive"))) {
             Map<String, String> values = new HashMap<>();
             values.put("kudos_targetplayer_name", targetPlayer.getName());
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(localeConfig.getString("error.player-received-too-many-kudos-last-time"), values));
@@ -51,7 +51,7 @@ public class LimitationManager {
 
     private void initFirstKudo() {
         Date currDate = new Date();
-        receivedKudosTime.put(targetPlayerUUID, DateUtils.addSeconds(currDate, config.getInt("kudo-award-limitation.cooldown")));
+        receivedKudosTime.put(targetPlayerUUID, DateUtils.addSeconds(currDate, config.getInt("kudo-award.limitation.cooldown")));
         receivedKudos.put(targetPlayerUUID, 1);
     }
 

@@ -65,7 +65,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean addKudoAndAwardItem(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        if (config.getBoolean("kudo-award-limitation.enabled")) {
+        if (config.getBoolean("kudo-award.limitation.enabled")) {
             if (!addLimitation(sender, targetPlayer)) {
                 return false;
             }
@@ -198,11 +198,11 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private void setCooldown(CommandSender sender) {
         if (!(sender instanceof Player))
             return;
-        if (config.getInt("general.kudo-award-cooldown") == 0)
+        if (config.getInt("kudo-award.cooldown") == 0)
             return;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
-        cooldownManager.setCooldown(senderUUID, config.getInt("general.kudo-award-cooldown"));
+        cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.cooldown"));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -215,7 +215,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private String getNotificationMode() {
-        if (config.getString("kudo-award-notification.notification-mode").equals("private")) {
+        if (config.getString("kudo-award.notification.notification-mode").equals("private")) {
             return "private";
         }
         return "broadcast";
@@ -243,7 +243,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return;
 
         if (notificationMode.equals("private") || notificationMode.equals("broadcast"))
-            playSound(sender, targetPlayer, config.getString("kudo-award-notification.playsound-type"));
+            playSound(sender, targetPlayer, config.getString("kudo-award.notification.playsound-type"));
     }
 
     private boolean validateMilestone(Player targetPlayer) {
@@ -276,12 +276,12 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean isMilestonePlaysoundEnabled() { return config.getBoolean("milestone.enable-playsound"); }
 
-    private boolean isKudoAwardPlaysoundEnabled() { return config.getBoolean("kudo-award-notification.enable-playsound"); }
+    private boolean isKudoAwardPlaysoundEnabled() { return config.getBoolean("kudo-award.notification.enable-playsound"); }
 
     private boolean canAwardKudos() { return playerCooldown == 0; }
 
     private boolean isKudoAwardNotificationEnabled() {
-        return config.getBoolean("kudo-award-notification.enabled");
+        return config.getBoolean("kudo-award.notification.enabled");
     }
 
     private boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
