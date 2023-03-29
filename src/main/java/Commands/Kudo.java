@@ -53,30 +53,27 @@ public class Kudo implements CommandExecutor, TabCompleter {
         String notificationMode = getNotificationMode();
 
         if (sender instanceof Player) this.playerCooldown = cooldownManager.getCooldown(((Player) sender).getUniqueId());
-        if (!preValidation(sender)) return;
-        if (!addKudoAndAwardItem(sender, targetPlayer, targetPlayerUUID)) return;
+        if (!playerCanReceiveKudo(sender, targetPlayer)) return;
+        if (!addRewards(sender, targetPlayer)) return;
+
+        kudosManager.addKudo(sender, targetPlayerUUID);
 
         sendKudoAwardNotification(sender, targetPlayer, notificationMode);
         setCooldown(sender);
     }
 
-    private boolean addLimitation(CommandSender sender, Player targetPlayer) {
-        return limitationManager.setLimitation(sender, targetPlayer);
+    private boolean playerCanReceiveKudo(CommandSender sender, Player targetPlayer) {
+        if (!validatePlayerCooldown(sender)) return false;
+        if (config.getBoolean("kudo-award.limitation.enabled") && !addLimitation(sender, targetPlayer)) return false;
+
+        return true;
     }
 
-    private boolean addKudoAndAwardItem(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
-        if (config.getBoolean("kudo-award.limitation.enabled")) {
-            if (!addLimitation(sender, targetPlayer)) {
-                return false;
-            }
-        }
-
+    private boolean addRewards(CommandSender sender, Player targetPlayer) {
         if (!kudosManager.addItemReward(sender, targetPlayer)) {
             if (sender instanceof Player) cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
-
-        kudosManager.addKudo(sender, targetPlayerUUID);
         return true;
     }
 
@@ -101,8 +98,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
     }
 
-    private boolean preValidation(CommandSender sender) {
-        return validatePlayerCooldown(sender);
+    private boolean addLimitation(CommandSender sender, Player targetPlayer) {
+        return limitationManager.setLimitation(sender, targetPlayer);
     }
 
     private boolean sendMilestone(CommandSender sender, Player targetPlayer, UUID targetPlayerUUID) {
