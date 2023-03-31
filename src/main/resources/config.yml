@@ -14,16 +14,17 @@ kudo-award:
     enabled: true
     cooldown: 86400
     max-kudos-to-receive: 5
-  award-item:
-    enabled: true
-    use-lore: false
-    item: COOKIE
-    item-name: "&6Hot Baked Cookie"
-    item-lore:
-      - "&7Ingredients:"
-      - "&7- Wheat"
-      - "&7- Cocoa Beans"
-    amount: 1
+  rewards:
+    award-item:
+      enabled: true
+      use-lore: false
+      item: COOKIE
+      item-name: "&6Hot Baked Cookie"
+      item-lore:
+        - "&7Ingredients:"
+        - "&7- Wheat"
+        - "&7- Cocoa Beans"
+      amount: 1
 milestone:
   enabled: true
   span-between-kudos: 10

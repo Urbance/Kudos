@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.checkerframework.checker.units.qual.K;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,20 +38,23 @@ public class KudosManager {
         }
     }
 
-    public boolean addItemReward(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("award-item.enabled")) return true;
-
+    public boolean addRewards(CommandSender sender, Player targetPlayer) {
+        if (!config.getBoolean("kudo-award.rewards.award-item.enabled")) return true;
         Inventory inventory = targetPlayer.getInventory();
-        ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("award-item.item")), config);
-        ItemStack awardItem = itemCreator.getItemReward();
+        KudosRewards kudosRewards = new KudosRewards(inventory);
 
-        if (!itemCanBeAddedToInventory(awardItem, inventory)) {
+        if (!kudosRewards.addAwardItem()) {
             sendInventoryIsFullMessage(sender, targetPlayer);
             return false;
         }
 
-        inventory.addItem(awardItem);
         return true;
+    }
+
+    private void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
+        Map<String, String> placeholderValues = new HashMap<>();
+        placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+        kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
     }
 
     public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {
@@ -61,21 +65,7 @@ public class KudosManager {
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
 
-    private void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
-        Map<String, String> placeholderValues = new HashMap<>();
-        placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-        kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
-    }
 
-    private boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
-        for (int i = 0; i < 36; i++) {
-            if (inventory.getItem(i) == null) {
-                return true;
-            }
-            if (inventory.getItem(i).isSimilar(itemStack) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
-                return true;
-            }
-        }
-        return false;
-    }
+
+
 }

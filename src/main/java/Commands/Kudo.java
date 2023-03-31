@@ -70,7 +70,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!kudosManager.addItemReward(sender, targetPlayer)) {
+        if (!kudosManager.addRewards(sender, targetPlayer)) {
             if (sender instanceof Player) cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
@@ -135,7 +135,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
 
         Inventory inventory = targetPlayer.getInventory();
-        ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("milestone.reward.item")), config);
+        ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("milestone.reward.item")));
 
         itemCreator.setDisplayName(config.getString("milestone.reward.item-name"));
         itemCreator.setAmount(config.getInt("milestone.reward.amount"));
@@ -286,7 +286,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             if (inventory.getItem(i) == null) {
                 return true;
             }
-            if (inventory.getItem(i).isSimilar(itemStack) && !(inventory.getItem(i).getAmount() + config.getInt("award-item.amount") > 64)) {
+            if (inventory.getItem(i).isSimilar(itemStack) && !(inventory.getItem(i).getAmount() + config.getInt("kudo-award.rewards.award-item.amount") > 64)) {
                 return true;
             }
         }
