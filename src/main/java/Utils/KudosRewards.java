@@ -20,23 +20,13 @@ public class KudosRewards {
     public boolean addAwardItem() {
         ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString("kudo-award.rewards.award-item.item")));
         ItemStack awardItem = itemCreator.getItemReward();
-
-        if (!itemCanBeAddedToInventory(awardItem, inventory))
-            return false;
-
+        if (!itemCanBeAddedToInventory(awardItem, inventory)) return false;
         inventory.addItem(awardItem);
         return true;
     }
 
     private boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
-        for (int i = 0; i < 36; i++) {
-            if (inventory.getItem(i) == null) {
-                return true;
-            }
-            if (inventory.getItem(i).isSimilar(itemStack) && !(inventory.getItem(i).getAmount() + config.getInt("kudo-award.rewards.award-item.amount") > 64)) {
-                return true;
-            }
-        }
-        return false;
+        return inventory.firstEmpty() != -1 || inventory.addItem(itemStack).isEmpty();
     }
+
 }
