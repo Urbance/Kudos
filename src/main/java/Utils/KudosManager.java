@@ -2,14 +2,11 @@ package Utils;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.units.qual.K;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +45,7 @@ public class KudosManager {
             return false;
         }
 
+        kudosRewards.performCommandRewards(targetPlayer);
         return true;
     }
 
@@ -61,11 +59,6 @@ public class KudosManager {
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
         values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
-
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
-
-
-
-
 }

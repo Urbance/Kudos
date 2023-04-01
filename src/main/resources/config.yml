@@ -25,6 +25,10 @@ kudo-award:
         - "&7- Wheat"
         - "&7- Cocoa Beans"
       amount: 1
+    command-rewards:
+      enabled: false
+      commands:
+        - xp add %kudos_player_name% 10
 milestone:
   enabled: true
   span-between-kudos: 10
