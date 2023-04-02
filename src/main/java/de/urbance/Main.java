@@ -50,9 +50,9 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void useSQL() {
-        if (!config.getBoolean("general.useSQL")) {
+        if (!config.getBoolean("general.use-SQL")) {
             getLogger().warning("In the config.yml \"useSQL\" is set to false. Currently there is only the possibility to store data via MySQL. Value is set back to true.");
-            config.set("general.useSQL", true);
+            config.set("general.use-SQL", true);
             saveConfig();
         }
     }
