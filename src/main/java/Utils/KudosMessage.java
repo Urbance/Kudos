@@ -1,6 +1,5 @@
 package Utils;
 
-import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.apache.commons.text.StringSubstitutor;
 import org.bukkit.Bukkit;

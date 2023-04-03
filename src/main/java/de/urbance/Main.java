@@ -4,12 +4,9 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
-import Utils.FileManager;
-import Utils.GUI;
-import Utils.KudosExpansion;
+import Utils.*;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
-import Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -20,6 +17,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
+    public final CooldownManager cooldownManager = new CooldownManager();
     public String prefix;
     public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
@@ -38,12 +36,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         setupSQL();
         setupConfigs();
-        UpdateChecker();
+        updateChecker();
         registerListenerAndCommands();
         useSQL();
-
-        // bStats
-        Metrics metrics = new Metrics(this, 16627);
+        setupMetrics();
     }
 
     @Override
@@ -52,9 +48,9 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     public void useSQL() {
-        if (!config.getBoolean("general.useSQL")) {
+        if (!config.getBoolean("general.use-SQL")) {
             getLogger().warning("In the config.yml \"useSQL\" is set to false. Currently there is only the possibility to store data via MySQL. Value is set back to true.");
-            config.set("general.useSQL", true);
+            config.set("general.use-SQL", true);
             saveConfig();
         }
     }
@@ -123,7 +119,11 @@ public final class Main extends JavaPlugin implements Listener {
         guiManager.save();
     }
 
-    public void UpdateChecker() {
+    private void setupMetrics() {
+        new Metrics(this, 16627);
+    }
+
+    public void updateChecker() {
         if (!config.getBoolean("general.update-notification")){
             return;
         }
@@ -143,11 +143,6 @@ public final class Main extends JavaPlugin implements Listener {
      */
     private void keepAliveDatabaseConnection() {
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-            @Override
-            public void run() {
-                data.keepAlive();
-            }
-        }, 0L, 1200);
+        scheduler.scheduleSyncRepeatingTask(this, () -> data.keepAlive(), 0L, 1200);
     }
 }
