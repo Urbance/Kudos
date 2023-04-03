@@ -2,25 +2,29 @@ package Utils;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class KudosManager {
-    Main plugin;
-    SQLGetter data;
-    FileConfiguration config;
-    FileConfiguration locale;
-    KudosMessage kudosMessage;
+    private Main plugin;
+    private SQLGetter data;
+    private FileConfiguration config;
+    private FileConfiguration locale;
+    private KudosMessage kudosMessage;
 
-    public KudosManager(Main plugin) {
-        this.plugin = plugin;
+    public KudosManager() {
+        this.plugin = JavaPlugin.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
         this.config = plugin.config;
         this.locale = plugin.localeConfig;
@@ -35,30 +39,58 @@ public class KudosManager {
         }
     }
 
-    public boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("kudo-award.rewards.award-item.enabled")) return true;
-        Inventory inventory = targetPlayer.getInventory();
-        KudosRewards kudosRewards = new KudosRewards(inventory);
-
-        if (!kudosRewards.addAwardItem()) {
-            sendInventoryIsFullMessage(sender, targetPlayer);
-            return false;
-        }
-
-        kudosRewards.performCommandRewards(targetPlayer);
-        return true;
-    }
-
-    private void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
-        Map<String, String> placeholderValues = new HashMap<>();
-        placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-        kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
-    }
-
     public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
         values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
+
+    public void playSound(CommandSender sender, Player targetPlayer, String playSoundType) {
+        String prefix = plugin.prefix;
+
+        if (getNotificationMode().equals("private") && !isMilestone(targetPlayer) && sender instanceof Player) {
+            Player player = (Player) sender;
+            player.playSound(player.getLocation(), Sound.valueOf(playSoundType), 1, 1);
+            targetPlayer.playSound(targetPlayer.getLocation(), Sound.valueOf(playSoundType), 1, 1);
+            return;
+        }
+
+        for (Player players : Bukkit.getOnlinePlayers()) {
+            try {
+                players.playSound(players, Sound.valueOf(playSoundType), 1, 1);
+            }
+            catch (Exception e) {
+                // TODO Check if var playSoundType is printed correctly
+                Bukkit.getLogger().warning(prefix + "Error in the config: playsound-type \"" + playSoundType + "\" isn't a valid playsound!");
+                return;
+            }
+        }
+    }
+
+    public String getNotificationMode() {
+        if (config.getString("kudo-award.notification.notification-mode").equals("private")) {
+            return "private";
+        }
+        return "broadcast";
+    }
+
+    public boolean isMilestone(Player targetPlayer) {
+        if (config.getBoolean("kudo-award.milestones.enabled")) {
+            int targetPlayerKudos = data.getKudos(targetPlayer.getUniqueId()) + 1;
+            return targetPlayerKudos % config.getInt("kudo-award.milestones.span-between-kudos") == 0;
+        }
+        return false;
+    }
+
+    public boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
+        return inventory.firstEmpty() != -1 || inventory.addItem(itemStack).isEmpty();
+    }
+
+    public void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
+        Map<String, String> placeholderValues = new HashMap<>();
+        placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+        kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
+    }
+
 }

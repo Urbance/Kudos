@@ -42,12 +42,14 @@ public class ItemCreator {
         setDisplayName(config.getString("kudo-award.rewards.award-item.item-name"));
         setAmount(config.getInt("kudo-award.rewards.award-item.amount"));
         if (config.getBoolean("kudo-award.rewards.award-item.use-lore")) setLore(config.getStringList("kudo-award.rewards.award-item.item-lore"));
-
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
 
-    public ItemStack get() {
+    public ItemStack getMilestoneItemReward() {
+        setDisplayName(config.getString("kudo-award.milestones.rewards.item-name"));
+        setAmount(config.getInt("kudo-award.milestones.rewards.amount"));
+        if (config.getBoolean("kudo-award.milestones.rewards.use-lore")) setLore(config.getStringList("kudo-award.milestones.rewards.item-lore"));
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

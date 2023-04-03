@@ -36,7 +36,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
-        this.kudosManager = new KudosManager(plugin);
+        this.kudosManager = new KudosManager();
         this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))

@@ -4,12 +4,9 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
-import Utils.FileManager;
-import Utils.GUI;
-import Utils.KudosExpansion;
+import Utils.*;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
-import Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -20,6 +17,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
+    public final CooldownManager cooldownManager = new CooldownManager();
     public String prefix;
     public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
