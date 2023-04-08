@@ -1,6 +1,5 @@
 package Commands;
 
-import KudosUtils.*;
 import Utils.KudosUtils.*;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -58,13 +57,9 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     private boolean playerCanReceiveKudo(CommandSender sender, Player targetPlayer) {
         if (!validatePlayerCooldown(sender)) return false;
-        if (config.getBoolean("kudo-award.limitation.enabled") && !addLimitation(sender, targetPlayer)) return false;
+        if (config.getBoolean("kudo-award.limitation.enabled") && !kudosLimitation.setLimitation(sender, targetPlayer)) return false;
 
         return true;
-    }
-
-    private boolean addLimitation(CommandSender sender, Player targetPlayer) {
-        return kudosLimitation.setLimitation(sender, targetPlayer);
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
@@ -113,7 +108,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean validatePlayerCooldown(CommandSender sender) {
-        if (!canAwardKudos() && sender instanceof Player) {
+        if (playerCooldown == 0 && sender instanceof Player) {
             Map<String, String> placeholderValues = new HashMap<>();
             placeholderValues.put("kudos_cooldown", String.valueOf(playerCooldown));
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.must-wait-before-use-again"), placeholderValues));
@@ -121,8 +116,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
         return true;
     }
-
-    private boolean canAwardKudos() { return playerCooldown == 0; }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
