@@ -1,4 +1,4 @@
-package Utils;
+package Utils.KudosUtils;
 
 import de.urbance.Main;
 import org.apache.commons.lang3.time.DateUtils;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class LimitationManager {
+public class KudosLimitation {
 
     private final Map<UUID, Integer> receivedKudos = new HashMap<>();
     private final Map<UUID, Date> receivedKudosTime = new HashMap<>();

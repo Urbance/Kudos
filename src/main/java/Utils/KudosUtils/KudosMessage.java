@@ -1,4 +1,4 @@
-package Utils;
+package Utils.KudosUtils;
 
 import de.urbance.Main;
 import org.apache.commons.text.StringSubstitutor;

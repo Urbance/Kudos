@@ -1,5 +1,6 @@
-package Utils;
+package Utils.KudosUtils;
 
+import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Material;

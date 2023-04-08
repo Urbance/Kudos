@@ -1,4 +1,4 @@
-package Utils;
+package Utils.KudosUtils;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;

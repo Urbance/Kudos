@@ -1,8 +1,8 @@
 package Commands;
 
 import Utils.GUI;
-import Utils.KudosManager;
-import Utils.KudosMessage;
+import Utils.KudosUtils.KudosManager;
+import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
