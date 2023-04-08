@@ -1,5 +1,6 @@
-package Utils;
+package Utils.KudosUtils;
 
+import Utils.ItemCreator;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

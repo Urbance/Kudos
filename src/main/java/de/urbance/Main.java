@@ -4,6 +4,7 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import Utils.KudosUtils.KudosExpansion;
 import Utils.*;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;

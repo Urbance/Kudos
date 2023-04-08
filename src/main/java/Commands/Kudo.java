@@ -1,6 +1,7 @@
 package Commands;
 
-import Utils.*;
+import KudosUtils.*;
+import Utils.KudosUtils.*;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -17,7 +18,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private FileConfiguration locale;
     private FileConfiguration config;
     private int playerCooldown;
-    private final LimitationManager limitationManager = new LimitationManager();
+    private final KudosLimitation kudosLimitation = new KudosLimitation();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -63,7 +64,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean addLimitation(CommandSender sender, Player targetPlayer) {
-        return limitationManager.setLimitation(sender, targetPlayer);
+        return kudosLimitation.setLimitation(sender, targetPlayer);
     }
 
     private boolean validateInput(String[] args, CommandSender sender) {
