@@ -16,11 +16,11 @@ Kudos is an open source plugin for Minecraft 1.19 Spigot Server. The plugin allo
 <br>It includes a GUI, which can display various informations and statistics.
 
 ## Features
+* PlaceholderAPI support
 * MySQL
 * Editable messages
-* Configurable
-* Item rewards
-* Milestones
+* Highly configurable
+* Rewards and Milestones
 
 ## Requirements
 * MySQL Database
