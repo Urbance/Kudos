@@ -42,17 +42,12 @@ public class KudosMilestone {
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
         placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
 
-        if (sender instanceof ConsoleCommandSender) {
-            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone-through-console"), placeholderValues));
-            return true;
-        }
-
+        if (sender instanceof ConsoleCommandSender) kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone-through-console"), placeholderValues));
         if (sender instanceof Player) {
             placeholderValues.put("kudos_player_name", sender.getName());
             kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone"), placeholderValues));
-            return true;
         }
-
+        playMilestoneSound(sender, targetPlayer);
         return false;
     }
 
@@ -69,8 +64,6 @@ public class KudosMilestone {
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
             return false;
         }
-
-        playMilestoneSound(sender, targetPlayer);
 
         inventory.addItem(awardItem);
         return true;
