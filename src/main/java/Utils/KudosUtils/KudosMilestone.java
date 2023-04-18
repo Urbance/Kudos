@@ -52,11 +52,11 @@ public class KudosMilestone {
     }
 
     private boolean sendRewards(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("kudo-award.milestones.rewards.enabled")) {
+        if (!config.getBoolean("kudo-award.milestones.rewards.award-item.enabled")) {
             return true;
         }
         Inventory inventory = targetPlayer.getInventory();
-        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.item"))).getMilestoneItemReward();
+        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.award-item.item"))).getMilestoneItemReward();
 
         if (!kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) {
             Map<String, String> placeholderValues = new HashMap<>();
