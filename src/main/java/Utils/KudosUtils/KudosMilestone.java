@@ -48,7 +48,7 @@ public class KudosMilestone {
             kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone"), placeholderValues));
         }
         playMilestoneSound(sender, targetPlayer);
-        return false;
+        return true;
     }
 
     private boolean sendRewards(CommandSender sender, Player targetPlayer) {
