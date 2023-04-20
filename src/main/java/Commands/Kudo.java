@@ -31,7 +31,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
 
         awardKudo(sender, args);
-
         return false;
     }
 
@@ -49,16 +48,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
         } else {
             if (!new KudosAward().sendKudoAward(sender, targetPlayer)) return;
         }
-
         kudosManager.addKudo(sender, targetPlayerUUID);
-
         setCooldown(sender);
     }
 
     private boolean playerCanReceiveKudo(CommandSender sender, Player targetPlayer) {
         if (!validatePlayerCooldown(sender)) return false;
         if (config.getBoolean("kudo-award.limitation.enabled") && !kudosLimitation.setLimitation(sender, targetPlayer)) return false;
-
         return true;
     }
 

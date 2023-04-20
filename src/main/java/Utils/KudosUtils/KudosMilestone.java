@@ -3,6 +3,7 @@ package Utils.KudosUtils;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -42,26 +43,28 @@ public class KudosMilestone {
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
         placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
 
-        if (sender instanceof ConsoleCommandSender) {
-            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone-through-console"), placeholderValues));
-            return true;
-        }
-
+        if (sender instanceof ConsoleCommandSender) kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone-through-console"), placeholderValues));
         if (sender instanceof Player) {
             placeholderValues.put("kudos_player_name", sender.getName());
             kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone"), placeholderValues));
-            return true;
         }
-
-        return false;
+        playMilestoneSound(sender, targetPlayer);
+        return true;
     }
 
     private boolean sendRewards(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("kudo-award.milestones.rewards.enabled")) {
+        if (!addAwardItem(sender, targetPlayer)) return false;
+        performCommandRewards(targetPlayer);
+        return true;
+    }
+
+    private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
+        if (!config.getBoolean("kudo-award.milestones.rewards.award-item.enabled")) {
             return true;
         }
+
         Inventory inventory = targetPlayer.getInventory();
-        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.item"))).getMilestoneItemReward();
+        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.award-item.item"))).getMilestoneItemReward();
 
         if (!kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) {
             Map<String, String> placeholderValues = new HashMap<>();
@@ -70,10 +73,20 @@ public class KudosMilestone {
             return false;
         }
 
-        playMilestoneSound(sender, targetPlayer);
-
         inventory.addItem(awardItem);
         return true;
+    }
+
+    private void performCommandRewards(Player targetplayer) {
+        if (!config.getBoolean("kudo-award.milestones.rewards.command-rewards.enabled"))
+            return;
+
+        for (String commands : config.getStringList("kudo-award.milestones.rewards.command-rewards.commands")) {
+            Map<String, String> values = new HashMap<>();
+            values.put("kudos_player_name", targetplayer.getName());
+            String command = new KudosMessage(plugin).setPlaceholders(commands, values);
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
     }
 
     private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
@@ -81,5 +94,4 @@ public class KudosMilestone {
             return;
         kudosManager.playSound(sender, targetPlayer, config.getString("kudo-award.milestones.playsound-type"));
     }
-
 }

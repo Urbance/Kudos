@@ -47,9 +47,9 @@ public class ItemCreator {
     }
 
     public ItemStack getMilestoneItemReward() {
-        setDisplayName(config.getString("kudo-award.milestones.rewards.item-name"));
-        setAmount(config.getInt("kudo-award.milestones.rewards.amount"));
-        if (config.getBoolean("kudo-award.milestones.rewards.use-lore")) setLore(config.getStringList("kudo-award.milestones.rewards.item-lore"));
+        setDisplayName(config.getString("kudo-award.milestones.rewards.award-item.item-name"));
+        setAmount(config.getInt("kudo-award.milestones.rewards.award-item.amount"));
+        if (config.getBoolean("kudo-award.milestones.rewards.award-item.use-lore")) setLore(config.getStringList("kudo-award.milestones.rewards.award-item.item-lore"));
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }

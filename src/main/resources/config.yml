@@ -35,10 +35,15 @@ kudo-award:
     enable-playsound: true
     playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
     rewards:
-      enabled: true
-      use-lore: false
-      item: MILK_BUCKET
-      item-name: "&6Cold milk"
-      item-lore:
-        - "&7Suitable for cookies"
-      amount: 1
+      command-rewards:
+        enabled: false
+        commands:
+          - xp add %kudos_player_name% 10
+      award-item:
+        enabled: true
+        use-lore: false
+        item: MILK_BUCKET
+        item-name: "&6Cold milk"
+        item-lore:
+          - "&7Suitable for cookies"
+        amount: 1

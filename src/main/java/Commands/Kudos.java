@@ -82,7 +82,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
             if (targetPlayer == null) {
                 Map<String, String> values = new HashMap<>();
-                values.put("targetplayer", args[0]);
+                values.put("kudos_targetplayer_name", args[0]);
                 kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
                 return false;
             }
