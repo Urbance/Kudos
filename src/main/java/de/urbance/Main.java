@@ -35,8 +35,8 @@ public final class Main extends JavaPlugin implements Listener {
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
-        setupSQL();
         setupConfigs();
+        setupSQL();
         updateChecker();
         registerListenerAndCommands();
         setupMetrics();
