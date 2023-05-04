@@ -3,7 +3,9 @@ package Utils.SQL;
 import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,6 +13,7 @@ import java.sql.SQLException;
 public class SQL {
     private Connection connection;
     private FileConfiguration mysqlConfig = new FileManager("mysql.yml", Main.getPlugin(Main.class)).getConfig();
+    private JavaPlugin plugin = Main.getPlugin(Main.class);
     private String host = mysqlConfig.getString("hostname");
     private String port = mysqlConfig.getString("port");
     private String database = mysqlConfig.getString("database");
@@ -24,8 +27,17 @@ public class SQL {
 
     public void connect() throws  ClassNotFoundException, SQLException {
         if (!isConnected()) {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s&useSSL=%s", host, port, database, username, password, useSSL));
+            if (plugin.getConfig().getBoolean("general.use-SQL")) {
+                Class.forName("com.mysql.jdbc.Driver");
+                connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s&useSSL=%s", host, port, database, username, password, useSSL));
+            } else {
+                Class.forName("org.sqlite.JDBC");
+                String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
+                File dataFolder = new File(dataFolderPath);
+                if (!dataFolder.exists())
+                    dataFolder.mkdir();
+                connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
+            }
         }
     }
 

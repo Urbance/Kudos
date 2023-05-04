@@ -99,7 +99,6 @@ public class KudosManager {
     }
 
     public void performCommandRewards(AwardType awardType, Player targetPlayer) {
-        Bukkit.broadcastMessage("KudosManager performCommandRewards");
         switch (awardType) {
             case AWARD -> {
                 if (!config.getBoolean("kudo-award.rewards.command-rewards.enabled"))
