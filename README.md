@@ -17,13 +17,12 @@ Kudos is an open source plugin for Minecraft 1.19 Spigot Server. The plugin allo
 
 ## Features
 * PlaceholderAPI support
-* MySQL
+* MySQL support
 * Editable messages
 * Highly configurable
 * Rewards and Milestones
 
 ## Requirements
-* MySQL Database
 * Requires Java 17 or later
 * Spigot 1.19.X
 
