@@ -19,14 +19,13 @@ description: |
     <br>Zusätzlich wird ein GUI mitgeliefert, worin verschiedene Statistiken dargestellt werden können. 
 
     # Das bringt es mit
+    * MySQL Support
     * [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) Support
     * Hohe Anpassbarkeit 
-    * Meilensteine
-    * Item Awards 
+    * Rewards und Meilensteine
     * Stetig erweiternde [Wiki](https://github.com/Urbance/Kudos/wiki)
 
     # Voraussetzungen
-    * MySQL Datenbank
     * Java 17 oder neuer 
     * Spigot 1.19.X
 
