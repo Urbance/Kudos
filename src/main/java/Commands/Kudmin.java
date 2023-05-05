@@ -87,7 +87,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     private void reloadConfigs(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 1, 0, false, false, false))
             return;
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs!"));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs. A few changes will only take effect after a server restart!"));
 
         new FileManager("config.yml", plugin).reload();
         new FileManager("messages.yml", plugin).reload();

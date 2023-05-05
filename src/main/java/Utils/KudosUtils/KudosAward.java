@@ -2,7 +2,6 @@ package Utils.KudosUtils;
 
 import Utils.ItemCreator;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,9 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class KudosAward {
     private Main plugin;
@@ -70,20 +66,8 @@ public class KudosAward {
         if (!kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) return false;
 
         inventory.addItem(awardItem);
-        performCommandRewards(targetPlayer);
+        new KudosManager().performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
         return true;
-    }
-
-    public void performCommandRewards(Player targetplayer) {
-        if (!config.getBoolean("kudo-award.rewards.command-rewards.enabled"))
-            return;
-
-        for (String commands : config.getStringList("kudo-award.rewards.command-rewards.commands")) {
-            Map<String, String> values = new HashMap<>();
-            values.put("kudos_player_name", targetplayer.getName());
-            String command = new KudosMessage(plugin).setPlaceholders(commands, values);
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-        }
     }
 
     private void playNotificationSound(CommandSender sender, Player targetPlayer, String notificationMode) {

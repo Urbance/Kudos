@@ -35,11 +35,10 @@ public final class Main extends JavaPlugin implements Listener {
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
-        setupSQL();
         setupConfigs();
+        setupSQL();
         updateChecker();
         registerListenerAndCommands();
-        useSQL();
         setupMetrics();
     }
 
@@ -48,13 +47,6 @@ public final class Main extends JavaPlugin implements Listener {
         SQL.disconnect();
     }
 
-    public void useSQL() {
-        if (!config.getBoolean("general.use-SQL")) {
-            getLogger().warning("In the config.yml \"useSQL\" is set to false. Currently there is only the possibility to store data via MySQL. Value is set back to true.");
-            config.set("general.use-SQL", true);
-            saveConfig();
-        }
-    }
     public void registerListenerAndCommands() {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new OnPlayerJoin(), this);

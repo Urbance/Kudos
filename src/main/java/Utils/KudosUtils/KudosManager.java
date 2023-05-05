@@ -31,6 +31,11 @@ public class KudosManager {
         this.kudosMessage = new KudosMessage(plugin);
     }
 
+    public enum AwardType {
+        AWARD,
+        MILESTONE
+    }
+
     public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
             data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), 1);
@@ -91,6 +96,31 @@ public class KudosManager {
         Map<String, String> placeholderValues = new HashMap<>();
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
+    }
+
+    public void performCommandRewards(AwardType awardType, Player targetPlayer) {
+        switch (awardType) {
+            case AWARD -> {
+                if (!config.getBoolean("kudo-award.rewards.command-rewards.enabled"))
+                    return;
+                for (String commands : config.getStringList("kudo-award.rewards.command-rewards.commands")) {
+                    Map<String, String> values = new HashMap<>();
+                    values.put("kudos_player_name", targetPlayer.getName());
+                    String command = new KudosMessage(plugin).setPlaceholders(commands, values);
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
+            }
+            case MILESTONE -> {
+                if (!config.getBoolean("kudo-award.milestones.rewards.command-rewards.enabled"))
+                    return;
+                for (String commands : config.getStringList("kudo-award.milestones.rewards.command-rewards.commands")) {
+                    Map<String, String> values = new HashMap<>();
+                    values.put("kudos_player_name", targetPlayer.getName());
+                    String command = new KudosMessage(plugin).setPlaceholders(commands, values);
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
+            }
+        }
     }
 
 }

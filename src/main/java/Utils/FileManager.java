@@ -41,7 +41,6 @@ public class FileManager {
         switch (fileName) {
             case "config.yml" -> {
                 plugin.config = fileConfiguration;
-                plugin.useSQL();
                 plugin.prefix = fileConfiguration.getString("general.prefix");
             }
             case "messages.yml" -> plugin.localeConfig = fileConfiguration;

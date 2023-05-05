@@ -39,7 +39,7 @@ public class SQLGetter {
         try {
             UUID uuid = player.getUniqueId();
             if (!exists(uuid)) {
-                PreparedStatement preparedStatement2 = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO kudos (Name,UUID) VALUES (?,?)");
+                PreparedStatement preparedStatement2 = plugin.SQL.getConnection().prepareStatement("INSERT INTO kudos (Name,UUID) VALUES (?,?)");
                 preparedStatement2.setString(1, player.getName());
                 preparedStatement2.setString(2, uuid.toString());
                 preparedStatement2.executeUpdate();

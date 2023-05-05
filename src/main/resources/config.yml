@@ -2,7 +2,7 @@ general:
   update-notification: true
   prefix: "&7» &eKudos&7: "
   debug-mode: false
-  use-SQL: true
+  use-SQL: false
 kudo-award:
   cooldown: 900
   notification:

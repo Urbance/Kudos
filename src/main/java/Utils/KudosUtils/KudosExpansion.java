@@ -6,6 +6,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
+import java.util.UUID;
 
 public class KudosExpansion extends PlaceholderExpansion {
 
@@ -31,35 +32,36 @@ public class KudosExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String parameter) {
-        SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
-
         if (player == null)  {
             return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
         }
-        if (parameter.equals("player_name"))
-            return player.getName();
 
-        if (parameter.equals("player_kudos"))
-            return String.valueOf(data.getKudos(player.getUniqueId()));
+        SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
+        UUID playerUUID = player.getUniqueId();
 
-        if (parameter.equals("player_assigned_kudos"))
-            return String.valueOf(data.getAssignedKudo(player.getUniqueId()));
-
-        if (parameter.equals("top1_kudos")) {
-            List<String> topThree = data.getTopThreePlayers();
-            return topThree.get(0);
+        switch (parameter) {
+            case "player_name" -> {
+                return player.getName();
+            }
+            case "player_kudos" -> {
+                return String.valueOf(data.getKudos(playerUUID));
+            }
+            case "player_assigned_kudos" -> {
+                return String.valueOf(data.getAssignedKudo(playerUUID));
+            }
+            case "top1_kudos" -> {
+                List<String> topThree = data.getTopThreePlayers();
+                return topThree.get(0);
+            }
+            case "top2_kudos" -> {
+                List<String> topThree = data.getTopThreePlayers();
+                return topThree.get(1);
+            }
+            case "top3_kudos" -> {
+                List<String> topThree = data.getTopThreePlayers();
+                return topThree.get(2);
+            }
         }
-
-        if (parameter.equals("top2_kudos")) {
-            List<String> topThree = data.getTopThreePlayers();
-            return topThree.get(1);
-        }
-
-        if (parameter.equals("top3_kudos")) {
-            List<String> topThree = data.getTopThreePlayers();
-            return topThree.get(2);
-        }
-
         return null;
     }
 }

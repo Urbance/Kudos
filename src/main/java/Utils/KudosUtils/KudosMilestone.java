@@ -3,7 +3,6 @@ package Utils.KudosUtils;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -54,7 +53,7 @@ public class KudosMilestone {
 
     private boolean sendRewards(CommandSender sender, Player targetPlayer) {
         if (!addAwardItem(sender, targetPlayer)) return false;
-        performCommandRewards(targetPlayer);
+        new KudosManager().performCommandRewards(KudosManager.AwardType.MILESTONE, targetPlayer);
         return true;
     }
 
@@ -75,18 +74,6 @@ public class KudosMilestone {
 
         inventory.addItem(awardItem);
         return true;
-    }
-
-    private void performCommandRewards(Player targetplayer) {
-        if (!config.getBoolean("kudo-award.milestones.rewards.command-rewards.enabled"))
-            return;
-
-        for (String commands : config.getStringList("kudo-award.milestones.rewards.command-rewards.commands")) {
-            Map<String, String> values = new HashMap<>();
-            values.put("kudos_player_name", targetplayer.getName());
-            String command = new KudosMessage(plugin).setPlaceholders(commands, values);
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command);
-        }
     }
 
     private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
