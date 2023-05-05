@@ -10,9 +10,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
-/*
- * New util for all messages that belongs to Kudos.
- * It sets the plugin prefix, placeholders (later) and formatting codes are considered.
+/**
+ * Framework which handles messages from Kudos
  */
 public class KudosMessage {
     private String prefix;

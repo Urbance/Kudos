@@ -1,9 +1,7 @@
 package Utils.SQL;
 
-import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.Connection;
