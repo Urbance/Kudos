@@ -73,11 +73,9 @@ public final class Main extends JavaPlugin implements Listener {
             SQL.connect();
         } catch (ClassNotFoundException | SQLException e) {
             getLogger().info("Database not connected");
+            e.printStackTrace();
             this.isConnected = false;
-            if (config.getBoolean("general.debug-mode"))
-                e.printStackTrace();
         }
-
         if (SQL.isConnected()) {
             getLogger().info("Database is connected");
             data.createTable();
