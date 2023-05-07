@@ -104,7 +104,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean validatePlayerCooldown(CommandSender sender) {
-        if (playerCooldown == 0 && sender instanceof Player) {
+        if (playerCooldown > 0 && sender instanceof Player) {
             Map<String, String> placeholderValues = new HashMap<>();
             placeholderValues.put("kudos_cooldown", String.valueOf(playerCooldown));
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.must-wait-before-use-again"), placeholderValues));
