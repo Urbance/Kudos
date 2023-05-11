@@ -6,6 +6,7 @@ import Commands.Kudos;
 import Events.OnPlayerJoin;
 import Utils.KudosUtils.KudosExpansion;
 import Utils.*;
+import Utils.KudosUtils.KudosGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import org.bukkit.Bukkit;
@@ -53,7 +54,7 @@ public final class Main extends JavaPlugin implements Listener {
         if (!isConnected) {
             return;
         }
-        pluginManager.registerEvents(new GUI(), this);
+        pluginManager.registerEvents(new KudosGUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudos").setTabCompleter(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
