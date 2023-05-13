@@ -1,4 +1,4 @@
-package Utils;
+package Utils.KudosUtils;
 
 import Commands.Kudos;
 import Utils.SQL.SQLGetter;
@@ -19,44 +19,53 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
 
-public class GUI implements Listener {
-    private final Inventory inventory;
+public class KudosGUI implements Listener {
     public Main plugin = Main.getPlugin(Main.class);
     public FileConfiguration guiConfig;
     public SQLGetter data = new SQLGetter(plugin);
 
-    public GUI() {
+    public KudosGUI() {
         this.guiConfig = plugin.guiConfig;
-        inventory = createInventory();
-        setItems();
     }
 
-    public Inventory getInventory() {
+    public Inventory create(Player player) {
+        String inventoryTitle = guiConfig.getString("title");
+        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
+
+        ItemStack statisticsItem = createItem(
+                player,
+                Material.getMaterial(guiConfig.getString("slot.statistics.item")),
+                guiConfig.getString("slot.statistics.item-name"),
+                guiConfig.getStringList("slot.statistics.lore"));
+        ItemStack helpItem = createItem(
+                null,
+                Material.getMaterial(guiConfig.getString("slot.help.item")),
+                guiConfig.getString("slot.help.item-name"),
+                guiConfig.getStringList("slot.help.lore"));
+        ItemStack top3Item = createItem(
+                null,
+                Material.getMaterial(guiConfig.getString("slot.top3.item")),
+                guiConfig.getString("slot.top3.item-name"),
+                data.getTopThreePlayers());
+
+        inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem);
+        inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
+        inventory.setItem(guiConfig.getInt("slot.top3.item-slot"), top3Item);
+
         return inventory;
     }
 
-    private Inventory createInventory() {
-        String title = guiConfig.getString("title");
-        return Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', title));
-    }
-
-    private void setItems() {
-        inventory.setItem(2, createItem(Material.PLAYER_HEAD, guiConfig.getString("slot.statistics.item-name"), null));
-        inventory.setItem(4, createItem(Material.POPPY, guiConfig.getString("slot.help.item-name"), guiConfig.getStringList("slot.help.lore")));
-        inventory.setItem(6, createItem(Material.EMERALD, guiConfig.getString("slot.top3.item-name"), data.getTopThreePlayers()));
-    }
-
-    private ItemStack createItem(Material material, String displayName, List<String> lore) {
+    private ItemStack createItem(Player player, Material material, String displayName, List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
 
-        itemMeta.setLore(setLore(lore, null));
+        itemMeta.setLore(setLore(lore, player));
         item.setItemMeta(itemMeta);
         return item;
     }
 
-    public List<String> setLore(List<String> lore, Player player) {
+    private List<String> setLore(List<String> lore, Player player) {
         if (lore != null) {
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
@@ -67,6 +76,18 @@ public class GUI implements Listener {
             }
         }
         return lore;
+    }
+
+    private void updatePlayerHead(Inventory inventory, Player player) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
+            if (inventory.getItem(slot) == null) continue;
+            ItemStack itemStack = inventory.getItem(slot);
+            if (!(itemStack.getType() == Material.PLAYER_HEAD)) continue;
+
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
+            itemStack.setItemMeta(skullMeta);
+        }
     }
 
     @EventHandler
@@ -81,20 +102,11 @@ public class GUI implements Listener {
     public void onInventoryOpen(InventoryOpenEvent event) {
         Player player = (Player) event.getPlayer();
         Inventory inventory = Kudos.inventory;
-        data = new SQLGetter(plugin);
 
         if (!event.getInventory().equals(inventory))
             return;
 
-        ItemStack playerHead = inventory.getItem(2);
-        SkullMeta skullMeta = (SkullMeta) playerHead.getItemMeta();
-        FileConfiguration guiConfig = new FileManager("gui.yml", plugin).getConfig();
-        List<String> lore = guiConfig.getStringList("slot.statistics.lore");
-
-        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
-        skullMeta.setLore(setLore(lore, player));
-
-        playerHead.setItemMeta(skullMeta);
+        updatePlayerHead(inventory, player);
     }
 }
 

@@ -1,6 +1,6 @@
 package Commands;
 
-import Utils.GUI;
+import Utils.KudosUtils.KudosGUI;
 import Utils.KudosUtils.KudosManager;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
@@ -61,7 +61,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         }
 
         Player player = Bukkit.getPlayer(sender.getName());
-        inventory = new GUI().getInventory();
+        inventory = new KudosGUI().create(player);
         player.openInventory(inventory);
     }
 
