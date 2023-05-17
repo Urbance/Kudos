@@ -15,8 +15,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -257,44 +259,49 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-
+        ArrayList<String> commands = new ArrayList<>();
+        List<String> completions = new ArrayList<>();
         if (!sender.hasPermission("kudmin"))
-            return list;
+            return commands;
         if (args.length == 1) {
-            list.add("help");
-            list.add("add");
-            list.add("remove");
-            list.add("set");
-            list.add("clear");
-            list.add("clearall");
-            list.add("reload");
+            commands.add("help");
+            commands.add("add");
+            commands.add("remove");
+            commands.add("set");
+            commands.add("clear");
+            commands.add("clearall");
+            commands.add("reload");
+            StringUtil.copyPartialMatches(args[0], commands, completions);
         }
         if (args.length == 2) {
             switch (args[0]) {
                 case "add", "remove", "set", "clear" -> {
-                    list.add("kudos");
-                    list.add("assigned_kudos");
+                    commands.add("kudos");
+                    commands.add("assigned_kudos");
                 }
                 case "clearall" -> {
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        list.add(players.getName());
+                        commands.add(players.getName());
                     }
                 }
             }
+            StringUtil.copyPartialMatches(args[1], commands, completions);
         }
         if (args.length == 3) {
             switch (args[0]) {
                 case "add", "remove", "set", "clear":
                     for (Player players : Bukkit.getOnlinePlayers())
-                        list.add(players.getName());
+                        commands.add(players.getName());
             }
+            StringUtil.copyPartialMatches(args[2], commands, completions);
         }
         if (args.length == 4) {
             switch (args[0]) {
-                case "add", "remove", "set" -> list.add("amount");
+                case "add", "remove", "set" -> commands.add("amount");
             }
+            StringUtil.copyPartialMatches(args[3], commands, completions);
         }
-        return list;
+        Collections.sort(completions);
+        return completions;
     }
 }
