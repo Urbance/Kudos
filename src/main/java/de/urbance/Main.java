@@ -120,7 +120,19 @@ public final class Main extends JavaPlugin implements Listener {
             return;
         }
         new UpdateChecker(this, 106036).getVersion(version -> {
-            if (this.getDescription().getVersion().equals(version)) {
+            String pluginVersion = getDescription().getVersion();
+            int majorPluginVersion = Integer.parseInt(pluginVersion.substring(0, pluginVersion.indexOf('.')));
+            int majorPluginVersionOnSpigot = Integer.parseInt(version.substring(0, version.indexOf('.')));
+
+            if (majorPluginVersion <= 0) {
+                getLogger().info("An error occurred when checking a new update");
+                return;
+            }
+            if (majorPluginVersion < majorPluginVersionOnSpigot) {
+                getLogger().info("There is a new major version available. Please check the changelogs for breaking changes!");
+                return;
+            }
+            if (pluginVersion.equals(version)) {
                 getLogger().info("There is not a new update available.");
             } else {
                 getLogger().info("There is a new update available.");
