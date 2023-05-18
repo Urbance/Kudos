@@ -54,7 +54,7 @@ public class KudosNotification {
     private void sendPrivateMessageToTargetPlayer(CommandSender sender, Player targetPlayer) {
         Map<String, String> valuesTargetPlayer = new HashMap<>();
         valuesTargetPlayer.put("kudos_player_name", sender.getName());
-        valuesTargetPlayer.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
+        valuesTargetPlayer.put("kudos_player_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
         kudosMessage.send(targetPlayer, kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player"), valuesTargetPlayer));
     }
 
