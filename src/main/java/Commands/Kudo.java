@@ -116,17 +116,15 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        List<String> completions = new ArrayList<>();
-        List<String> commands = new ArrayList<>();
-        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*")))
-            return commands;
+        List<String> playerNameList = new ArrayList<>();
+        List<String> tabCompletions = new ArrayList<>();
+        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) return playerNameList;
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                commands.add(player.getName());
+                playerNameList.add(player.getName());
             }
-            StringUtil.copyPartialMatches(args[0], commands, completions);
+            StringUtil.copyPartialMatches(args[0], playerNameList, tabCompletions);
         }
-        Collections.sort(completions);
-        return completions;
+        return tabCompletions;
     }
 }
