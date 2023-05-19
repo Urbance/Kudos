@@ -15,8 +15,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -257,44 +259,43 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-
-        if (!sender.hasPermission("kudmin"))
-            return list;
+        ArrayList<String> commandArguments = new ArrayList<>();
+        List<String> tabCompletions = new ArrayList<>();
+        if (!sender.hasPermission("kudmin")) return commandArguments;
         if (args.length == 1) {
-            list.add("help");
-            list.add("add");
-            list.add("remove");
-            list.add("set");
-            list.add("clear");
-            list.add("clearall");
-            list.add("reload");
+            commandArguments.add("help");
+            commandArguments.add("add");
+            commandArguments.add("remove");
+            commandArguments.add("set");
+            commandArguments.add("clear");
+            commandArguments.add("clearall");
+            commandArguments.add("reload");
+            StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
         }
         if (args.length == 2) {
-            switch (args[0]) {
-                case "add", "remove", "set", "clear" -> {
-                    list.add("kudos");
-                    list.add("assigned_kudos");
-                }
-                case "clearall" -> {
-                    for (Player players : Bukkit.getOnlinePlayers()) {
-                        list.add(players.getName());
-                    }
+            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set") || args[0].equals("clear")) {
+                commandArguments.add("kudos");
+                commandArguments.add("assigned_kudos");
+            } else if (args[0].equals("clearall")) {
+                for (Player players : Bukkit.getOnlinePlayers()) {
+                    commandArguments.add(players.getName());
                 }
             }
+            StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
         }
         if (args.length == 3) {
-            switch (args[0]) {
-                case "add", "remove", "set", "clear":
-                    for (Player players : Bukkit.getOnlinePlayers())
-                        list.add(players.getName());
+            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set") || args[0].equals("clear")) {
+                for (Player players : Bukkit.getOnlinePlayers())
+                    commandArguments.add(players.getName());
             }
+            StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
         }
         if (args.length == 4) {
-            switch (args[0]) {
-                case "add", "remove", "set" -> list.add("amount");
+            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set")) {
+                commandArguments.add("amount");
             }
+            StringUtil.copyPartialMatches(args[3], commandArguments, tabCompletions);
         }
-        return list;
+        return tabCompletions;
     }
 }

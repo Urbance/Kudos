@@ -7,6 +7,7 @@ import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.StringUtil;
 
 import java.util.*;
 
@@ -115,14 +116,15 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*")))
-            return list;
+        List<String> playerNameList = new ArrayList<>();
+        List<String> tabCompletions = new ArrayList<>();
+        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) return playerNameList;
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                list.add(player.getName());
+                playerNameList.add(player.getName());
             }
+            StringUtil.copyPartialMatches(args[0], playerNameList, tabCompletions);
         }
-        return list;
+        return tabCompletions;
     }
 }

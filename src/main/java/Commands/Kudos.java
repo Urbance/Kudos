@@ -14,11 +14,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Kudos implements CommandExecutor, TabCompleter {
     public static Inventory inventory;
@@ -92,14 +90,15 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        ArrayList<String> list = new ArrayList<>();
-        if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*")))
-            return list;
+        List<String> playerNameList = new ArrayList<>();
+        List<String> tabCompletions = new ArrayList<>();
+        if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) return playerNameList;
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                list.add(player.getName());
+                playerNameList.add(player.getName());
             }
+            StringUtil.copyPartialMatches(args[0], playerNameList, tabCompletions);
         }
-        return list;
+        return tabCompletions;
     }
 }
