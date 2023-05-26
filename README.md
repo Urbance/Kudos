@@ -1,7 +1,7 @@
-# Kudos
-<p align="center">
+<h1 align="center">
   <img src="https://github.com/Urbance/Kudos/blob/main/logo.hereo-of-the-village.png" title="Logo-Hero-of-the-Village">
-</p>
+  <br>Kudos
+</h1>
 
 ## Introduction
 Kudos is an open source praise system. Players have the opportunity to praise each other.
