@@ -20,7 +20,7 @@ Which permissions are available? What does *insert feature* actually do? All the
 <br>Quicklinks: [Wiki](https://github.com/Urbance/Kudos/wiki) | [How To Start](https://github.com/Urbance/Kudos/wiki/How-To-Start) | [Commands and Permissions](https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions)
 
 ## Wanna try it out before installing?
-You can try Kudos on my dev server.
+You can try Kudos on my dev server:
 ~~~
 Dev Server Sponsored by Ember Host | Dedicated Resources | Ryzen 7950X3D | 99% uptime | NVMe SSD Storage
 IP: 213.239.215.108:25217
