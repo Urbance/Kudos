@@ -31,9 +31,3 @@ You can find instructions for installation and setup [here](https://github.com/U
 
 ## Commands and Permissions
 You can find all commands and permissions [here](https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions)!
-
-## FAQs
-***
-Q: I have Questions, Suggestions or Issues. How can I contact you?
-
-A: I am glad that you want to contact me. Join my [Discord Server](https://discord.gg/hDqPms3MbH) and open a ticket or write me a PM. 
