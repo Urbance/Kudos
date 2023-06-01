@@ -40,7 +40,7 @@ public class SQL {
         if (!isConnected()) {
             HikariDataSource dataSource = new HikariDataSource();
             if (config.getBoolean("general.use-SQL")) {
-                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s&useSSL=%s", host, port, database, useSSL));
+                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
                 dataSource.setUsername(username);
                 dataSource.setPassword(password);
                 dataSource.setDriverClassName("com.mysql.jdbc.Driver");
@@ -50,14 +50,13 @@ public class SQL {
                 dataSource.addDataSourceProperty("useServerPrepStmts", "true");
                 dataSource.addDataSourceProperty("keepaliveTime", "30000");
                 dataSource.addDataSourceProperty("maxLifetime", "1800000");
-                connection = dataSource.getConnection();
             } else {
                 String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
                 createDataFolder(dataFolderPath);
                 dataSource.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
                 dataSource.setDriverClassName("org.sqlite.JDBC");
-                connection = dataSource.getConnection();
             }
+            connection = dataSource.getConnection();
         }
     }
 
