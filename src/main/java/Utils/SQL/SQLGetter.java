@@ -8,16 +8,17 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 public class SQLGetter {
-
     private Main plugin;
-    public FileConfiguration guiConfig;
+    private FileConfiguration guiConfig;
 
     public SQLGetter(Main plugin) {
         this.plugin = plugin;
@@ -229,34 +230,24 @@ public class SQLGetter {
         try {
             PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3");
             ResultSet results = preparedStatement.executeQuery();
-            List<String> topThree = guiConfig.getStringList("slot.top3.lore");
+            List<String> topThreePlayersList = guiConfig.getStringList("slot.top3.lore");
 
             int counter = 0;
             while (results.next()) {
-                topThree.set(counter, topThree.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
-                topThree.set(counter, topThree.get(counter).replaceAll("%top_player%", results.getString("NAME")));
+                topThreePlayersList.set(counter, topThreePlayersList.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
+                topThreePlayersList.set(counter, topThreePlayersList.get(counter).replaceAll("%top_player%", results.getString("NAME")));
                 counter++;
             }
 
-            for (int i = 0; i < topThree.size(); i++) {
-                if (topThree.get(i).contains("%top_kudos%") || topThree.get(i).contains("%top_player%")) {
-                    topThree.set(i, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top3.not-assigned")));
+            for (int i = 0; i < topThreePlayersList.size(); i++) {
+                if (topThreePlayersList.get(i).contains("%top_kudos%") || topThreePlayersList.get(i).contains("%top_player%")) {
+                    topThreePlayersList.set(i, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top3.not-assigned")));
                 }
             }
-
-            return topThree;
+            return topThreePlayersList;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
-    }
-
-    public void keepAlive() {
-        try {
-            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT 1 FROM kudos");
-            preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        return Collections.emptyList();
     }
 }
