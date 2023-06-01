@@ -40,11 +40,16 @@ public class SQL {
         if (!isConnected()) {
             HikariDataSource dataSource = new HikariDataSource();
             if (config.getBoolean("general.use-SQL")) {
-                // useSSL not implemented
-                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, database));
+                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s&useSSL=%s", host, port, database, useSSL));
                 dataSource.setUsername(username);
                 dataSource.setPassword(password);
                 dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+                dataSource.addDataSourceProperty("prepStmtCacheSize", "250");
+                dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                dataSource.addDataSourceProperty("cachePrepStmts", "true");
+                dataSource.addDataSourceProperty("useServerPrepStmts", "true");
+                dataSource.addDataSourceProperty("keepaliveTime", "30000");
+                dataSource.addDataSourceProperty("maxLifetime", "1800000");
                 connection = dataSource.getConnection();
             } else {
                 String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));

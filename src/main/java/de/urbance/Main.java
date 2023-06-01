@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.sql.SQLException;
 
@@ -37,7 +36,11 @@ public final class Main extends JavaPlugin implements Listener {
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
         setupConfigs();
-        setupSQL();
+        try {
+            setupSQL();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         updateChecker();
         registerListenerAndCommands();
         setupMetrics();
@@ -66,7 +69,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void setupSQL(){
+    public void setupSQL() throws SQLException {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
