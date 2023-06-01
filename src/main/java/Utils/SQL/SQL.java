@@ -1,11 +1,11 @@
 package Utils.SQL;
 
+import com.zaxxer.hikari.HikariDataSource;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQL {
@@ -38,16 +38,20 @@ public class SQL {
 
     public void connect() throws  ClassNotFoundException, SQLException {
         if (!isConnected()) {
+            HikariDataSource dataSource = new HikariDataSource();
             if (config.getBoolean("general.use-SQL")) {
-                Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s&useSSL=%s", host, port, database, username, password, useSSL));
+                // useSSL not implemented
+                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", host, port, database));
+                dataSource.setUsername(username);
+                dataSource.setPassword(password);
+                dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+                connection = dataSource.getConnection();
             } else {
-                Class.forName("org.sqlite.JDBC");
                 String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
-                File dataFolder = new File(dataFolderPath);
-                if (!dataFolder.exists())
-                    dataFolder.mkdir();
-                connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
+                createDataFolder(dataFolderPath);
+                dataSource.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
+                dataSource.setDriverClassName("org.sqlite.JDBC");
+                connection = dataSource.getConnection();
             }
         }
     }
@@ -64,5 +68,11 @@ public class SQL {
 
     public Connection getConnection() {
         return connection;
+    }
+
+    private void createDataFolder(String dataFolderPath) {
+        File dataFolder = new File(dataFolderPath);
+        if (!dataFolder.exists())
+            dataFolder.mkdir();
     }
 }

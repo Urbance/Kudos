@@ -82,8 +82,6 @@ public final class Main extends JavaPlugin implements Listener {
             data.createTable();
             this.isConnected = true;
         }
-        if (isConnected)
-            keepAliveDatabaseConnection();
     }
 
     public void setupConfigs() {
@@ -138,15 +136,5 @@ public final class Main extends JavaPlugin implements Listener {
                 getLogger().info("There is a new update available.");
             }
         });
-    }
-
-    /*
-    Added on v1.7.3.
-    Fixed connection timeout from database temporarily.
-    It's planned to replace it with DataSources and HikariCP.
-     */
-    private void keepAliveDatabaseConnection() {
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, () -> data.keepAlive(), 0L, 1200);
     }
 }
