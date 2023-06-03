@@ -43,8 +43,6 @@ public class SQL {
             dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
             dataSource.addDataSourceProperty("cachePrepStmts", "true");
             dataSource.addDataSourceProperty("useServerPrepStmts", "true");
-            dataSource.addDataSourceProperty("keepaliveTime", "30000");
-            dataSource.addDataSourceProperty("maxLifetime", "1800000");
             if (config.getBoolean("general.use-SQL")) {
                 dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
                 dataSource.setUsername(username);
