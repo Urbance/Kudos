@@ -42,15 +42,15 @@ public class KudosGUI implements Listener {
                 Material.getMaterial(guiConfig.getString("slot.help.item")),
                 guiConfig.getString("slot.help.item-name"),
                 guiConfig.getStringList("slot.help.lore"));
-        ItemStack top3Item = createItem(
+        ItemStack topKudosPlayersItem = createItem(
                 null,
-                Material.getMaterial(guiConfig.getString("slot.top3.item")),
-                guiConfig.getString("slot.top3.item-name"),
-                data.getTopThreePlayers());
+                Material.getMaterial(guiConfig.getString("slot.top-kudos-players.item")),
+                guiConfig.getString("slot.top-kudos-players.item-name"),
+                data.getTopPlayersKudos());
 
         inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem);
         inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
-        inventory.setItem(guiConfig.getInt("slot.top3.item-slot"), top3Item);
+        inventory.setItem(guiConfig.getInt("slot.top-kudos-players.item-slot"), topKudosPlayersItem);
 
         return inventory;
     }

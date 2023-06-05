@@ -15,12 +15,10 @@ slot:
       - "&7/kudo [player] - Award a player a Kudo"
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the players Kudos"
-  top3:
+  top-kudos-players:
     item: EMERALD
     item-name: "&c&lTop3"
     item-slot: 6
-    lore:
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-      - "&e%top_kudos% &7%top_player%"
-    not-assigned: "&eNot assigned"
+    lore-format: "&e%top_kudos% &7%top_player%"
+    not-assigned-kudos: "&eNot assigned"
+    display-players: 3

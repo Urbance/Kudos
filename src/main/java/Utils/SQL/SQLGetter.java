@@ -12,9 +12,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public class SQLGetter {
     private Main plugin;
@@ -209,27 +211,59 @@ public class SQLGetter {
         }
     }
 
-    public List<String> getTopThreePlayers() {
+    public List<String> getTopPlayersKudos() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3")){
-            ResultSet results = preparedStatement.executeQuery();
-            List<String> topThreePlayersList = guiConfig.getStringList("slot.top3.lore");
-
+            int amountDisplayPlayers = guiConfig.getInt("slot.top-kudos-players.display-players");
+            if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT " + amountDisplayPlayers);
+            ResultSet results = preparedStatement.executeQuery();
+            List<String> itemLore = prepareTopPlayersKudosList(amountDisplayPlayers);
+
             while (results.next()) {
-                topThreePlayersList.set(counter, topThreePlayersList.get(counter).replaceAll("%top_kudos%", results.getString("KUDOS")));
-                topThreePlayersList.set(counter, topThreePlayersList.get(counter).replaceAll("%top_player%", results.getString("NAME")));
-                counter++;
+                String playerName = results.getString("NAME");
+                String kudos = results.getString("KUDOS");
+                String loreEntry = itemLore.get(counter);
+
+                loreEntry = loreEntry.replaceAll("%top_kudos%", kudos);
+                loreEntry = loreEntry.replaceAll("%top_player%", playerName);
+
+                itemLore.set(counter, loreEntry);
+                counter ++;
             }
 
-            for (int i = 0; i < topThreePlayersList.size(); i++) {
-                if (topThreePlayersList.get(i).contains("%top_kudos%") || topThreePlayersList.get(i).contains("%top_player%")) {
-                    topThreePlayersList.set(i, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top3.not-assigned")));
-                }
-            }
-            return topThreePlayersList;
+            return setNotAssignedKudosText(itemLore);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    public void keepAlive() {
+        try {
+            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT 1 FROM kudos");
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
+        List<String> list = new ArrayList<>();
+        String loreFormat = guiConfig.getString("slot.top-kudos-players.lore-format");
+
+        for (int entry = 0; entry < amountDisplayPlayers; entry++) {
+            list.add(loreFormat);
+        }
+        return list;
+    }
+
+    private List<String> setNotAssignedKudosText(List<String> lore) {
+        for (int entry = 0; entry < lore.size(); entry++) {
+            if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top-kudos-players.not-assigned-kudos")));
+            }
+        }
+        return lore;
     }
 }
