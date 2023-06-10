@@ -1,5 +1,6 @@
 package Utils.SQL;
 
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,7 +10,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class SQL {
-    private Connection connection;
+    private static HikariConfig hikariConfig = new HikariConfig();
+    private static HikariDataSource hikariDataSource;
     private FileConfiguration mysqlConfig;
     private FileConfiguration config;
     private Main plugin;
@@ -32,44 +34,31 @@ public class SQL {
         this.useSSL = mysqlConfig.getString("useSSL");
     }
 
-    public boolean isConnected() {
-        return (connection == null ? false : true);
-    }
-
-    public void connect() throws  ClassNotFoundException, SQLException {
-        if (!isConnected()) {
-            HikariDataSource dataSource = new HikariDataSource();
-            dataSource.addDataSourceProperty("prepStmtCacheSize", "250");
-            dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-            dataSource.addDataSourceProperty("cachePrepStmts", "true");
-            dataSource.addDataSourceProperty("useServerPrepStmts", "true");
-            if (config.getBoolean("general.use-SQL")) {
-                dataSource.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
-                dataSource.setUsername(username);
-                dataSource.setPassword(password);
-                dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-            } else {
-                String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
-                createDataFolder(dataFolderPath);
-                dataSource.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
-                dataSource.setDriverClassName("org.sqlite.JDBC");
-            }
-            connection = dataSource.getConnection();
+    public void connect() {
+//            hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+//            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+//            hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
+//            hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
+        if (config.getBoolean("general.use-SQL")) {
+            hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
+            hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
+            hikariConfig.setUsername(username);
+            hikariConfig.setPassword(password);
+        } else {
+            String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
+            createDataFolder(dataFolderPath);
+            hikariConfig.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
+            hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
+        hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
     public void disconnect() {
-        if (isConnected()) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+        hikariDataSource.close();
     }
 
-    public Connection getConnection() {
-        return connection;
+    public static Connection getConnection() throws SQLException {
+        return hikariDataSource.getConnection();
     }
 
     private void createDataFolder(String dataFolderPath) {

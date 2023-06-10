@@ -26,7 +26,7 @@ public class SQLGetter {
     }
 
     public void createTable() {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS kudos " +
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS kudos " +
                 "(UUID VARCHAR(100),Name VARCHAR(100),Kudos INT(100),Assigned INT(100),PRIMARY KEY (UUID))")) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -35,7 +35,7 @@ public class SQLGetter {
     }
 
     public void createPlayer(Player player) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("INSERT INTO kudos (Name,UUID,Kudos,Assigned) VALUES (?,?,?,?)")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (Name,UUID,Kudos,Assigned) VALUES (?,?,?,?)")) {
             UUID uuid = player.getUniqueId();
             if (!exists(uuid)) {
                 preparedStatement.setString(1, player.getName());
@@ -52,7 +52,7 @@ public class SQLGetter {
     }
 
     private void updateUsername(Player player, UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Name=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Name=? WHERE UUID=?")) {
             preparedStatement.setString(1, player.getName());
             preparedStatement.setString(2, String.valueOf(uuid));
             preparedStatement.executeUpdate();
@@ -62,7 +62,7 @@ public class SQLGetter {
     }
 
     public OfflinePlayer getPlayer(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT UUID FROM kudos WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID FROM kudos WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
             if (results.next()) {
@@ -75,7 +75,7 @@ public class SQLGetter {
     }
 
     public boolean exists(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT * FROM kudos WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM kudos WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
             if (results.next()) {
@@ -89,7 +89,7 @@ public class SQLGetter {
     }
 
     public void addKudos(UUID toPlayer, UUID fromPlayer, int kudos) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?");) {
             preparedStatement.setInt(1, (getKudos(toPlayer) + kudos));
             preparedStatement.setString(2, toPlayer.toString());
             preparedStatement.executeUpdate();
@@ -101,7 +101,7 @@ public class SQLGetter {
     }
 
     public void removeKudos(UUID uuid, int kudos) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (getKudos(uuid) - kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -111,7 +111,7 @@ public class SQLGetter {
     }
 
     public void setKudos(UUID uuid, int kudos) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -121,7 +121,7 @@ public class SQLGetter {
     }
 
     public void clearKudos(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
             preparedStatement.setInt(1, 0);
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -131,7 +131,7 @@ public class SQLGetter {
     }
 
     public int getKudos(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos from kudos WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Kudos from kudos WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
             int kudos = 0;
@@ -146,7 +146,7 @@ public class SQLGetter {
     }
 
     public void addAssignedKudos(UUID uuid, int assigned) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (getAssignedKudo(uuid) + assigned));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -156,7 +156,7 @@ public class SQLGetter {
     }
 
     public void removeAssignedKudos(UUID uuid, int kudos) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (getKudos(uuid) - kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -166,7 +166,7 @@ public class SQLGetter {
     }
 
     public void setAssignedKudos(UUID uuid, int kudos) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -176,7 +176,7 @@ public class SQLGetter {
     }
 
     public int getAssignedKudo(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Assigned from kudos WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Assigned from kudos WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
             int assigned = 0;
@@ -191,7 +191,7 @@ public class SQLGetter {
     }
 
     public void clearAssignedKudos(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
             preparedStatement.setInt(1, 0);
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
@@ -201,7 +201,7 @@ public class SQLGetter {
     }
 
     public void clearKudosAndAssignedKudos(UUID uuid) {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("UPDATE kudos SET Kudos=0, Assigned=0 WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=0, Assigned=0 WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -210,7 +210,7 @@ public class SQLGetter {
     }
 
     public List<String> getTopThreePlayers() {
-        try (PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3")){
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3")){
             ResultSet results = preparedStatement.executeQuery();
             List<String> topThreePlayersList = guiConfig.getStringList("slot.top3.lore");
 
