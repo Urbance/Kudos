@@ -24,7 +24,7 @@ You can try Kudos on my dev server:
 ~~~
 Dev Server Sponsored by Ember Host | Dedicated Resources | Ryzen 7950X3D | 99% uptime | NVMe SSD Storage
 IP: 213.239.215.108:25217
-Version: 1.19.3
+Version: 1.20.1
 ~~~
 
 ## Impressions
