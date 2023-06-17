@@ -27,7 +27,7 @@ kudo-award:
     command-rewards:
       enabled: false
       commands:
-        - xp add %kudos_player_name% 10
+        - effect give %kudos_player_name% minecraft:speed 600
   milestones:
     enabled: true
     span-between-kudos: 10
@@ -45,4 +45,4 @@ kudo-award:
       command-rewards:
         enabled: false
         commands:
-          - xp add %kudos_player_name% 10
+          - effect give %kudos_player_name% minecraft:health_boost 600
