@@ -24,6 +24,7 @@ kudo-award:
         - "&7- Wheat"
         - "&7- Cocoa Beans"
       amount: 1
+    xp: 0
     command-rewards:
       enabled: false
       commands:
@@ -42,6 +43,7 @@ kudo-award:
         item-lore:
           - "&7Suitable for cookies"
         amount: 1
+      xp: 50
       command-rewards:
         enabled: false
         commands:
