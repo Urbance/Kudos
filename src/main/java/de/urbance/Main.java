@@ -48,7 +48,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        SQL.disconnect();
+        Utils.SQL.SQL.disconnect();
     }
 
     public void registerListenerAndCommands() {
@@ -73,14 +73,18 @@ public final class Main extends JavaPlugin implements Listener {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
-        SQL.connect();
-        if (!SQL.getConnection().isClosed()) {
+        try {
+            SQL.connect();
+        }
+        catch (Exception e) {
+            this.isConnected = false;
+            getLogger().info("Database is not connected");
+            throw e;
+        }
+        if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
             data.createTable();
             this.isConnected = true;
-        } else {
-            getLogger().info("Database not connected");
-            this.isConnected = false;
         }
     }
 

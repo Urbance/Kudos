@@ -53,7 +53,7 @@ public class SQL {
         hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
-    public void disconnect() {
+    public static void disconnect() {
         hikariDataSource.close();
     }
 
