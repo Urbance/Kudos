@@ -1,15 +1,17 @@
 package Utils.SQL;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import de.urbance.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQL {
-    private Connection connection;
+    private static HikariConfig hikariConfig = new HikariConfig();
+    private static HikariDataSource hikariDataSource;
     private FileConfiguration mysqlConfig;
     private FileConfiguration config;
     private Main plugin;
@@ -32,37 +34,32 @@ public class SQL {
         this.useSSL = mysqlConfig.getString("useSSL");
     }
 
-    public boolean isConnected() {
-        return (connection == null ? false : true);
-    }
-
-    public void connect() throws  ClassNotFoundException, SQLException {
-        if (!isConnected()) {
-            if (config.getBoolean("general.use-SQL")) {
-                Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s?user=%s&password=%s&useSSL=%s", host, port, database, username, password, useSSL));
-            } else {
-                Class.forName("org.sqlite.JDBC");
-                String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
-                File dataFolder = new File(dataFolderPath);
-                if (!dataFolder.exists())
-                    dataFolder.mkdir();
-                connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
-            }
+    public void connect() {
+        if (config.getBoolean("general.use-SQL")) {
+            hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
+            hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
+            hikariConfig.setUsername(username);
+            hikariConfig.setPassword(password);
+        } else {
+            String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
+            createDataFolder(dataFolderPath);
+            hikariConfig.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
+            hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
+        hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
-    public void disconnect() {
-        if (isConnected()) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public static void disconnect() {
+        hikariDataSource.close();
     }
 
-    public Connection getConnection() {
-        return connection;
+    public static Connection getConnection() throws SQLException {
+        return hikariDataSource.getConnection();
+    }
+
+    private void createDataFolder(String dataFolderPath) {
+        File dataFolder = new File(dataFolderPath);
+        if (!dataFolder.exists())
+            dataFolder.mkdir();
     }
 }

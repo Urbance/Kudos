@@ -14,7 +14,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.sql.SQLException;
 
@@ -37,7 +36,11 @@ public final class Main extends JavaPlugin implements Listener {
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
         setupConfigs();
-        setupSQL();
+        try {
+            setupSQL();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         updateChecker();
         registerListenerAndCommands();
         setupMetrics();
@@ -45,7 +48,7 @@ public final class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        SQL.disconnect();
+        Utils.SQL.SQL.disconnect();
     }
 
     public void registerListenerAndCommands() {
@@ -66,24 +69,23 @@ public final class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void setupSQL(){
+    public void setupSQL() throws SQLException {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
         try {
             SQL.connect();
-        } catch (ClassNotFoundException | SQLException e) {
-            getLogger().info("Database not connected");
-            e.printStackTrace();
-            this.isConnected = false;
         }
-        if (SQL.isConnected()) {
+        catch (Exception e) {
+            this.isConnected = false;
+            getLogger().info("Database is not connected");
+            throw e;
+        }
+        if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
             data.createTable();
             this.isConnected = true;
         }
-        if (isConnected)
-            keepAliveDatabaseConnection();
     }
 
     public void setupConfigs() {
@@ -138,15 +140,5 @@ public final class Main extends JavaPlugin implements Listener {
                 getLogger().info("There is a new update available.");
             }
         });
-    }
-
-    /*
-    Added on v1.7.3.
-    Fixed connection timeout from database temporarily.
-    It's planned to replace it with DataSources and HikariCP.
-     */
-    private void keepAliveDatabaseConnection() {
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, () -> data.keepAlive(), 0L, 1200);
     }
 }

@@ -54,6 +54,7 @@ public class KudosMilestone {
     private boolean sendRewards(CommandSender sender, Player targetPlayer) {
         if (!addAwardItem(sender, targetPlayer)) return false;
         new KudosManager().performCommandRewards(KudosManager.AwardType.MILESTONE, targetPlayer);
+        targetPlayer.giveExp(config.getInt("kudo-award.milestones.rewards.xp"));
         return true;
     }
 
