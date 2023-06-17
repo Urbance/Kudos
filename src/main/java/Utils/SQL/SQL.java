@@ -35,10 +35,6 @@ public class SQL {
     }
 
     public void connect() {
-//            hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-//            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-//            hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-//            hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
         if (config.getBoolean("general.use-SQL")) {
             hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
             hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
