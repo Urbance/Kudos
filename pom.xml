@@ -41,6 +41,12 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.19.3] Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.zaxxer</pattern>
+                                    <shadedPattern>de.urbance.shaded.hikaricp</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
