@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 public class SQLGetter {
     private Main plugin;
@@ -80,10 +79,7 @@ public class SQLGetter {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM kudos WHERE UUID=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
-            if (results.next()) {
-                return true;
-            }
-            return false;
+            return results.next();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -216,7 +212,6 @@ public class SQLGetter {
             int amountDisplayPlayers = guiConfig.getInt("slot.top-kudos-players.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
-            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT " + amountDisplayPlayers);
             ResultSet results = preparedStatement.executeQuery();
             List<String> itemLore = prepareTopPlayersKudosList(amountDisplayPlayers);
 

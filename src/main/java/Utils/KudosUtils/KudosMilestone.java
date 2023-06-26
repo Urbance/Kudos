@@ -63,17 +63,17 @@ public class KudosMilestone {
             return true;
         }
 
-        Inventory inventory = targetPlayer.getInventory();
-        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.award-item.item"))).getMilestoneItemReward();
-
-        if (!kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) {
-            Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
-            return false;
-        }
-
-        inventory.addItem(awardItem);
+//        Inventory inventory = targetPlayer.getInventory();
+//        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.award-item.item"))).getMilestoneItemReward();
+//
+//        if (kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) {
+//            Map<String, String> placeholderValues = new HashMap<>();
+//            placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
+//            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
+//            return false;
+//        }
+//
+//        inventory.addItem(awardItem);
         return true;
     }
 

@@ -12,9 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.awt.*;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class KudosManager {
     private Main plugin;
@@ -88,8 +88,17 @@ public class KudosManager {
         return false;
     }
 
-    public boolean itemCanBeAddedToInventory(ItemStack itemStack, Inventory inventory) {
-        return inventory.firstEmpty() != -1 || inventory.addItem(itemStack).isEmpty();
+    public boolean itemCanBeAddedToInventory(ArrayList<ItemStack> itemStacks, Inventory inventory) {
+        for (ItemStack itemStack : itemStacks) {
+            for (int slot = 0; slot < inventory.getSize(); slot++) {
+                ItemStack itemStackInventory = inventory.getItem(slot);
+                if (inventory.firstEmpty() != -1) continue;
+                if (itemStack.equals(itemStackInventory) && (itemStack.getAmount() + itemStackInventory.getAmount()) > itemStackInventory.getMaxStackSize()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {

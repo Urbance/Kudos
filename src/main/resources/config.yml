@@ -14,17 +14,25 @@ kudo-award:
     cooldown: 86400
     max-kudos-to-receive: 5
   rewards:
-    award-item:
-      enabled: true
-      use-lore: false
-      item: COOKIE
-      item-name: "&6Hot Baked Cookie"
-      item-lore:
-        - "&7Ingredients:"
-        - "&7- Wheat"
-        - "&7- Cocoa Beans"
-      amount: 1
-    xp: 0
+    items:
+      item-1:
+        material: COOKIE
+        enabled: true
+        use-lore: false
+        item-name: "&6Hot Baked Cookie"
+        item-lore:
+          - "&7Ingredients:"
+          - "&7- Wheat"
+          - "&7- Cocoa Beans"
+        amount: 1
+      item-2:
+        material: MILK_BUCKET
+        enabled: false
+        use-lore: false
+        item-name: "&6Cold milk"
+        item-lore:
+          - "&7Suitable for cookies"
+        amount: 1
     command-rewards:
       enabled: false
       commands:
@@ -38,10 +46,10 @@ kudo-award:
       award-item:
         enabled: true
         use-lore: false
-        item: MILK_BUCKET
-        item-name: "&6Cold milk"
+        item: PUMPKIN_PIE
+        item-name: "&6Sweet pumpkin cake"
         item-lore:
-          - "&7Suitable for cookies"
+          - "Like at grandma's"
         amount: 1
       xp: 50
       command-rewards:

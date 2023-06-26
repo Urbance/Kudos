@@ -42,7 +42,6 @@ public final class Main extends JavaPlugin implements Listener {
             throw new RuntimeException(e);
         }
         checkNewUpdateAndCurrentVersion();
-        updateChecker();
         registerListenerAndCommands();
         setupMetrics();
     }
@@ -122,9 +121,7 @@ public final class Main extends JavaPlugin implements Listener {
         String pluginVersion = getDescription().getVersion();
         if (pluginVersion.contains("PRE")) getLogger().info("You're using a 'PRE' version. Please notice that bugs can occur!");
 
-        if (!config.getBoolean("general.update-notification")){
-            return;
-        }
+        if (!config.getBoolean("general.update-notification")) return;
         new UpdateChecker(this, 106036).getVersion(version -> {
             int majorPluginVersion = Integer.parseInt(pluginVersion.substring(0, pluginVersion.indexOf('.')));
             int majorPluginVersionOnSpigot = Integer.parseInt(version.substring(0, version.indexOf('.')));
