@@ -32,26 +32,30 @@ public class KudosGUI implements Listener {
         String inventoryTitle = guiConfig.getString("title");
         Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
 
-        ItemStack statisticsItem = createItem(
-                player,
-                Material.getMaterial(guiConfig.getString("slot.statistics.item")),
-                guiConfig.getString("slot.statistics.item-name"),
-                guiConfig.getStringList("slot.statistics.lore"));
-        ItemStack helpItem = createItem(
-                null,
-                Material.getMaterial(guiConfig.getString("slot.help.item")),
-                guiConfig.getString("slot.help.item-name"),
-                guiConfig.getStringList("slot.help.lore"));
-        ItemStack top3Item = createItem(
-                null,
-                Material.getMaterial(guiConfig.getString("slot.top3.item")),
-                guiConfig.getString("slot.top3.item-name"),
-                data.getTopThreePlayers());
-
-        inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem);
-        inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
-        inventory.setItem(guiConfig.getInt("slot.top3.item-slot"), top3Item);
-
+        if (guiConfig.getBoolean("slot.statistics.enabled")) {
+            ItemStack statisticsItem = createItem(
+                    player,
+                    Material.getMaterial(guiConfig.getString("slot.statistics.item")),
+                    guiConfig.getString("slot.statistics.item-name"),
+                    guiConfig.getStringList("slot.statistics.lore"));
+            inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem);
+        }
+        if (guiConfig.getBoolean("slot.help.enabled")) {
+            ItemStack helpItem = createItem(
+                    null,
+                    Material.getMaterial(guiConfig.getString("slot.help.item")),
+                    guiConfig.getString("slot.help.item-name"),
+                    guiConfig.getStringList("slot.help.lore"));
+            inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
+        }
+        if (guiConfig.getBoolean("slot.top3.enabled")) {
+            ItemStack topKudosPlayersItem = createItem(
+                    null,
+                    Material.getMaterial(guiConfig.getString("slot.top3.item")),
+                    guiConfig.getString("slot.top3.item-name"),
+                    data.getTopThreePlayers());
+            inventory.setItem(guiConfig.getInt("slot.top3.item-slot"), topKudosPlayersItem);
+        }
         return inventory;
     }
 

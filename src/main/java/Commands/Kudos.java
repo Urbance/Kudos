@@ -57,7 +57,11 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission(sender);
             return;
         }
-
+        FileConfiguration guiConfig = plugin.guiConfig;
+        if (!guiConfig.getBoolean("enabled")) {
+            kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
+            return;
+        }
         Player player = Bukkit.getPlayer(sender.getName());
         inventory = new KudosGUI().create(player);
         player.openInventory(inventory);

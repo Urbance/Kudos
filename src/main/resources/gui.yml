@@ -1,6 +1,8 @@
+enabled: true
 title: "&rKudos"
 slot:
   statistics:
+    enabled: true
     item: PLAYER_HEAD
     item-name: "&2&lStatistics"
     item-slot: 2
@@ -8,6 +10,7 @@ slot:
       - "&7&e%kudos_player_kudos% &7Kudos received"
       - "&7&e%kudos_player_assigned_kudos% &7Kudos assigned"
   help:
+    enabled: true
     item: POPPY
     item-name: "&e&lHelp"
     item-slot: 4
@@ -16,6 +19,7 @@ slot:
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the players Kudos"
   top3:
+    enabled: true
     item: EMERALD
     item-name: "&c&lTop3"
     item-slot: 6
