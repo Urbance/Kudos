@@ -64,7 +64,7 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("kudo").setTabCompleter(new Kudo());
         getCommand("kudmin").setExecutor(new Kudmin());
         getCommand("kudmin").setTabCompleter(new Kudmin());
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new KudosExpansion().register();
         }
     }
@@ -76,10 +76,10 @@ public final class Main extends JavaPlugin implements Listener {
         try {
             SQL.connect();
         }
-        catch (Exception e) {
+        catch (Exception exception) {
             this.isConnected = false;
             getLogger().info("Database is not connected");
-            throw e;
+            throw exception;
         }
         if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
