@@ -48,13 +48,13 @@ public class KudosGUI implements Listener {
                     guiConfig.getStringList("slot.help.lore"));
             inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
         }
-        if (guiConfig.getBoolean("slot.top-kudos-players.enabled")) {
+        if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
             ItemStack topKudosPlayersItem = createItem(
                     null,
-                    Material.getMaterial(guiConfig.getString("slot.top-kudos-players.item")),
-                    guiConfig.getString("slot.top-kudos-players.item-name"),
+                    Material.getMaterial(guiConfig.getString("slot.kudos-leaderboard.item")),
+                    guiConfig.getString("slot.kudos-leaderboard.item-name"),
                     data.getTopPlayersKudos());
-            inventory.setItem(guiConfig.getInt("slot.top-kudos-players.item-slot"), topKudosPlayersItem);
+            inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), topKudosPlayersItem);
         }
         return inventory;
     }

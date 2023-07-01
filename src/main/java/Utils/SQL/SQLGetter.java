@@ -209,7 +209,7 @@ public class SQLGetter {
 
     public List<String> getTopPlayersKudos() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Kudos, Name FROM kudos ORDER BY Kudos DESC LIMIT 3")){
-            int amountDisplayPlayers = guiConfig.getInt("slot.top-kudos-players.display-players");
+            int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
             ResultSet results = preparedStatement.executeQuery();
@@ -236,7 +236,7 @@ public class SQLGetter {
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
-        String loreFormat = guiConfig.getString("slot.top-kudos-players.lore-format");
+        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.lore-format");
 
         for (int entry = 0; entry < amountDisplayPlayers; entry++) {
             list.add(loreFormat);
@@ -247,7 +247,7 @@ public class SQLGetter {
     private List<String> setNotAssignedKudosText(List<String> lore) {
         for (int entry = 0; entry < lore.size(); entry++) {
             if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.top-kudos-players.not-assigned-kudos")));
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos")));
             }
         }
         return lore;
