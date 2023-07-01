@@ -21,7 +21,7 @@ slot:
   kudos-leaderboard:
     enabled: true
     item: EMERALD
-    item-name: "&c&lTop3"
+    item-name: "&c&lLeaderboard"
     item-slot: 6
     lore-format: "&e%top_kudos% &7%top_player%"
     not-assigned-kudos: "&eNot assigned"
