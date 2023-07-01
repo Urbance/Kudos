@@ -4,6 +4,7 @@ import Utils.ItemCreator;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.hover.content.Item;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,7 +60,6 @@ public class KudosAward {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        // if (!config.getBoolean("kudo-award.rewards.award-item.enabled")) return true;
         if (!addAwardItemAndPerformRewards(targetPlayer)) {
             kudosManager.sendInventoryIsFullMessage(sender, targetPlayer);
             return false;
@@ -69,17 +69,14 @@ public class KudosAward {
 
     private boolean addAwardItemAndPerformRewards(Player targetPlayer) {
         Inventory inventory = targetPlayer.getInventory();
-
-        // if (!kudosManager.itemCanBeAddedToInventory(itemStacks, inventory)) return false;
-
-        if (!addRewardItems(inventory, targetPlayer)) return false;
+        if (!addRewardItems(inventory)) return false;
 
         new KudosManager().performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.rewards.xp"));
         return true;
     }
 
-    private boolean addRewardItems(Inventory inventory, Player targetPlayer) {
+    private boolean addRewardItems(Inventory inventory) {
         ArrayList<ItemStack> itemStackList = getItemRewards();
         if (!kudosManager.itemCanBeAddedToInventory(itemStackList, inventory)) return false;
         for (ItemStack itemStack : itemStackList) {
@@ -99,14 +96,12 @@ public class KudosAward {
         String configItemRewardsPath = "kudo-award.rewards.items";
         for (String itemKey : config.getConfigurationSection(configItemRewardsPath).getKeys(false)) {
             String configItemRewardsPathKey = configItemRewardsPath + "." + itemKey;
-            Material material = Material.getMaterial(config.getString(configItemRewardsPathKey + ".material"));
-            ItemStack itemStack = new ItemStack(material);
-            ItemMeta itemMeta = itemStack.getItemMeta();
-            itemStack.setAmount(config.getInt(configItemRewardsPathKey + ".amount"));
-            itemMeta.setDisplayName(config.getString(configItemRewardsPathKey + ".item-name"));
-//            if (config.getBoolean("kudo-award.rewards.award-item.use-lore")) itemMeta.setLore(config.getStringList("kudo-award.rewards.award-item.item-lore"));
-            itemStack.setItemMeta(itemMeta);
-            itemStacks.add(itemStack);
+            if (!config.getBoolean(configItemRewardsPathKey + ".enabled")) continue;
+            ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString(configItemRewardsPathKey + ".material")));
+            itemCreator.setDisplayName(config.getString(configItemRewardsPathKey + ".item-name"));
+            itemCreator.setAmount(config.getInt(configItemRewardsPathKey + ".amount"));
+            if (config.getBoolean(configItemRewardsPathKey + ".use-lore")) itemCreator.setLore(config.getStringList(configItemRewardsPathKey + ".item-lore"));
+            itemStacks.add(itemCreator.get());
         }
         return itemStacks;
     }

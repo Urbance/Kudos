@@ -16,8 +16,8 @@ kudo-award:
   rewards:
     items:
       item-1:
-        material: COOKIE
         enabled: true
+        material: COOKIE
         use-lore: false
         item-name: "&6Hot Baked Cookie"
         item-lore:
@@ -26,8 +26,8 @@ kudo-award:
           - "&7- Cocoa Beans"
         amount: 1
       item-2:
-        material: MILK_BUCKET
         enabled: false
+        material: MILK_BUCKET
         use-lore: false
         item-name: "&6Cold milk"
         item-lore:
