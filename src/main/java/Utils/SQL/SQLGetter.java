@@ -234,15 +234,6 @@ public class SQLGetter {
         return Collections.emptyList();
     }
 
-    public void keepAlive() {
-        try {
-            PreparedStatement preparedStatement = plugin.SQL.getConnection().prepareStatement("SELECT 1 FROM kudos");
-            preparedStatement.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
         String loreFormat = guiConfig.getString("slot.top-kudos-players.lore-format");
