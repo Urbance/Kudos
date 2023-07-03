@@ -2,22 +2,15 @@ package Utils.KudosUtils;
 
 import Utils.ItemCreator;
 import de.urbance.Main;
-import net.md_5.bungee.api.chat.hover.content.Item;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class KudosAward {
     private Main plugin;
