@@ -1,5 +1,6 @@
-title: "&rKudos"
-enabled: true
+general:
+  title: "&rKudos"
+  enabled: true
 slot:
   statistics:
     enabled: true

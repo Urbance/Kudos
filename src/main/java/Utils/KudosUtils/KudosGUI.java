@@ -29,7 +29,7 @@ public class KudosGUI implements Listener {
     }
 
     public Inventory create(Player player) {
-        String inventoryTitle = guiConfig.getString("title");
+        String inventoryTitle = guiConfig.getString("general.title");
         Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
