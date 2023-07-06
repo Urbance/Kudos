@@ -53,23 +53,23 @@ public class KudosAward {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!addAwardItemAndPerformRewards(targetPlayer)) {
+        if (!performItemRewardsAndPerformRewards(targetPlayer)) {
             kudosManager.sendInventoryIsFullMessage(sender, targetPlayer);
             return false;
         }
         return true;
     }
 
-    private boolean addAwardItemAndPerformRewards(Player targetPlayer) {
+    private boolean performItemRewardsAndPerformRewards(Player targetPlayer) {
         Inventory inventory = targetPlayer.getInventory();
-        if (!addRewardItems(inventory)) return false;
+        if (!addItemRewards(inventory)) return false;
 
         new KudosManager().performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.rewards.xp"));
         return true;
     }
 
-    private boolean addRewardItems(Inventory inventory) {
+    private boolean addItemRewards(Inventory inventory) {
         ArrayList<ItemStack> itemStackList = getItemRewards();
         if (!kudosManager.itemCanBeAddedToInventory(itemStackList, inventory)) return false;
         for (ItemStack itemStack : itemStackList) {

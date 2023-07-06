@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class KudosManager {
@@ -88,17 +89,18 @@ public class KudosManager {
         return false;
     }
 
-    public boolean itemCanBeAddedToInventory(ArrayList<ItemStack> itemStacks, Inventory inventory) {
-        for (ItemStack itemStack : itemStacks) {
-            for (int slot = 0; slot < inventory.getSize(); slot++) {
-                ItemStack itemStackInventory = inventory.getItem(slot);
-                if (inventory.firstEmpty() != -1) continue;
-                if (itemStack.equals(itemStackInventory) && (itemStack.getAmount() + itemStackInventory.getAmount()) > itemStackInventory.getMaxStackSize()) {
-                    return false;
-                }
+    public boolean itemCanBeAddedToInventory(ArrayList<ItemStack> itemsThatShouldBeAdded, Inventory inventory) {
+        ArrayList<ItemStack> itemsThatCanBeAdded = new ArrayList<>();
+        for (ItemStack itemStack : itemsThatShouldBeAdded) {
+            if (inventory.addItem(itemStack).isEmpty()) {
+                itemsThatCanBeAdded.add(itemStack);
             }
         }
-        return true;
+        if (itemsThatCanBeAdded.size() == itemsThatShouldBeAdded.size()) return true;
+        for (ItemStack addedItems : itemsThatCanBeAdded) {
+            inventory.removeItem(addedItems);
+        }
+        return false;
     }
 
     public void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
