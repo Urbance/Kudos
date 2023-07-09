@@ -33,6 +33,7 @@ kudo-award:
         item-lore:
           - "&7Suitable for cookies"
         amount: 1
+    xp: 0
     command-rewards:
       enabled: false
       commands:
