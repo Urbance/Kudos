@@ -17,7 +17,7 @@ Kudos is an open source praise system. Players have the opportunity to praise ea
 ## Wiki & Support
 Which permissions are available? What does *insert feature* actually do? All these questions are answered in the Kudos Wiki. 
 <br>If you still don't know what to do or have found a bug, feel free to contact me.
-<br>Quicklinks: [Wiki](https://urbance.gitbook.io/kudos-v3-wiki/) | [Installation & Setup](https://urbance.gitbook.io/kudos-v3-wiki/getting-started/installation-and-setup) | [Commands and Permissions](https://urbance.gitbook.io/kudos-v3-wiki/getting-started/permissions-and-commands)
+<br>Quicklinks: [Wiki](https://urbance.gitbook.io/kudos-v4-wiki/getting-started/home) | [Installation & Setup](https://urbance.gitbook.io/kudos-v3-wiki/getting-started/installation-and-setup) | [Commands and Permissions](https://urbance.gitbook.io/kudos-v3-wiki/getting-started/permissions-and-commands)
 
 ## Wanna try it out before installing?
 You can try Kudos on my dev server:
