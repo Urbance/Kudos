@@ -29,7 +29,7 @@ public class KudosGUI implements Listener {
     }
 
     public Inventory create(Player player) {
-        String inventoryTitle = guiConfig.getString("title");
+        String inventoryTitle = guiConfig.getString("general.title");
         Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
@@ -48,13 +48,13 @@ public class KudosGUI implements Listener {
                     guiConfig.getStringList("slot.help.lore"));
             inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
         }
-        if (guiConfig.getBoolean("slot.top3.enabled")) {
+        if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
             ItemStack topKudosPlayersItem = createItem(
                     null,
-                    Material.getMaterial(guiConfig.getString("slot.top3.item")),
-                    guiConfig.getString("slot.top3.item-name"),
-                    data.getTopThreePlayers());
-            inventory.setItem(guiConfig.getInt("slot.top3.item-slot"), topKudosPlayersItem);
+                    Material.getMaterial(guiConfig.getString("slot.kudos-leaderboard.item")),
+                    guiConfig.getString("slot.kudos-leaderboard.item-name"),
+                    data.getTopPlayersKudos());
+            inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), topKudosPlayersItem);
         }
         return inventory;
     }

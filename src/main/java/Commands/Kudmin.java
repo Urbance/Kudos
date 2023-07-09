@@ -18,7 +18,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         this.data = new SQLGetter(plugin);
         FileConfiguration locale = new FileManager("messages.yml", plugin).getConfig();
 
-        if (!sender.hasPermission("kudmin")) {
+        if (!sender.hasPermission("kudos.kudmin.*")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
@@ -261,7 +260,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
-        if (!sender.hasPermission("kudmin")) return commandArguments;
+        if (!sender.hasPermission("kudos.kudmin.*")) return commandArguments;
         if (args.length == 1) {
             commandArguments.add("help");
             commandArguments.add("add");

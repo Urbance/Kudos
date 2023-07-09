@@ -3,6 +3,7 @@ package Utils.KudosUtils;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
@@ -36,8 +37,11 @@ public class KudosExpansion extends PlaceholderExpansion {
             return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
         }
 
-        SQLGetter data = new SQLGetter(Main.getPlugin(Main.class));
+        Main plugin = Main.getPlugin(Main.class);
+        SQLGetter data = new SQLGetter(plugin);
         UUID playerUUID = player.getUniqueId();
+        String notAssignedKudos = plugin.guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos");
+        List<String> topPlayerKudos = data.getTopPlayersKudos();
 
         switch (parameter) {
             case "player_name" -> {
@@ -50,16 +54,19 @@ public class KudosExpansion extends PlaceholderExpansion {
                 return String.valueOf(data.getAssignedKudo(playerUUID));
             }
             case "top1_kudos" -> {
-                List<String> topThree = data.getTopThreePlayers();
-                return topThree.get(0);
+                if (topPlayerKudos.isEmpty())
+                    return notAssignedKudos;
+                return topPlayerKudos.get(0);
             }
             case "top2_kudos" -> {
-                List<String> topThree = data.getTopThreePlayers();
-                return topThree.get(1);
+                if (topPlayerKudos.size() < 2)
+                    return notAssignedKudos;
+                return topPlayerKudos.get(1);
             }
             case "top3_kudos" -> {
-                List<String> topThree = data.getTopThreePlayers();
-                return topThree.get(2);
+                if (topPlayerKudos.size() < 3)
+                    return notAssignedKudos;
+                return topPlayerKudos.get(2);
             }
         }
         return null;
