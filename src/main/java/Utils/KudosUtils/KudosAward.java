@@ -1,16 +1,10 @@
 package Utils.KudosUtils;
 
-import Utils.ItemCreator;
 import de.urbance.Main;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.ArrayList;
 
 public class KudosAward {
     private Main plugin;
@@ -53,28 +47,10 @@ public class KudosAward {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!performItemRewardsAndPerformRewards(targetPlayer)) {
-            kudosManager.sendInventoryIsFullMessage(sender, targetPlayer);
-            return false;
-        }
-        return true;
-    }
+        if (!kudosManager.addItemRewards(sender, targetPlayer, "kudo-award.rewards.items")) return false;
 
-    private boolean performItemRewardsAndPerformRewards(Player targetPlayer) {
-        Inventory inventory = targetPlayer.getInventory();
-        if (!addItemRewards(inventory)) return false;
-
-        new KudosManager().performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
+        kudosManager.performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.rewards.xp"));
-        return true;
-    }
-
-    private boolean addItemRewards(Inventory inventory) {
-        ArrayList<ItemStack> itemStackList = getItemRewards();
-        if (!kudosManager.itemCanBeAddedToInventory(itemStackList, inventory)) return false;
-        for (ItemStack itemStack : itemStackList) {
-            inventory.addItem(itemStack);
-        }
         return true;
     }
 
@@ -82,20 +58,5 @@ public class KudosAward {
         if (!config.getBoolean("kudo-award.notification.enable-playsound")) return;
         if (notificationMode.equals("private") || notificationMode.equals("broadcast"))
             kudosManager.playSound(sender, targetPlayer, config.getString("kudo-award.notification.playsound-type"));
-    }
-
-    private ArrayList<ItemStack> getItemRewards() {
-        ArrayList<ItemStack> itemStacks = new ArrayList<>();
-        String configItemRewardsPath = "kudo-award.rewards.items";
-        for (String itemKey : config.getConfigurationSection(configItemRewardsPath).getKeys(false)) {
-            String configItemRewardsPathKey = configItemRewardsPath + "." + itemKey;
-            if (!config.getBoolean(configItemRewardsPathKey + ".enabled")) continue;
-            ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString(configItemRewardsPathKey + ".material")));
-            itemCreator.setDisplayName(config.getString(configItemRewardsPathKey + ".item-name"));
-            itemCreator.setAmount(config.getInt(configItemRewardsPathKey + ".amount"));
-            if (config.getBoolean(configItemRewardsPathKey + ".use-lore")) itemCreator.setLore(config.getStringList(configItemRewardsPathKey + ".item-lore"));
-            itemStacks.add(itemCreator.get());
-        }
-        return itemStacks;
     }
 }
