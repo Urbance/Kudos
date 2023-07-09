@@ -1,21 +1,23 @@
 package Utils.KudosUtils;
 
+import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.awt.*;
 import java.util.*;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class KudosManager {
     private Main plugin;
@@ -89,18 +91,26 @@ public class KudosManager {
         return false;
     }
 
-    public boolean itemCanBeAddedToInventory(ArrayList<ItemStack> itemsThatShouldBeAdded, Inventory inventory) {
+    public boolean itemCanBeAddedToInventory(ArrayList<ItemStack> itemsThatShouldBeAdded, Player targetplayer) {
         ArrayList<ItemStack> itemsThatCanBeAdded = new ArrayList<>();
+        Inventory targetplayerInventory = targetplayer.getInventory();
+        Inventory dummyInventory = Bukkit.createInventory(null, 36);
+        targetplayer.updateInventory();
+
+        // fill dummy inventory
+        for (int slot = 0; slot < 36; slot++) {
+            ItemStack itemStack = targetplayerInventory.getItem(slot);
+            if (itemStack != null) dummyInventory.setItem(slot, targetplayerInventory.getItem(slot));
+        }
+
+        // fill list with item rewards that can be added
         for (ItemStack itemStack : itemsThatShouldBeAdded) {
-            if (inventory.addItem(itemStack).isEmpty()) {
+            if (dummyInventory.addItem(itemStack).isEmpty()) {
                 itemsThatCanBeAdded.add(itemStack);
             }
         }
-        if (itemsThatCanBeAdded.size() == itemsThatShouldBeAdded.size()) return true;
-        for (ItemStack addedItems : itemsThatCanBeAdded) {
-            inventory.removeItem(addedItems);
-        }
-        return false;
+
+        return itemsThatCanBeAdded.size() == itemsThatShouldBeAdded.size();
     }
 
     public void sendInventoryIsFullMessage(CommandSender sender, Player targetPlayer) {
@@ -134,4 +144,33 @@ public class KudosManager {
         }
     }
 
+    public boolean addItemRewards(CommandSender sender, Player targetplayer, String configItemRewardsListPath) {
+        Inventory targetplayerInventory = targetplayer.getInventory();
+        ArrayList<ItemStack> itemStackList = getItemRewards(configItemRewardsListPath);
+
+        if (!itemCanBeAddedToInventory(itemStackList, targetplayer)) {
+            sendInventoryIsFullMessage(sender, targetplayer);
+            return false;
+        }
+        for (ItemStack itemStack : itemStackList) {
+            targetplayerInventory.addItem(itemStack);
+        }
+        targetplayer.updateInventory();
+        return true;
+    }
+
+    public ArrayList<ItemStack> getItemRewards(String configItemRewardsListPath) {
+        ArrayList<ItemStack> itemStacks = new ArrayList<>();
+        for (String itemKey : config.getConfigurationSection(configItemRewardsListPath).getKeys(false)) {
+            String configItemRewardsPathKey = configItemRewardsListPath + "." + itemKey;
+            if (!config.getBoolean(configItemRewardsPathKey + ".enabled")) continue;
+            ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString(configItemRewardsPathKey + ".material")));
+            itemCreator.setDisplayName(config.getString(configItemRewardsPathKey + ".item-name"));
+            itemCreator.setAmount(config.getInt(configItemRewardsPathKey + ".amount"));
+            if (config.getBoolean(configItemRewardsPathKey + ".use-lore")) itemCreator.setLore(config.getStringList(configItemRewardsPathKey + ".item-lore"));
+            itemStacks.add(itemCreator.get());
+        }
+        return itemStacks;
+    }
 }
+

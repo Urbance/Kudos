@@ -1,9 +1,7 @@
 package Utils.KudosUtils;
 
-import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +32,7 @@ public class KudosMilestone {
     }
 
     public boolean sendMilestone(CommandSender sender, Player targetPlayer) {
-        if (!sendRewards(sender, targetPlayer)) {
+        if (!addRewards(sender, targetPlayer)) {
             if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
@@ -51,29 +50,11 @@ public class KudosMilestone {
         return true;
     }
 
-    private boolean sendRewards(CommandSender sender, Player targetPlayer) {
-        if (!addAwardItem(sender, targetPlayer)) return false;
+    private boolean addRewards(CommandSender sender, Player targetPlayer) {
+        if (!kudosManager.addItemRewards(sender, targetPlayer, "kudo-award.milestones.rewards.items")) return false;
+
         new KudosManager().performCommandRewards(KudosManager.AwardType.MILESTONE, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.milestones.rewards.xp"));
-        return true;
-    }
-
-    private boolean addAwardItem(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("kudo-award.milestones.rewards.award-item.enabled")) {
-            return true;
-        }
-
-//        Inventory inventory = targetPlayer.getInventory();
-//        ItemStack awardItem = new ItemCreator(Material.getMaterial(config.getString("kudo-award.milestones.rewards.award-item.item"))).getMilestoneItemReward();
-//
-//        if (kudosManager.itemCanBeAddedToInventory(awardItem, inventory)) {
-//            Map<String, String> placeholderValues = new HashMap<>();
-//            placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-//            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-inventory-is-full"), placeholderValues));
-//            return false;
-//        }
-//
-//        inventory.addItem(awardItem);
         return true;
     }
 

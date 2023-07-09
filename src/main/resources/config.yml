@@ -43,14 +43,23 @@ kudo-award:
     enable-playsound: true
     playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
     rewards:
-      award-item:
-        enabled: true
-        use-lore: false
-        item: PUMPKIN_PIE
-        item-name: "&6Sweet pumpkin cake"
-        item-lore:
-          - "Like at grandma's"
-        amount: 1
+      items:
+        item-1:
+          enabled: true
+          material: PUMPKIN_PIE
+          use-lore: true
+          item-name: "&6Sweet pumpkin cake"
+          item-lore:
+            - "&7Like at grandma's"
+          amount: 1
+        item-2:
+          enabled: true
+          material: EMERALD
+          use-lore: true
+          item-name: "&2Shimmering Emerald"
+          item-lore:
+            - "&7Handed out to special people"
+          amount: 1
       xp: 50
       command-rewards:
         enabled: false
