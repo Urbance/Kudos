@@ -3,7 +3,6 @@ package Utils.KudosUtils;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
