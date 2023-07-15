@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.util.UUID;
+
 public class OnPlayerJoin implements Listener {
     Main plugin = Main.getPlugin(Main.class);
 
@@ -17,7 +19,7 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        createDatabasePlayer(player);
+        createDatabasePlayer(player.getUniqueId());
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
@@ -26,9 +28,9 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private void createDatabasePlayer(Player player) {
+    private void createDatabasePlayer(UUID uuid) {
         if (!plugin.isConnected) return;
         SQLGetter data = new SQLGetter(plugin);
-        data.createPlayer(player);
+        data.createPlayer(uuid);
     }
 }

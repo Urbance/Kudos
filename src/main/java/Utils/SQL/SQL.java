@@ -50,6 +50,7 @@ public class SQL {
             hikariConfig.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
+        SQLGetter.driverClassName = hikariConfig.getDriverClassName();
         hikariDataSource = new HikariDataSource(hikariConfig);
     }
 

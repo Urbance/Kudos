@@ -83,7 +83,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
         if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
-            data.createTable();
+            data.initDatabases();
             this.isConnected = true;
         }
     }
