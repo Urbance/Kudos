@@ -50,7 +50,7 @@ public class KudosExpansion extends PlaceholderExpansion {
                 return String.valueOf(data.getKudos(playerUUID));
             }
             case "player_assigned_kudos" -> {
-                return String.valueOf(data.getAssignedKudo(playerUUID));
+                return String.valueOf(data.getAssignedKudos(playerUUID));
             }
             case "top1_kudos" -> {
                 if (topPlayerKudos.isEmpty())

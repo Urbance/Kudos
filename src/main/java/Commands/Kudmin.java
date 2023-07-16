@@ -158,10 +158,11 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
         switch (optionValue) {
-            case "kudos" -> {
-                data.addKudos(player, null, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
-            }
+            // TODO
+//            case "kudos" -> {
+//                data.addKudos(player, null, amount);
+//                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
+//            }
             case "assigned_kudos" -> {
                 data.addAssignedKudos(player, amount);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
@@ -189,7 +190,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
             }
             case "assigned_kudos" -> {
-                if (amount > data.getAssignedKudo(playerUUID)) {
+                if (amount > data.getAssignedKudos(playerUUID)) {
                     data.clearAssignedKudos(playerUUID);
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
                     return;
