@@ -30,7 +30,6 @@ public class SQLGetter {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS players " +
                      "(UUID VARCHAR(100) NOT NULL, TotalKudos INT NOT NULL, TotalAssignedKudos INT NOT NULL, PRIMARY KEY (UUID))")) {
-
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,7 +43,6 @@ public class SQLGetter {
             createTableStatement = createTableStatement.replace("AUTO_INCREMENT", "AUTOINCREMENT");
             createTableStatement = createTableStatement.replace("INT", "INTEGER");
         }
-
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(createTableStatement)) {
             preparedStatement.executeUpdate();
@@ -102,22 +100,6 @@ public class SQLGetter {
             preparedStatement.setString(3, "UNDEFINED");
             preparedStatement.setString(4, dateFormat.format(date));
             preparedStatement.executeUpdate();
-            setTotalKudosAndTotalAssignedKudos(toPlayer, fromPlayer);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setTotalKudosAndTotalAssignedKudos(UUID toPlayer, UUID fromPlayer) {
-        String setTotalKudosStatementTemplate = "UPDATE players SET TotalKudos = (SELECT COUNT(ToPlayer) FROM kudos WHERE ToPlayer=\"%toPlayer%\") WHERE UUID=\"%toPlayer%\";";
-        setTotalKudosStatementTemplate = setTotalKudosStatementTemplate.replace("%toPlayer%", String.valueOf(toPlayer));
-        String setTotalAssignedKudosStatementTemplate = "UPDATE players SET TotalAssignedKudos = (SELECT COUNT(FromPlayer) FROM kudos WHERE FromPlayer=\"%fromPlayer%\") WHERE UUID = \"%fromPlayer%\";";
-        setTotalAssignedKudosStatementTemplate = setTotalAssignedKudosStatementTemplate.replace("%fromPlayer%", String.valueOf(fromPlayer));
-
-        try (Connection connection = SQL.getConnection();
-             PreparedStatement setTotalKudosStatement = connection.prepareStatement(setTotalKudosStatementTemplate); PreparedStatement setTotalAssignedKudosStatement = connection.prepareStatement(setTotalAssignedKudosStatementTemplate)) {
-            setTotalKudosStatement.executeUpdate();
-            setTotalAssignedKudosStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -144,20 +126,33 @@ public class SQLGetter {
     }
 
     public void clearKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, 0);
-            preparedStatement.setString(2, uuid.toString());
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE ToPlayer=?")) {
+            preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public void clearAssignedKudos(UUID uuid) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE FromPlayer=?")) {
+            preparedStatement.setString(1, uuid.toString());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearKudosAndAssignedKudos(UUID uuid) {
+        clearKudos(uuid);
+        clearAssignedKudos(uuid);
+    }
+
     public int getKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT TotalKudos from players WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(ToPlayer) FROM kudos WHERE ToPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
-            return results.getInt("TotalKudos");
+            return results.getInt("COUNT(ToPlayer)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -165,10 +160,10 @@ public class SQLGetter {
     }
 
     public int getAssignedKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT TotalAssignedKudos from players WHERE UUID=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(FromPlayer) FROM kudos WHERE FromPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
-            return results.getInt("TotalAssignedKudos");
+            return results.getInt("COUNT(FromPlayer)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -205,27 +200,8 @@ public class SQLGetter {
         }
     }
 
-    public void clearAssignedKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, 0);
-            preparedStatement.setString(2, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void clearKudosAndAssignedKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=0, Assigned=0 WHERE UUID=?")) {
-            preparedStatement.setString(1, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<String> getTopPlayersKudos() {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID, TotalKudos FROM players ORDER BY TotalKudos DESC LIMIT 3")){
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT ToPlayer, COUNT(EntryNo) FROM kudos GROUP BY ToPlayer ORDER BY COUNT(EntryNo) DESC LIMIT 3")){
             int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
@@ -233,9 +209,9 @@ public class SQLGetter {
             List<String> itemLore = prepareTopPlayersKudosList(amountDisplayPlayers);
 
             while (results.next()) {
-                UUID uuid = UUID.fromString(results.getString("UUID"));
+                UUID uuid = UUID.fromString(results.getString("ToPlayer"));
                 String playerName = Bukkit.getOfflinePlayer(uuid).getName();
-                String kudos = results.getString("TotalKudos");
+                String kudos = results.getString("COUNT(EntryNo)");
                 String loreEntry = itemLore.get(counter);
 
                 loreEntry = loreEntry.replaceAll("%top_kudos%", kudos);
