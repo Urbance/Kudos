@@ -29,7 +29,7 @@ public class SQLGetter {
     private void createPlayersTable() {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS players " +
-                     "(UUID VARCHAR(100) NOT NULL, TotalKudos INT NOT NULL, TotalAssignedKudos INT NOT NULL, PRIMARY KEY (UUID))")) {
+                     "(UUID VARCHAR(100) NOT NULL, PRIMARY KEY (UUID))")) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class SQLGetter {
 
     private void createKudosTable() {
         String createTableStatement = "CREATE TABLE IF NOT EXISTS kudos " +
-                "(EntryNo INT PRIMARY KEY AUTO_INCREMENT, ToPlayer VARCHAR(100) NOT NULL, FromPlayer VARCHAR(100) NOT NULL, Reason VARCHAR(100) NOT NULL, Date VARCHAR(100) NOT NULL)";
+                "(EntryNo INT PRIMARY KEY AUTO_INCREMENT, AwardedToPlayer VARCHAR(100) NOT NULL, ReceivedFromPlayer VARCHAR(100) NOT NULL, Reason VARCHAR(100), Date VARCHAR(100) NOT NULL)";
         if (driverClassName.equals("org.sqlite.JDBC")) {
             createTableStatement = createTableStatement.replace("AUTO_INCREMENT", "AUTOINCREMENT");
             createTableStatement = createTableStatement.replace("INT", "INTEGER");
@@ -52,11 +52,9 @@ public class SQLGetter {
     }
 
     public void createPlayer(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO players (UUID,TotalKudos,TotalAssignedKudos) VALUES (?,?,?)")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO players (UUID) VALUES (?)")) {
             if (!exists(uuid)) {
                 preparedStatement.setString(1, uuid.toString());
-                preparedStatement.setInt(2, 0);
-                preparedStatement.setInt(3, 0);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -89,15 +87,15 @@ public class SQLGetter {
         return false;
     }
 
-    public void addKudos(UUID toPlayer, UUID fromPlayer) {
+    public void addKudos(UUID awardedToPlayer, UUID receivedFromPlayer, String reason) {
         try (Connection connection = SQL.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (ToPlayer, FromPlayer, Reason, Date) VALUES (?,?,?,?); " + "UPDATE players SET TotalKudos=?,TotalAssignedKudos=? WHERE UUID=?;")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
 
-            preparedStatement.setString(1, String.valueOf(toPlayer));
-            preparedStatement.setString(2, String.valueOf(fromPlayer));
-            preparedStatement.setString(3, "UNDEFINED");
+            preparedStatement.setString(1, String.valueOf(awardedToPlayer));
+            preparedStatement.setString(2, String.valueOf(receivedFromPlayer));
+            preparedStatement.setString(3, reason);
             preparedStatement.setString(4, dateFormat.format(date));
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -126,7 +124,7 @@ public class SQLGetter {
     }
 
     public void clearKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE ToPlayer=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE AwardedToPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -135,7 +133,7 @@ public class SQLGetter {
     }
 
     public void clearAssignedKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE FromPlayer=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE ReceivedFromPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -149,10 +147,11 @@ public class SQLGetter {
     }
 
     public int getKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(ToPlayer) FROM kudos WHERE ToPlayer=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(AwardedToPlayer) FROM kudos WHERE AwardedToPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
-            return results.getInt("COUNT(ToPlayer)");
+            results.next();
+            return results.getInt("COUNT(AwardedToPlayer)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -160,10 +159,11 @@ public class SQLGetter {
     }
 
     public int getAssignedKudos(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(FromPlayer) FROM kudos WHERE FromPlayer=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(ReceivedFromPlayer) FROM kudos WHERE ReceivedFromPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
-            return results.getInt("COUNT(FromPlayer)");
+            results.next();
+            return results.getInt("COUNT(ReceivedFromPlayer)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -201,7 +201,7 @@ public class SQLGetter {
     }
 
     public List<String> getTopPlayersKudos() {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT ToPlayer, COUNT(EntryNo) FROM kudos GROUP BY ToPlayer ORDER BY COUNT(EntryNo) DESC LIMIT 3")){
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(EntryNo) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(EntryNo) DESC LIMIT 3")){
             int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
@@ -209,7 +209,7 @@ public class SQLGetter {
             List<String> itemLore = prepareTopPlayersKudosList(amountDisplayPlayers);
 
             while (results.next()) {
-                UUID uuid = UUID.fromString(results.getString("ToPlayer"));
+                UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
                 String playerName = Bukkit.getOfflinePlayer(uuid).getName();
                 String kudos = results.getString("COUNT(EntryNo)");
                 String loreEntry = itemLore.get(counter);

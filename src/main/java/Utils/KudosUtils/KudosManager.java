@@ -38,9 +38,9 @@ public class KudosManager {
 
     public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
-            data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId());
+            data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), null);
         } else {
-            data.addKudos(targetPlayerUUID, null);
+            data.addKudos(targetPlayerUUID, null, null);
         }
     }
 
