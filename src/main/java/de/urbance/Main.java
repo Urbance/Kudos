@@ -69,7 +69,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public void setupSQL() throws SQLException {
+    public boolean setupSQL() throws SQLException {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
@@ -83,9 +83,10 @@ public final class Main extends JavaPlugin implements Listener {
         }
         if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
-            data.initDatabases();
+            if (!data.initDatabases()) return false;
             this.isConnected = true;
         }
+        return true;
     }
 
     public void setupConfigs() {

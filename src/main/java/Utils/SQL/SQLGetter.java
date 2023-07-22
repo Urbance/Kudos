@@ -21,22 +21,23 @@ public class SQLGetter {
         this.guiConfig = new FileManager("gui.yml", plugin).getConfig();
     }
 
-    public void initDatabases() {
-        createPlayersTable();
-        createKudosTable();
+    public boolean initDatabases() {
+        return createPlayersTable() && createKudosTable();
     }
 
-    private void createPlayersTable() {
+    private boolean createPlayersTable() {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS players " +
                      "(UUID VARCHAR(100) NOT NULL, PRIMARY KEY (UUID))")) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
-    private void createKudosTable() {
+    private boolean createKudosTable() {
         String createTableStatement = "CREATE TABLE IF NOT EXISTS kudos " +
                 "(EntryNo INT PRIMARY KEY AUTO_INCREMENT, AwardedToPlayer VARCHAR(100) NOT NULL, ReceivedFromPlayer VARCHAR(100) NOT NULL, Reason VARCHAR(100), Date VARCHAR(100) NOT NULL)";
         if (driverClassName.equals("org.sqlite.JDBC")) {
@@ -48,10 +49,12 @@ public class SQLGetter {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
-    public void createPlayer(UUID uuid) {
+    public boolean createPlayer(UUID uuid) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO players (UUID) VALUES (?)")) {
             if (!exists(uuid)) {
                 preparedStatement.setString(1, uuid.toString());
@@ -59,7 +62,9 @@ public class SQLGetter {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public OfflinePlayer getPlayer(UUID uuid) {

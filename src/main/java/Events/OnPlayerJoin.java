@@ -2,6 +2,7 @@ package Events;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        createDatabasePlayer(player.getUniqueId());
+        if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin.");
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
@@ -28,9 +29,10 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private void createDatabasePlayer(UUID uuid) {
-        if (!plugin.isConnected) return;
+    private boolean createDatabasePlayer(UUID uuid) {
+        if (!plugin.isConnected) return false;
         SQLGetter data = new SQLGetter(plugin);
-        data.createPlayer(uuid);
+        if (data.createPlayer(uuid)) return true;
+        return false;
     }
 }
