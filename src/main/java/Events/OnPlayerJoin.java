@@ -23,7 +23,7 @@ public class OnPlayerJoin implements Listener {
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
-        if (!plugin.isConnected && player.hasPermission("kudmin")) {
+        if (!plugin.isConnected && player.hasPermission("kudos.kudmin.*")) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo database found. If you're trying to connect to a database server please check your credentials in the mysql.yml!"));
         }
     }
