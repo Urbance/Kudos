@@ -69,9 +69,9 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
                 " \n" +
                 "&7/kudmin help\n" +
-                "&7/kudmin add &e[kudos/assigned_kudos] [player] [amount]\n" +
-                "&7/kudmin remove &e[kudos/assigned_kudos] [player] [amount]\n" +
-                "&7/kudmin set &e[kudos/assigned_kudos] [player] [amount]\n" +
+                "&7/kudmin add &ekudos [player] [amount]\n" +
+                "&7/kudmin remove &ekudos [player] [amount]\n" +
+                "&7/kudmin set &ekudos [player] [amount]\n" +
                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                 "&7/kudmin clearall &e[player]\n" +
                 "&7/kudmin reload\n" +
@@ -142,10 +142,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 data.setKudos(playerUUID, amount);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + amount + " Kudos &7" + "to &e" + playerName));
             }
-            case "assigned_kudos" -> {
-                data.setAssignedKudos(playerUUID, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
-            }
         }
     }
 
@@ -163,10 +159,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 //                data.addKudos(player, null, amount);
 //                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
 //            }
-            case "assigned_kudos" -> {
-                data.addAssignedKudos(player, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " assigned Kudos &7" + "to &e" + playerName));
-            }
         }
     }
 
@@ -188,15 +180,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 }
                 data.removeKudos(playerUUID, amount);
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-            }
-            case "assigned_kudos" -> {
-                if (amount > data.getAssignedKudos(playerUUID)) {
-                    data.clearAssignedKudos(playerUUID);
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
-                    return;
-                }
-                data.removeAssignedKudos(playerUUID, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " assigned Kudos &7" + "from &e" + playerName));
             }
         }
     }
@@ -275,7 +258,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         if (args.length == 2) {
             if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set") || args[0].equals("clear")) {
                 commandArguments.add("kudos");
-                commandArguments.add("assigned_kudos");
             } else if (args[0].equals("clearall")) {
                 for (Player players : Bukkit.getOnlinePlayers()) {
                     commandArguments.add(players.getName());

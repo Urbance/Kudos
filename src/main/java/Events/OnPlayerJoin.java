@@ -32,7 +32,6 @@ public class OnPlayerJoin implements Listener {
     private boolean createDatabasePlayer(UUID uuid) {
         if (!plugin.isConnected) return false;
         SQLGetter data = new SQLGetter(plugin);
-        if (data.createPlayer(uuid)) return true;
-        return false;
+        return data.createPlayer(uuid);
     }
 }

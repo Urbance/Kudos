@@ -175,36 +175,6 @@ public class SQLGetter {
         return 0;
     }
 
-    public void addAssignedKudos(UUID uuid, int assigned) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (getAssignedKudos(uuid) + assigned));
-            preparedStatement.setString(2, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void removeAssignedKudos(UUID uuid, int kudos) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (getKudos(uuid) - kudos));
-            preparedStatement.setString(2, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setAssignedKudos(UUID uuid, int kudos) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Assigned=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (kudos));
-            preparedStatement.setString(2, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public List<String> getTopPlayersKudos() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(EntryNo) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(EntryNo) DESC LIMIT 3")){
             int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
