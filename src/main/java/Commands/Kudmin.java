@@ -106,11 +106,17 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
         switch (optionValue) {
             case "kudos" -> {
-                data.clearKudos(playerUUID);
+                if (!data.clearKudos(playerUUID)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of the plugin."));
+                    return;
+                }
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos from &e" + playerName));
             }
             case "assigned_kudos" -> {
-                data.clearAssignedKudos(playerUUID);
+                if (!data.clearAssignedKudos(playerUUID)) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of the plugin."));
+                    return;
+                }
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared assigned Kudos from &e" + playerName));
             }
         }
@@ -124,7 +130,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
-        data.clearKudosAndAssignedKudos(playerUUID);
+        if (!data.clearKudosAndAssignedKudos(playerUUID)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of the plugin."));
+            return;
+        }
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
     }
 
@@ -174,7 +183,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         switch (optionValue) {
             case "kudos" -> {
                 if (amount > data.getKudos(playerUUID)) {
-                    data.clearKudos(playerUUID);
+                    if (!data.clearKudos(playerUUID)) {
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of this plugin."));
+                        return;
+                    }
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
                     return;
                 }

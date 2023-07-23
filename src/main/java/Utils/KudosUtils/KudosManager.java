@@ -3,10 +3,7 @@ package Utils.KudosUtils;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -38,9 +35,13 @@ public class KudosManager {
 
     public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
-            data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), null);
+            if (!data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), null)) {
+                kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+            }
         } else {
-            data.addKudos(targetPlayerUUID, null, null);
+            if (!data.addKudos(targetPlayerUUID, null, null)) {
+                kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+            }
         }
     }
 

@@ -92,12 +92,11 @@ public class SQLGetter {
         return false;
     }
 
-    public void addKudos(UUID awardedToPlayer, UUID receivedFromPlayer, String reason) {
+    public boolean addKudos(UUID awardedToPlayer, UUID receivedFromPlayer, String reason) {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
-
             preparedStatement.setString(1, String.valueOf(awardedToPlayer));
             preparedStatement.setString(2, String.valueOf(receivedFromPlayer));
             preparedStatement.setString(3, reason);
@@ -105,7 +104,9 @@ public class SQLGetter {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public void removeKudos(UUID uuid, int kudos) {
@@ -128,27 +129,30 @@ public class SQLGetter {
         }
     }
 
-    public void clearKudos(UUID uuid) {
+    public boolean clearKudos(UUID uuid) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE AwardedToPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
-    public void clearAssignedKudos(UUID uuid) {
+    public boolean clearAssignedKudos(UUID uuid) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE ReceivedFromPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
-    public void clearKudosAndAssignedKudos(UUID uuid) {
-        clearKudos(uuid);
-        clearAssignedKudos(uuid);
+    public boolean clearKudosAndAssignedKudos(UUID uuid) {
+        return clearAssignedKudos(uuid) && clearKudos(uuid);
     }
 
     public int getKudos(UUID uuid) {
