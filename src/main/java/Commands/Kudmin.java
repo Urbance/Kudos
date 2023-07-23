@@ -79,7 +79,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 "&7You can find all commands and permissions " ;
         ComponentBuilder helpTextComponent = new ComponentCreator(helpText).createPlainTextComponent(false, null);
         ComponentBuilder wiki = new ComponentCreator("&chere&7!")
-                .createLinkTextComponent("&l&o&cClick!","https://github.com/Urbance/Kudos/wiki/How-To-Start#commands-and-permissions", false);
+                .createLinkTextComponent("&l&o&cClick!","https://urbance.gitbook.io/kudos-v4-wiki/getting-started/permissions-and-commands", false);
         sender.spigot().sendMessage(helpTextComponent
                 .append(wiki.create())
                 .create());
