@@ -35,13 +35,13 @@ public class KudosManager {
 
     public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
         if (sender instanceof Player) {
-            if (!data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), null)) {
+            if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), null)) {
                 kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+                return;
             }
-        } else {
-            if (!data.addKudos(targetPlayerUUID, null, null)) {
-                kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
-            }
+        }
+        if (!data.addKudos(targetPlayerUUID, config.getString("general.console-name"), null)) {
+            kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
         }
     }
 

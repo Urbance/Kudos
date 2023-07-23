@@ -92,13 +92,14 @@ public class SQLGetter {
         return false;
     }
 
-    public boolean addKudos(UUID awardedToPlayer, UUID receivedFromPlayer, String reason) {
+    public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason) {
+        if (receivedFromPlayer == null) receivedFromPlayer = "UNDEFINED";
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
             Date date = new Date();
             preparedStatement.setString(1, String.valueOf(awardedToPlayer));
-            preparedStatement.setString(2, String.valueOf(receivedFromPlayer));
+            preparedStatement.setString(2, receivedFromPlayer);
             preparedStatement.setString(3, reason);
             preparedStatement.setString(4, dateFormat.format(date));
             preparedStatement.executeUpdate();
