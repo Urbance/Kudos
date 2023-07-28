@@ -39,6 +39,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.1] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
