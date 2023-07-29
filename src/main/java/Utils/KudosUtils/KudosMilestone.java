@@ -36,7 +36,7 @@ public class KudosMilestone {
 
         Map<String, String> placeholderValues = new HashMap<>();
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-        placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
+        placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId()) + 1));
 
         if (sender instanceof ConsoleCommandSender) kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("milestone.player-reaches-milestone-through-console"), placeholderValues));
         if (sender instanceof Player) {

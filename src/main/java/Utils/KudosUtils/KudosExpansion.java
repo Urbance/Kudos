@@ -47,7 +47,7 @@ public class KudosExpansion extends PlaceholderExpansion {
                 return player.getName();
             }
             case "player_kudos" -> {
-                return String.valueOf(data.getKudos(playerUUID));
+                return String.valueOf(data.getAmountKudos(playerUUID));
             }
             case "player_assigned_kudos" -> {
                 return String.valueOf(data.getAssignedKudos(playerUUID));

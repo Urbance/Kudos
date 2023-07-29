@@ -27,7 +27,7 @@ public class KudosNotification {
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
-        values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayerUUID) + 1));
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayerUUID) + 1));
         kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console"), values));
     }
 
@@ -36,7 +36,7 @@ public class KudosNotification {
         Map<String, String> values = new HashMap<>();
         values.put("kudos_player_name", sender.getName());
         values.put("kudos_targetplayer_name", targetPlayer.getName());
-        values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayerUUID) + 1));
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayerUUID) + 1));
         kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast"), values));
     }
 
@@ -54,7 +54,7 @@ public class KudosNotification {
     private void sendPrivateMessageToTargetPlayer(CommandSender sender, Player targetPlayer) {
         Map<String, String> valuesTargetPlayer = new HashMap<>();
         valuesTargetPlayer.put("kudos_player_name", sender.getName());
-        valuesTargetPlayer.put("kudos_player_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId()) + 1));
+        valuesTargetPlayer.put("kudos_player_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId()) + 1));
         kudosMessage.send(targetPlayer, kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player"), valuesTargetPlayer));
     }
 

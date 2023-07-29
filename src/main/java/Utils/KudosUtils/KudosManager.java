@@ -48,7 +48,7 @@ public class KudosManager {
     public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
-        values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId())));
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
 
@@ -83,7 +83,7 @@ public class KudosManager {
 
     public boolean isMilestone(Player targetPlayer) {
         if (config.getBoolean("kudo-award.milestones.enabled")) {
-            int targetPlayerKudos = data.getKudos(targetPlayer.getUniqueId()) + 1;
+            int targetPlayerKudos = data.getAmountKudos(targetPlayer.getUniqueId()) + 1;
             return targetPlayerKudos % config.getInt("kudo-award.milestones.span-between-kudos") == 0;
         }
         return false;
