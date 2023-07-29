@@ -115,7 +115,7 @@ public class SQLGetter {
 
     public void removeKudos(UUID uuid, int kudos) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (getKudos(uuid) - kudos));
+            preparedStatement.setInt(1, (getAmountKudos(uuid) - kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -149,7 +149,7 @@ public class SQLGetter {
         return clearAssignedKudos(uuid) && clearKudos(uuid);
     }
 
-    public int getKudos(UUID uuid) {
+    public int getAmountKudos(UUID uuid) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(AwardedToPlayer) FROM kudos WHERE AwardedToPlayer=?")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
