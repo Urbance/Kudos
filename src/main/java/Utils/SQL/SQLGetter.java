@@ -92,17 +92,20 @@ public class SQLGetter {
         return false;
     }
 
-    public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason) {
-        if (receivedFromPlayer == null) receivedFromPlayer = "UNDEFINED";
+    public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason, int amount) {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
-            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            Date date = new Date();
-            preparedStatement.setString(1, String.valueOf(awardedToPlayer));
-            preparedStatement.setString(2, receivedFromPlayer);
-            preparedStatement.setString(3, reason);
-            preparedStatement.setString(4, dateFormat.format(date));
-            preparedStatement.executeUpdate();
+
+            for (int counter = 1; counter <= amount; counter++) {
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                preparedStatement.setString(1, String.valueOf(awardedToPlayer));
+                preparedStatement.setString(2, receivedFromPlayer);
+                preparedStatement.setString(3, reason);
+                preparedStatement.setString(4, dateFormat.format(date));
+                preparedStatement.executeUpdate();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -113,16 +116,6 @@ public class SQLGetter {
     public void removeKudos(UUID uuid, int kudos) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (getKudos(uuid) - kudos));
-            preparedStatement.setString(2, uuid.toString());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setKudos(UUID uuid, int kudos) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (kudos));
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {

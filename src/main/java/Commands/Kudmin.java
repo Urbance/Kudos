@@ -24,7 +24,6 @@ import java.util.UUID;
 public class Kudmin implements CommandExecutor, TabCompleter {
     private String prefix;
     private Main plugin;
-    private String optionValue;
     private SQLGetter data;
 
     @Override
@@ -57,13 +56,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "clearall" -> performClearAll(sender, args);
             case "add" -> performAdd(sender, args);
             case "remove" -> performRemove(sender, args);
-            case "set" -> performSet(sender, args);
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
     }
 
     private void sendHelpMessage(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 1, 0, false, false, false))
+        if (!validateInput(args, sender, 1, 0, false, false))
             return;
 
         String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
@@ -71,7 +69,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 "&7/kudmin help\n" +
                 "&7/kudmin add &ekudos [player] [amount]\n" +
                 "&7/kudmin remove &ekudos [player] [amount]\n" +
-                "&7/kudmin set &ekudos [player] [amount]\n" +
                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                 "&7/kudmin clearall &e[player]\n" +
                 "&7/kudmin reload\n" +
@@ -86,7 +83,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void reloadConfigs(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 1, 0, false, false, false))
+        if (!validateInput(args, sender, 1, 0, false, false))
             return;
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs. A few changes will only take effect after a server restart!"));
 
@@ -97,11 +94,21 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performClear(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 3, 2, true, true, false)) {
+        if (!validateInput(args, sender, 3, 1, true, false)) {
             return;
         }
 
-        String playerName = args[2];
+        if (args.length < 3) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
+            return;
+        }
+        String optionValue = args[2];
+        if (!(optionValue.equals("kudos") || optionValue.equals("assigned_kudos"))) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
+            return;
+        }
+
+        String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
         switch (optionValue) {
@@ -123,7 +130,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performClearAll(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 2, 1, false, true, false)) {
+        if (!validateInput(args, sender, 2, 1, true, false)) {
             return;
         }
 
@@ -137,38 +144,16 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
     }
 
-    private void performSet(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 4, 2, true, true, true)) {
-            return;
-        }
-
-        int amount = Integer.parseInt(args[3]);
-        String playerName = args[2];
-        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-
-        switch (optionValue) {
-            case "kudos" -> {
-                data.setKudos(playerUUID, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Set &e" + amount + " Kudos &7" + "to &e" + playerName));
-            }
-        }
-    }
-
     private void performAdd(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 4, 2, true, true, true))
+        if (!validateInput(args, sender, 3, 1, true, true))
             return;
 
-        int amount = Integer.parseInt(args[3]);
-        String playerName = args[2];
+        String playerName = args[1];
         UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+        int amountKudos = Integer.parseInt(args[2]);
 
-        switch (optionValue) {
-            // TODO
-//            case "kudos" -> {
-//                data.addKudos(player, null, amount);
-//                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amount + " Kudos &7" + "to &e" + playerName));
-//            }
-        }
+        data.addKudos(player, "SYSTEM", null, amountKudos);
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
     }
 
     private void performRemove(CommandSender sender, String[] args) {
@@ -196,12 +181,11 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         }
     }
 
-    private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateOptionValue, boolean validateTargetPlayer, boolean validateValue) {
+    private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
             return false;
         }
-        if (validateOptionValue && (!setAndValidateOptionValue(sender, args))) return false;
         if (validateTargetPlayer && (!targetPlayerExists(sender, args, playerArgumentPosition))) return false;
         if (validateValue && (!isValueAnInteger(sender, args))) return false;
 
@@ -209,7 +193,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean isValueAnInteger(CommandSender sender, String[] args) {
-        if (args.length < 4 || !isValueAnInteger(args[3]) || !(Integer.parseInt(args[3]) >= 0)) {
+        if (args.length < 3 || !isValueAnInteger(args[2]) || !(Integer.parseInt(args[2]) >= 0)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
             return false;
         }
@@ -220,19 +204,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         try {
             Integer.parseInt(rawValue);
         } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean setAndValidateOptionValue(CommandSender sender, String[] args) {
-        if (args.length < 2) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
-            return false;
-        }
-        optionValue = args[1];
-        if (!(optionValue.equals("kudos") || optionValue.equals("assigned_kudos"))) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
             return false;
         }
         return true;
@@ -261,16 +232,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             commandArguments.add("help");
             commandArguments.add("add");
             commandArguments.add("remove");
-            commandArguments.add("set");
             commandArguments.add("clear");
             commandArguments.add("clearall");
             commandArguments.add("reload");
             StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
         }
         if (args.length == 2) {
-            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set") || args[0].equals("clear")) {
-                commandArguments.add("kudos");
-            } else if (args[0].equals("clearall")) {
+            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("clear") || args[0].equals("clearall")) {
                 for (Player players : Bukkit.getOnlinePlayers()) {
                     commandArguments.add(players.getName());
                 }
@@ -278,17 +246,14 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
         }
         if (args.length == 3) {
-            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set") || args[0].equals("clear")) {
-                for (Player players : Bukkit.getOnlinePlayers())
-                    commandArguments.add(players.getName());
-            }
-            StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
-        }
-        if (args.length == 4) {
-            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("set")) {
+            if (args[0].equals("add") || args[0].equals("remove")) {
                 commandArguments.add("amount");
             }
-            StringUtil.copyPartialMatches(args[3], commandArguments, tabCompletions);
+            if (args[0].equals("clear")) {
+                commandArguments.add("kudos");
+                commandArguments.add("assigned_kudos");
+            }
+            StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
         }
         return tabCompletions;
     }
