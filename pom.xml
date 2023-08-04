@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>4.0.0-PRE1</version>
+    <version>4.0.0-PRE2</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -39,6 +39,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.1] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
@@ -47,6 +48,14 @@
                                     <shadedPattern>de.urbance.shaded.hikaricp</shadedPattern>
                                 </relocation>
                             </relocations>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.commons:commons-lang3</artifact>
+                                    <excludes>
+                                        <exclude>org/apache/commons/lang3/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
