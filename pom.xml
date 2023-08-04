@@ -55,6 +55,7 @@
                                         <exclude>org/apache/commons/lang3/**</exclude>
                                     </excludes>
                                 </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
