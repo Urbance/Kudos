@@ -228,32 +228,35 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         if (!sender.hasPermission("kudos.kudmin.*")) return commandArguments;
-        if (args.length == 1) {
-            commandArguments.add("help");
-            commandArguments.add("add");
-            commandArguments.add("remove");
-            commandArguments.add("clear");
-            commandArguments.add("clearall");
-            commandArguments.add("reload");
-            StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
-        }
-        if (args.length == 2) {
-            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("clear") || args[0].equals("clearall")) {
-                for (Player players : Bukkit.getOnlinePlayers()) {
-                    commandArguments.add(players.getName());
+
+        switch (args.length) {
+            case 1 -> {
+                commandArguments.add("help");
+                commandArguments.add("add");
+                commandArguments.add("remove");
+                commandArguments.add("clear");
+                commandArguments.add("clearall");
+                commandArguments.add("reload");
+                StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
+            }
+            case 2 -> {
+                if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("clear") || args[0].equals("clearall")) {
+                    for (Player players : Bukkit.getOnlinePlayers()) {
+                        commandArguments.add(players.getName());
+                    }
                 }
+                StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
             }
-            StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
-        }
-        if (args.length == 3) {
-            if (args[0].equals("add") || args[0].equals("remove")) {
-                commandArguments.add("amount");
+            case 3 -> {
+                if (args[0].equals("add") || args[0].equals("remove")) {
+                    commandArguments.add("amount");
+                }
+                if (args[0].equals("clear")) {
+                    commandArguments.add("kudos");
+                    commandArguments.add("assigned_kudos");
+                }
+                StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
             }
-            if (args[0].equals("clear")) {
-                commandArguments.add("kudos");
-                commandArguments.add("assigned_kudos");
-            }
-            StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
         }
         return tabCompletions;
     }
