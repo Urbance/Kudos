@@ -55,7 +55,8 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "clear" -> performClear(sender, args);
             case "clearall" -> performClearAll(sender, args);
             case "add" -> performAdd(sender, args);
-            case "remove" -> performRemove(sender, args);
+            case "get" -> performGet(sender, args);
+           // case "remove" -> performRemove(sender, args);
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
     }
@@ -68,6 +69,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 " \n" +
                 "&7/kudmin help\n" +
                 "&7/kudmin add &ekudos [player] [amount]\n" +
+                "&7/kudmin get &e[kudos/assigned_kudos] [player] [page]\n" +
                 "&7/kudmin remove &ekudos [player] [amount]\n" +
                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                 "&7/kudmin clearall &e[player]\n" +
@@ -156,30 +158,71 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
     }
 
-    private void performRemove(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 4, 2, true, true, true)) {
-            return;
-        }
+    private void performGet(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 3, 1, true, true)) return;
+        String playerName = args[1];
 
-        int amount = Integer.parseInt(args[3]);
-        String playerName = args[2];
+        // int id = Integer.parseInt(args[3]);
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+        List<String> fooList = data.getPlayerKudos(playerUUID);
+        int totalEntries = fooList.size();
+        int maxSites = (int) Math.ceil((double) totalEntries / 5);
+        int site = Integer.parseInt(args[2]);
+        int maxEntry = site * 5;
 
-        switch (optionValue) {
-            case "kudos" -> {
-                if (amount > data.getKudos(playerUUID)) {
-                    if (!data.clearKudos(playerUUID)) {
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of this plugin."));
-                        return;
-                    }
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-                    return;
-                }
-                data.removeKudos(playerUUID, amount);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-            }
+        String message = "&7========= &c&l Kudos from Player %player_name% [%current_site%/%max_sites%] &7=========\n" +
+                "&aID &7| &aFrom Player &7| &aReason &7| &aReceived At\n";
+
+        message = message.replaceAll("%max_sites%", String.valueOf(maxSites));
+        message = message.replaceAll("%current_site%", String.valueOf(site));
+        message = message.replaceAll("%player_name%", playerName);
+
+        for (int entry = maxEntry - 5; entry < maxEntry; entry++) {
+            message += fooList.get(entry) + "\n";
         }
+
+        /*
+        Ziel: Entry Liste auffüllen
+        Gegeben: Angeforderte Seite, Anzahl aller Einträge auf einer Seite
+        Gesucht: Startpunkt
+
+        Bsp:
+        - Spieler möchte Seite 2
+        - Anträge auf einer Seite beträgt 5
+        2 * 5 = 10 - 5 -> Aus der Entryliste von Eintrag von 5 bis 10 hochzählen.
+        */
+
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+
     }
+
+//    private void performRemove(CommandSender sender, String[] args) {
+//        // TODO test validateValue 0
+//        if (!validateInput(args, sender, 4, 3, true, true)) {
+//            return;
+//        }
+//
+//        String optionValue = args[1];
+//        String playerName = args[2];
+//        int id = Integer.parseInt(args[3]);
+//        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+//
+//
+//        switch (optionValue) {
+//            case "kudos" -> {
+//                if (amount > data.getKudos(playerUUID)) {
+//                    if (!data.clearKudos(playerUUID)) {
+//                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of this plugin."));
+//                        return;
+//                    }
+//                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+//                    return;
+//                }
+//                data.removeKudos(playerUUID, amount);
+//                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
+//            }
+//        }
+//    }
 
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
@@ -228,32 +271,39 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         if (!sender.hasPermission("kudos.kudmin.*")) return commandArguments;
-        if (args.length == 1) {
-            commandArguments.add("help");
-            commandArguments.add("add");
-            commandArguments.add("remove");
-            commandArguments.add("clear");
-            commandArguments.add("clearall");
-            commandArguments.add("reload");
-            StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
-        }
-        if (args.length == 2) {
-            if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("clear") || args[0].equals("clearall")) {
-                for (Player players : Bukkit.getOnlinePlayers()) {
-                    commandArguments.add(players.getName());
+
+        switch (args.length) {
+            case 1 -> {
+                commandArguments.add("help");
+                commandArguments.add("add");
+                commandArguments.add("remove");
+                commandArguments.add("get");
+                commandArguments.add("clear");
+                commandArguments.add("clearall");
+                commandArguments.add("reload");
+                StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
+            }
+            case 2 -> {
+                if (args[0].equals("add") || args[0].equals("remove") || args[0].equals("clear") || args[0].equals("clearall") || args[0].equals("get")) {
+                    for (Player players : Bukkit.getOnlinePlayers()) {
+                        commandArguments.add(players.getName());
+                    }
                 }
+                StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
             }
-            StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
-        }
-        if (args.length == 3) {
-            if (args[0].equals("add") || args[0].equals("remove")) {
-                commandArguments.add("amount");
+            case 3 -> {
+                if (args[0].equals("add") || args[0].equals("remove")) {
+                    commandArguments.add("amount");
+                }
+                if (args[0].equals("clear")) {
+                    commandArguments.add("kudos");
+                    commandArguments.add("assigned_kudos");
+                }
+                if (args[0].equals("get")) {
+                    commandArguments.add("site");
+                }
+                StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
             }
-            if (args[0].equals("clear")) {
-                commandArguments.add("kudos");
-                commandArguments.add("assigned_kudos");
-            }
-            StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
         }
         return tabCompletions;
     }

@@ -113,6 +113,7 @@ public class SQLGetter {
         return true;
     }
 
+    // TODO needs changeover to new Kudmin concept
     public void removeKudos(UUID uuid, int kudos) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
             preparedStatement.setInt(1, (getAmountKudos(uuid) - kudos));
@@ -147,6 +148,33 @@ public class SQLGetter {
 
     public boolean clearKudosAndAssignedKudos(UUID uuid) {
         return clearAssignedKudos(uuid) && clearKudos(uuid);
+    }
+
+    public List<String> getPlayerKudos(UUID uuid) {
+        List<String> kudos = new ArrayList<>();
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=?;")) {
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+
+            while (results.next()) {
+                String entryNumber = results.getString("EntryNo");
+                String receivedFromPlayer;
+                try {
+                    receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
+                } catch (Exception e) {
+                    receivedFromPlayer = results.getString("ReceivedFromPlayer");
+                }
+
+                String reason = results.getString("Reason");
+                String date = results.getString("Date");
+
+                kudos.add("&7" + entryNumber + " | " + receivedFromPlayer + " | " + reason + " | " + date);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return kudos;
     }
 
     public int getAmountKudos(UUID uuid) {
