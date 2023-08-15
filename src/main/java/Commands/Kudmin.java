@@ -161,39 +161,46 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     private void performGet(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 3, 1, true, true)) return;
         String playerName = args[1];
-
-        // int id = Integer.parseInt(args[3]);
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-        List<String> fooList = data.getPlayerKudos(playerUUID);
-        int totalEntries = fooList.size();
-        int maxSites = (int) Math.ceil((double) totalEntries / 5);
-        int site = Integer.parseInt(args[2]);
-        int maxEntry = site * 5;
+        List<String> entryKudosList = data.getPlayerKudos(playerUUID);
 
-        String message = "&7========= &c&l Kudos from Player %player_name% [%current_site%/%max_sites%] &7=========\n" +
-                "&aID &7| &aFrom Player &7| &aReason &7| &aReceived At\n";
-
-        message = message.replaceAll("%max_sites%", String.valueOf(maxSites));
-        message = message.replaceAll("%current_site%", String.valueOf(site));
-        message = message.replaceAll("%player_name%", playerName);
-
-        for (int entry = maxEntry - 5; entry < maxEntry; entry++) {
-            message += fooList.get(entry) + "\n";
+        if (entryKudosList.size() == 0) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
+            return;
         }
 
-        /*
-        Ziel: Entry Liste auffüllen
-        Gegeben: Angeforderte Seite, Anzahl aller Einträge auf einer Seite
-        Gesucht: Startpunkt
+        int totalEntries = entryKudosList.size();
+        int entriesPerPage = 5;
+        int maxPages = (int) Math.ceil((double) totalEntries / entriesPerPage);
 
-        Bsp:
-        - Spieler möchte Seite 2
-        - Anträge auf einer Seite beträgt 5
-        2 * 5 = 10 - 5 -> Aus der Entryliste von Eintrag von 5 bis 10 hochzählen.
-        */
+        int requestedPage = Integer.parseInt(args[2]);
 
-        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+        if (requestedPage > maxPages || requestedPage == 0) {
+            if (maxPages == 1) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please enter a page number of at least &e1&7."));
+            } else {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please enter a number between &e1" + " &7and &e" + maxPages + "&7."));
+            }
+            return;
+        }
 
+        int startIndex = (requestedPage - 1) * entriesPerPage;
+        int endIndex = Math.min(startIndex + entriesPerPage, totalEntries);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("&7========= &c&l Kudos from Player %player_name% [%current_page%/%max_pages%] &7=========\n");
+        stringBuilder.append("&aID &7| &aFrom Player &7| &aReason &7| &aReceived At\n");
+
+        for (int entry = startIndex; entry < endIndex; entry++) {
+            stringBuilder.append(entryKudosList.get(entry)).append("\n");
+        }
+
+        String message = stringBuilder.toString()
+                .replace("%max_pages%", String.valueOf(maxPages))
+                .replace("%current_page%", String.valueOf(requestedPage))
+                .replace("%player_name%", playerName);
+
+       sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 
 //    private void performRemove(CommandSender sender, String[] args) {
