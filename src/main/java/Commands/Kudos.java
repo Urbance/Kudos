@@ -65,6 +65,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         Player player = Bukkit.getPlayer(sender.getName());
         inventory = new KudosGUI().create(player);
         player.openInventory(inventory);
+        data.getPlayerKudos(((Player) sender).getUniqueId());
     }
 
     public void showKudos(CommandSender sender) {
