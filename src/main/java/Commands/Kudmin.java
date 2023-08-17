@@ -159,12 +159,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performGet(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 3, 1, true, true)) return;
+        if (!validateInput(args, sender, 3, 1, true, false)) return;
+
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
         List<String> entryKudosList = data.getPlayerKudos(playerUUID);
 
-        if (entryKudosList.size() == 0) {
+        if (entryKudosList.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
             return;
         }
@@ -172,15 +173,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int totalEntries = entryKudosList.size();
         int entriesPerPage = 5;
         int maxPages = (int) Math.ceil((double) totalEntries / entriesPerPage);
+        int requestedPage = 1;
 
-        int requestedPage = Integer.parseInt(args[2]);
+        if (args.length == 3 && isValueAnInteger(args[2])) requestedPage = Integer.parseInt(args[2]);
 
         if (requestedPage > maxPages || requestedPage == 0) {
-            if (maxPages == 1) {
+            if (requestedPage == 0 && maxPages == 1) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please enter a page number of at least &e1&7."));
-            } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please enter a number between &e1" + " &7and &e" + maxPages + "&7."));
+                return;
             }
+            if (requestedPage > 1 && maxPages == 1) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "There is no more than one page."));
+                return;
+            }
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please enter a number between &e1" + " &7and &e" + maxPages + "&7."));
             return;
         }
 
@@ -237,22 +243,22 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return false;
         }
         if (validateTargetPlayer && (!targetPlayerExists(sender, args, playerArgumentPosition))) return false;
-        if (validateValue && (!isValueAnInteger(sender, args))) return false;
+        if (validateValue && (!checkIfKudminValueIsValid(sender, args))) return false;
 
         return true;
     }
 
-    private boolean isValueAnInteger(CommandSender sender, String[] args) {
-        if (args.length < 3 || !isValueAnInteger(args[2]) || !(Integer.parseInt(args[2]) >= 0)) {
+    private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
+        if (args.length < 3 || !isValueAnInteger(args[2]) || Integer.parseInt(args[2]) < 0) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
             return false;
         }
         return true;
     }
 
-    private boolean isValueAnInteger(String rawValue) {
+    private boolean isValueAnInteger(String value) {
         try {
-            Integer.parseInt(rawValue);
+            Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return false;
         }
