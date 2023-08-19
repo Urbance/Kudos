@@ -113,15 +113,15 @@ public class SQLGetter {
         return true;
     }
 
-    // TODO needs changeover to new Kudmin concept
-    public void removeKudos(UUID uuid, int kudos) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Kudos=? WHERE UUID=?")) {
-            preparedStatement.setInt(1, (getAmountKudos(uuid) - kudos));
-            preparedStatement.setString(2, uuid.toString());
+    public boolean removeKudo(int kudosID) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE EntryNo=?")) {
+            preparedStatement.setInt(1, kudosID);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public boolean clearKudos(UUID uuid) {
@@ -150,7 +150,7 @@ public class SQLGetter {
         return clearAssignedKudos(uuid) && clearKudos(uuid);
     }
 
-    public List<String> getPlayerKudos(UUID uuid) {
+    public List<String> getAllPlayerKudos(UUID uuid) {
         List<String> kudos = new ArrayList<>();
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=?;")) {
             preparedStatement.setString(1, uuid.toString());
@@ -175,6 +175,22 @@ public class SQLGetter {
             e.printStackTrace();
         }
         return kudos;
+    }
+
+    public int getPlayerKudo(int requestedKudosID) {
+        int kudosID = 0;
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT EntryNo FROM kudos WHERE EntryNo=?;")) {
+            preparedStatement.setInt(1, requestedKudosID);
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                if (!results.wasNull())
+                    kudosID = results.getInt("EntryNo");
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return kudosID;
     }
 
     public int getAmountKudos(UUID uuid) {

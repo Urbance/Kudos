@@ -56,7 +56,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "clearall" -> performClearAll(sender, args);
             case "add" -> performAdd(sender, args);
             case "get" -> performGet(sender, args);
-           // case "remove" -> performRemove(sender, args);
+            case "remove" -> performRemove(sender, args);
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
     }
@@ -146,24 +146,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
     }
 
-    private void performAdd(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 3, 1, true, true))
-            return;
-
-        String playerName = args[1];
-        UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-        int amountKudos = Integer.parseInt(args[2]);
-
-        data.addKudos(player, "SYSTEM", null, amountKudos);
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
-    }
 
     private void performGet(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 3, 1, true, false)) return;
 
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-        List<String> entryKudosList = data.getPlayerKudos(playerUUID);
+        List<String> entryKudosList = data.getAllPlayerKudos(playerUUID);
 
         if (entryKudosList.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
@@ -236,6 +225,39 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 //            }
 //        }
 //    }
+    private void performRemove(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 3, 1, true, false)) return;
+
+
+        /*
+        Syntax: /kudmin remove [Player] [Kudos ID]
+
+        - validate kudos_id: if null or not an integer
+        - if no kudos_id entered: reference to /kudmin get
+         */
+
+        if (args.length == 2) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [Player] [site]&7."));
+            return;
+        }
+        if (args.length == 3 && !isValueAnInteger(args[2])) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Invalid Kudos ID."));
+            return;
+        }
+
+        String targetPlayerName = args[1];
+        int kudoID = data.getPlayerKudo(Integer.parseInt(args[2]));
+
+        if (kudoID == 0) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Kudo with ID &e" + kudoID + " &7not found."));
+            return;
+        }
+        if (!data.removeKudo(kudoID)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Something went wrong while removing the Kudo. Please contact the server administrator."));
+            return;
+        }
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Removed Kudo with ID &e" + kudoID + " &7from player &e" + targetPlayerName + "&7."));
+    }
 
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
@@ -305,8 +327,11 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
             }
             case 3 -> {
-                if (args[0].equals("add") || args[0].equals("remove")) {
+                if (args[0].equals("add")) {
                     commandArguments.add("amount");
+                }
+                if (args[0].equals("remove")) {
+                    commandArguments.add("kudos_id");
                 }
                 if (args[0].equals("clear")) {
                     commandArguments.add("kudos");
