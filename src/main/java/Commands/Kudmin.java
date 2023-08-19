@@ -227,15 +227,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 //    }
     private void performRemove(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 3, 1, true, false)) return;
-
-
-        /*
-        Syntax: /kudmin remove [Player] [Kudos ID]
-
-        - validate kudos_id: if null or not an integer
-        - if no kudos_id entered: reference to /kudmin get
-         */
-
+        
         if (args.length == 2) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [Player] [site]&7."));
             return;
