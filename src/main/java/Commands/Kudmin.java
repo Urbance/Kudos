@@ -146,6 +146,31 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Cleared Kudos and assigned Kudos from &e" + playerName));
     }
 
+    private void performAdd(CommandSender sender, String[] args) {
+        if (!validateInput(args, sender, 30, 1, true, true)) return;
+        if (args.length == 3) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
+            return;
+        }
+
+        String playerName = args[1];
+        int amountKudos = Integer.parseInt(args[2]);
+        String reason = args[3];
+        int maximumReasonLength = 18;
+        UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+
+        // TODO Refactor in KudosManager
+        for (int argumentPosition = 4; argumentPosition < args.length; argumentPosition++) {
+            reason += " " + args[argumentPosition];
+        }
+        if (reason.length() > maximumReasonLength) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The reason can't be longer than &e" + maximumReasonLength + " &7chars."));
+            return;
+        }
+
+        data.addKudos(player, "SERVER", reason, amountKudos);
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
+    }
 
     private void performGet(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 3, 1, true, false)) return;
@@ -198,36 +223,9 @@ public class Kudmin implements CommandExecutor, TabCompleter {
        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
     }
 
-//    private void performRemove(CommandSender sender, String[] args) {
-//        // TODO test validateValue 0
-//        if (!validateInput(args, sender, 4, 3, true, true)) {
-//            return;
-//        }
-//
-//        String optionValue = args[1];
-//        String playerName = args[2];
-//        int id = Integer.parseInt(args[3]);
-//        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-//
-//
-//        switch (optionValue) {
-//            case "kudos" -> {
-//                if (amount > data.getKudos(playerUUID)) {
-//                    if (!data.clearKudos(playerUUID)) {
-//                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred! Please contact the system administrator or the developer of this plugin."));
-//                        return;
-//                    }
-//                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-//                    return;
-//                }
-//                data.removeKudos(playerUUID, amount);
-//                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Removed &e" + amount + " Kudos &7" + "from &e" + playerName));
-//            }
-//        }
-//    }
     private void performRemove(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 3, 1, true, false)) return;
-        
+
         if (args.length == 2) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [Player] [site]&7."));
             return;
@@ -333,6 +331,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     commandArguments.add("site");
                 }
                 StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
+            }
+            case 4 -> {
+                if (args[0].equals("add")) commandArguments.add("reason");
+                StringUtil.copyPartialMatches(args[3], commandArguments, tabCompletions);
             }
         }
         return tabCompletions;
