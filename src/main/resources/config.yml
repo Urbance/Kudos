@@ -2,7 +2,7 @@ general:
   update-notification: true
   prefix: "&7» &eKudos&7: "
   use-SQL: false
-  console-name: "CONSOLE"
+  console-name: "SERVER"
 kudo-award:
   cooldown: 900
   notification:
