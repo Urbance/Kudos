@@ -171,5 +171,14 @@ public class KudosManager {
         }
         return itemStacks;
     }
+
+    public String getReason(String[] args, int startIndex) {
+        String reason = args[3];
+        int endIndex = args.length;
+
+        for (int argumentPosition = startIndex; argumentPosition < endIndex; argumentPosition++) reason += " " + args[argumentPosition];
+
+        return reason;
+    }
 }
 

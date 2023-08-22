@@ -2,6 +2,7 @@ package Commands;
 
 import Utils.ComponentCreator;
 import Utils.FileManager;
+import Utils.KudosUtils.KudosManager;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -25,13 +26,15 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     private String prefix;
     private Main plugin;
     private SQLGetter data;
+    private FileConfiguration config;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = "&7» &cKudmin&7: ";
         this.plugin = Main.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
-        FileConfiguration locale = new FileManager("messages.yml", plugin).getConfig();
+        this.config = plugin.config;
+        FileConfiguration locale = plugin.localeConfig;
 
         if (!sender.hasPermission("kudos.kudmin.*")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
@@ -42,9 +45,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }
-
         performAction(sender, args);
-
         return false;
     }
 
@@ -152,23 +153,24 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
         }
-
+        KudosManager kudosManager = new KudosManager();
+        String reason = kudosManager.getReason(args, 4);
         String playerName = args[1];
         int amountKudos = Integer.parseInt(args[2]);
-        String reason = args[3];
-        int maximumReasonLength = 18;
+        int maximumReasonLength = config.getInt("general.reason-length");
         UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
-        // TODO Refactor in KudosManager
-        for (int argumentPosition = 4; argumentPosition < args.length; argumentPosition++) {
-            reason += " " + args[argumentPosition];
-        }
         if (reason.length() > maximumReasonLength) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The reason can't be longer than &e" + maximumReasonLength + " &7chars."));
             return;
         }
 
-        data.addKudos(player, "SERVER", reason, amountKudos);
+        if (reason.isEmpty()) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred. Can't get reason."));
+            return;
+        }
+
+        data.addKudos(player, config.getString("general.console-name"), reason, amountKudos);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
     }
 

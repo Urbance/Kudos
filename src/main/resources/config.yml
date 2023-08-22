@@ -3,6 +3,7 @@ general:
   prefix: "&7» &eKudos&7: "
   use-SQL: false
   console-name: "SERVER"
+  reason-length: 18
 kudo-award:
   cooldown: 900
   notification:
