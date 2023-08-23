@@ -39,7 +39,7 @@ public class SQLGetter {
 
     private boolean createKudosTable() {
         String createTableStatement = "CREATE TABLE IF NOT EXISTS kudos " +
-                "(EntryNo INT PRIMARY KEY AUTO_INCREMENT, AwardedToPlayer VARCHAR(100) NOT NULL, ReceivedFromPlayer VARCHAR(100) NOT NULL, Reason VARCHAR(100), Date VARCHAR(100) NOT NULL)";
+                "(KudoID INT PRIMARY KEY AUTO_INCREMENT, AwardedToPlayer VARCHAR(100) NOT NULL, ReceivedFromPlayer VARCHAR(100) NOT NULL, Reason VARCHAR(100), Date VARCHAR(100) NOT NULL)";
         if (driverClassName.equals("org.sqlite.JDBC")) {
             createTableStatement = createTableStatement.replace("AUTO_INCREMENT", "AUTOINCREMENT");
             createTableStatement = createTableStatement.replace("INT", "INTEGER");
@@ -114,7 +114,7 @@ public class SQLGetter {
     }
 
     public boolean removeKudo(int kudosID) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE EntryNo=?")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE KudoID=?")) {
             preparedStatement.setInt(1, kudosID);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -157,7 +157,7 @@ public class SQLGetter {
             ResultSet results = preparedStatement.executeQuery();
 
             while (results.next()) {
-                String entryNumber = results.getString("EntryNo");
+                String entryNumber = results.getString("KudoID");
                 String receivedFromPlayer;
                 try {
                     receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
@@ -179,12 +179,12 @@ public class SQLGetter {
 
     public int getPlayerKudo(int requestedKudosID) {
         int kudosID = 0;
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT EntryNo FROM kudos WHERE EntryNo=?;")) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT KudoID FROM kudos WHERE KudoID=?;")) {
             preparedStatement.setInt(1, requestedKudosID);
             ResultSet results = preparedStatement.executeQuery();
             while (results.next()) {
                 if (!results.wasNull())
-                    kudosID = results.getInt("EntryNo");
+                    kudosID = results.getInt("KudoID");
             }
         }
         catch (SQLException e) {
@@ -218,7 +218,7 @@ public class SQLGetter {
     }
 
     public List<String> getTopPlayersKudos() {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(EntryNo) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(EntryNo) DESC LIMIT 3")){
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 3")){
             int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
@@ -228,7 +228,7 @@ public class SQLGetter {
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
                 String playerName = Bukkit.getOfflinePlayer(uuid).getName();
-                String kudos = results.getString("COUNT(EntryNo)");
+                String kudos = results.getString("COUNT(KudoID)");
                 String loreEntry = itemLore.get(counter);
 
                 loreEntry = loreEntry.replaceAll("%top_kudos%", kudos);
