@@ -13,14 +13,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
-public class KudosManager {
+public class KudosManagement {
     private Main plugin;
     private SQLGetter data;
     private FileConfiguration config;
     private FileConfiguration locale;
     private KudosMessage kudosMessage;
 
-    public KudosManager() {
+    public KudosManagement() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
         this.config = plugin.config;

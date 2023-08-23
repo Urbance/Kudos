@@ -1,7 +1,7 @@
 package Commands;
 
 import Utils.KudosUtils.KudosGUI;
-import Utils.KudosUtils.KudosManager;
+import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
@@ -25,7 +25,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     SQLGetter data;
     String prefix;
     OfflinePlayer targetPlayer;
-    KudosManager kudosManager;
+    KudosManagement kudosManagement;
     KudosMessage kudosMessage;
 
 
@@ -34,7 +34,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
-        this.kudosManager = new KudosManager();
+        this.kudosManagement = new KudosManagement();
         this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
@@ -72,7 +72,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission(sender);
             return;
         }
-        kudosManager.showPlayerKudos(sender, targetPlayer);
+        kudosManagement.showPlayerKudos(sender, targetPlayer);
 }
 
     public boolean validateInput(String[] args, CommandSender sender) {

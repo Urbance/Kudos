@@ -17,7 +17,7 @@ public class KudosMilestone {
     private SQLGetter data;
     private FileConfiguration locale;
     private KudosMessage kudosMessage;
-    private KudosManager kudosManager;
+    private KudosManagement kudosManagement;
 
     public KudosMilestone() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
@@ -25,7 +25,7 @@ public class KudosMilestone {
         this.data = new SQLGetter(plugin);
         this.locale = plugin.localeConfig;
         this.kudosMessage = new KudosMessage(plugin);
-        this.kudosManager = new KudosManager();
+        this.kudosManagement = new KudosManagement();
     }
 
     public boolean sendMilestone(CommandSender sender, Player targetPlayer) {
@@ -48,9 +48,9 @@ public class KudosMilestone {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!kudosManager.addItemRewards(sender, targetPlayer, "kudo-award.milestones.rewards.items")) return false;
+        if (!kudosManagement.addItemRewards(sender, targetPlayer, "kudo-award.milestones.rewards.items")) return false;
 
-        new KudosManager().performCommandRewards(KudosManager.AwardType.MILESTONE, targetPlayer);
+        new KudosManagement().performCommandRewards(KudosManagement.AwardType.MILESTONE, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.milestones.rewards.xp"));
         return true;
     }
@@ -58,6 +58,6 @@ public class KudosMilestone {
     private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
         if (!config.getBoolean("kudo-award.milestones.enable-playsound"))
             return;
-        kudosManager.playSound(sender, targetPlayer, config.getString("kudo-award.milestones.playsound-type"));
+        kudosManagement.playSound(sender, targetPlayer, config.getString("kudo-award.milestones.playsound-type"));
     }
 }

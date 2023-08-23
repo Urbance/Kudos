@@ -9,12 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class KudosAward {
     private Main plugin;
     private FileConfiguration config;
-    private KudosManager kudosManager;
+    private KudosManagement kudosManagement;
 
     public KudosAward() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
         this.config = plugin.config;
-        this.kudosManager = new KudosManager();
+        this.kudosManagement = new KudosManagement();
     }
 
     public boolean sendKudoAward(CommandSender sender, Player targetPlayer) {
@@ -30,7 +30,7 @@ public class KudosAward {
         if (!config.getBoolean("kudo-award.notification.enabled")) return;
 
         KudosNotification kudosNotification = new KudosNotification();
-        String notificationMode = kudosManager.getNotificationMode();
+        String notificationMode = kudosManagement.getNotificationMode();
         playNotificationSound(sender, targetPlayer, notificationMode);
 
         if (!(sender instanceof Player)) {
@@ -47,9 +47,9 @@ public class KudosAward {
     }
 
     private boolean addRewards(CommandSender sender, Player targetPlayer) {
-        if (!kudosManager.addItemRewards(sender, targetPlayer, "kudo-award.rewards.items")) return false;
+        if (!kudosManagement.addItemRewards(sender, targetPlayer, "kudo-award.rewards.items")) return false;
 
-        kudosManager.performCommandRewards(KudosManager.AwardType.AWARD, targetPlayer);
+        kudosManagement.performCommandRewards(KudosManagement.AwardType.AWARD, targetPlayer);
         targetPlayer.giveExp(config.getInt("kudo-award.rewards.xp"));
         return true;
     }
@@ -57,6 +57,6 @@ public class KudosAward {
     private void playNotificationSound(CommandSender sender, Player targetPlayer, String notificationMode) {
         if (!config.getBoolean("kudo-award.notification.enable-playsound")) return;
         if (notificationMode.equals("private") || notificationMode.equals("broadcast"))
-            kudosManager.playSound(sender, targetPlayer, config.getString("kudo-award.notification.playsound-type"));
+            kudosManagement.playSound(sender, targetPlayer, config.getString("kudo-award.notification.playsound-type"));
     }
 }

@@ -14,7 +14,7 @@ import java.util.*;
 public class Kudo implements CommandExecutor, TabCompleter {
     private Main plugin;
     private KudosMessage kudosMessage;
-    private KudosManager kudosManager;
+    private KudosManagement kudosManagement;
     private FileConfiguration locale;
     private FileConfiguration config;
     private int playerCooldown;
@@ -26,7 +26,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.locale = plugin.localeConfig;
         this.config = plugin.config;
         this.kudosMessage = new KudosMessage(plugin);
-        this.kudosManager = new KudosManager();
+        this.kudosManagement = new KudosManagement();
 
         if (!validateInput(args, sender))
             return false;
@@ -41,7 +41,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         if (sender instanceof Player) this.playerCooldown = plugin.cooldownManager.getCooldown(((Player) sender).getUniqueId());
         if (!playerCanReceiveKudo(sender, targetPlayer)) return;
-        if (kudosManager.isMilestone(targetPlayer)) {
+        if (kudosManagement.isMilestone(targetPlayer)) {
             if (!new KudosMilestone().sendMilestone(sender, targetPlayer)) {
                 if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
                 return;
@@ -49,7 +49,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         } else {
             if (!new KudosAward().sendKudoAward(sender, targetPlayer)) return;
         }
-        kudosManager.addKudo(sender, targetPlayerUUID);
+        kudosManagement.addKudo(sender, targetPlayerUUID);
         setCooldown(sender);
     }
 

@@ -2,7 +2,7 @@ package Commands;
 
 import Utils.ComponentCreator;
 import Utils.FileManager;
-import Utils.KudosUtils.KudosManager;
+import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -153,8 +153,8 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
         }
-        KudosManager kudosManager = new KudosManager();
-        String reason = kudosManager.getReason(args, 4);
+        KudosManagement kudosManagement = new KudosManagement();
+        String reason = kudosManagement.getReason(args, 4);
         String playerName = args[1];
         int amountKudos = Integer.parseInt(args[2]);
         int maximumReasonLength = config.getInt("general.reason-length");
