@@ -148,7 +148,9 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performAdd(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 30, 1, true, true)) return;
+        int maximumReasonLength = config.getInt("general.reason-length");
+
+        if (!validateInput(args, sender, 3 + maximumReasonLength, 1, true, true)) return;
         if (args.length == 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
@@ -157,7 +159,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String reason = kudosManagement.getReason(args, 4);
         String playerName = args[1];
         int amountKudos = Integer.parseInt(args[2]);
-        int maximumReasonLength = config.getInt("general.reason-length");
+
         UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
         if (reason.length() > maximumReasonLength) {
