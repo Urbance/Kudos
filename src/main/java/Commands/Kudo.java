@@ -3,6 +3,7 @@ package Commands;
 import Utils.KudosUtils.*;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -27,15 +28,15 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.config = plugin.config;
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
+        String reason = null;
+        if (config.getBoolean("kudo-award.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
+        if (!validateInput(args, sender, reason)) return false;
 
-        if (!validateInput(args, sender))
-            return false;
-
-        awardKudo(sender, args);
+        awardKudo(sender, args, reason);
         return false;
     }
 
-    private void awardKudo(CommandSender sender, String[] args) {
+    private void awardKudo(CommandSender sender, String[] args, String reason) {
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
 
@@ -47,9 +48,9 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 return;
             }
         } else {
-            if (!new KudosAward().sendKudoAward(sender, targetPlayer)) return;
+            if (!new KudosAward().sendKudoAward(sender, targetPlayer, reason)) return;
         }
-        kudosManagement.addKudo(sender, targetPlayerUUID);
+        kudosManagement.addKudo(sender, targetPlayerUUID, reason);
         setCooldown(sender);
     }
 
@@ -59,7 +60,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean validateInput(String[] args, CommandSender sender) {
+    private boolean validateInput(String[] args, CommandSender sender, String reason) {
         if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) {
             kudosMessage.noPermission(sender);
             return false;
@@ -68,7 +69,16 @@ public class Kudo implements CommandExecutor, TabCompleter {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return false;
         }
+
         if (args.length > 1) {
+            if (config.getBoolean("kudo-award.enable-reasons")) {
+                int maximumReasonLength = config.getInt("general.reason-length");
+                if (reason.length() < maximumReasonLength) {
+                    return true;
+                }
+                kudosMessage.sendSender(sender, locale.getString("error.award-reason-is-too-long").replace("%kudos_maximum_award_reason_chars%", String.valueOf(maximumReasonLength)));
+                return false;
+            }
             kudosMessage.wrongUsage(sender);
             return false;
         }
@@ -116,14 +126,23 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        List<String> playerNameList = new ArrayList<>();
+        List<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
-        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) return playerNameList;
-        if (args.length == 1) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                playerNameList.add(player.getName());
+        FileConfiguration config = Main.getPlugin(Main.class).config;
+        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) return commandArguments;
+        switch (args.length) {
+            case 1 -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    commandArguments.add(player.getName());
+                }
+                StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
             }
-            StringUtil.copyPartialMatches(args[0], playerNameList, tabCompletions);
+            case 2 -> {
+                if (config.getBoolean("kudo-award.enable-reasons")) {
+                    tabCompletions.add("reason");
+                }
+                StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
+            }
         }
         return tabCompletions;
     }

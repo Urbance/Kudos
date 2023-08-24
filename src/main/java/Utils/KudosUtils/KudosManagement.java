@@ -33,15 +33,13 @@ public class KudosManagement {
         MILESTONE
     }
 
-    public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
+    public void addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
+        if (reason == null) reason = config.getString("kudo-award.no-reason-given");
         if (sender instanceof Player) {
-            if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), null, 1)) {
-                kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
-                return;
-            }
+            if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1)) kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
             return;
         }
-        if (!data.addKudos(targetPlayerUUID, config.getString("general.console-name"), null, 1)) {
+        if (!data.addKudos(targetPlayerUUID, config.getString("general.console-name"), reason, 1)) {
             kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
         }
     }
@@ -173,7 +171,7 @@ public class KudosManagement {
     }
 
     public String getReason(String[] args, int startIndex) {
-        String reason = args[3];
+        String reason = args[startIndex - 1];
         int endIndex = args.length;
 
         for (int argumentPosition = startIndex; argumentPosition < endIndex; argumentPosition++) reason += " " + args[argumentPosition];

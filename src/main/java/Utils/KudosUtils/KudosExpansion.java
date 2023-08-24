@@ -32,9 +32,7 @@ public class KudosExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String parameter) {
-        if (player == null)  {
-            return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
-        }
+        if (player == null) return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
 
         Main plugin = Main.getPlugin(Main.class);
         SQLGetter data = new SQLGetter(plugin);

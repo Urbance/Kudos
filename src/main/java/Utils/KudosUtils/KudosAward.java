@@ -17,16 +17,16 @@ public class KudosAward {
         this.kudosManagement = new KudosManagement();
     }
 
-    public boolean sendKudoAward(CommandSender sender, Player targetPlayer) {
+    public boolean sendKudoAward(CommandSender sender, Player targetPlayer, String reason) {
         if (!addRewards(sender, targetPlayer)) {
              if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
-        sendNotification(sender, targetPlayer);
+        sendNotification(sender, targetPlayer, reason);
         return true;
     }
 
-    private void sendNotification(CommandSender sender, Player targetPlayer) {
+    private void sendNotification(CommandSender sender, Player targetPlayer, String reason) {
         if (!config.getBoolean("kudo-award.notification.enabled")) return;
 
         KudosNotification kudosNotification = new KudosNotification();
@@ -38,7 +38,7 @@ public class KudosAward {
             return;
         }
         switch (notificationMode) {
-            case "broadcast" -> kudosNotification.sendBroadcastMessage(sender, targetPlayer);
+            case "broadcast" -> kudosNotification.sendBroadcastMessage(sender, targetPlayer, reason);
             case "private" -> kudosNotification.sendPrivate(sender, targetPlayer);
         }
     }

@@ -2,6 +2,7 @@ package Utils.KudosUtils;
 
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -15,12 +16,16 @@ public class KudosNotification {
     private KudosMessage kudosMessage;
     private SQLGetter data;
     private FileConfiguration locale;
+    private KudosManagement kudosManagement;
+    private boolean awardReasonsAreEnabled;
 
     public KudosNotification() {
         Main plugin = JavaPlugin.getPlugin(Main.class);
         this.kudosMessage = new KudosMessage(plugin);
         this.data = new SQLGetter(plugin);
         this.locale = plugin.localeConfig;
+        this.kudosManagement = new KudosManagement();
+        this.awardReasonsAreEnabled = plugin.config.getBoolean("kudo-award.enable-reasons");
     }
 
     public void fromConsole(Player targetPlayer) {
@@ -31,13 +36,20 @@ public class KudosNotification {
         kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console"), values));
     }
 
-    public void sendBroadcastMessage(CommandSender sender, Player targetPlayer) {
+    public void sendBroadcastMessage(CommandSender sender, Player targetPlayer, String reason) {
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         Map<String, String> values = new HashMap<>();
         values.put("kudos_player_name", sender.getName());
         values.put("kudos_targetplayer_name", targetPlayer.getName());
         values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayerUUID) + 1));
-        kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast"), values));
+
+        String broadcastMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast"), values);
+
+        if (reason != null) {
+            values.put("kudos_award_reason", reason);
+            broadcastMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast-with-reason"), values);
+        }
+        kudosMessage.broadcast(broadcastMessage);
     }
 
     public void sendPrivate(CommandSender sender, Player targetPlayer) {
