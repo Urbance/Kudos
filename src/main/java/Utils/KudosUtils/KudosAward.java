@@ -37,12 +37,9 @@ public class KudosAward {
             kudosNotification.fromConsole(targetPlayer);
             return;
         }
-        if (notificationMode.equals("broadcast")) {
-            kudosNotification.sendBroadcastMessage(sender, targetPlayer);
-            return;
-        }
-        if (notificationMode.equals("private")) {
-            kudosNotification.sendPrivate(sender, targetPlayer);
+        switch (notificationMode) {
+            case "broadcast" -> kudosNotification.sendBroadcastMessage(sender, targetPlayer);
+            case "private" -> kudosNotification.sendPrivate(sender, targetPlayer);
         }
     }
 
