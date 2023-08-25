@@ -40,7 +40,7 @@ public class KudosAward {
         }
         switch (notificationMode) {
             case "broadcast" -> kudosNotification.sendBroadcastMessage(sender, targetPlayer, reason);
-            case "private" -> kudosNotification.sendPrivate(sender, targetPlayer);
+            case "private" -> kudosNotification.sendPrivate(sender, targetPlayer, reason);
         }
     }
 

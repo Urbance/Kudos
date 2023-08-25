@@ -16,16 +16,12 @@ public class KudosNotification {
     private KudosMessage kudosMessage;
     private SQLGetter data;
     private FileConfiguration locale;
-    private KudosManagement kudosManagement;
-    private boolean awardReasonsAreEnabled;
 
     public KudosNotification() {
         Main plugin = JavaPlugin.getPlugin(Main.class);
         this.kudosMessage = new KudosMessage(plugin);
         this.data = new SQLGetter(plugin);
         this.locale = plugin.localeConfig;
-        this.kudosManagement = new KudosManagement();
-        this.awardReasonsAreEnabled = plugin.config.getBoolean("kudo-award.enable-reasons");
     }
 
     public void fromConsole(Player targetPlayer, String reason) {
@@ -59,9 +55,9 @@ public class KudosNotification {
         kudosMessage.broadcast(awardMessage);
     }
 
-    public void sendPrivate(CommandSender sender, Player targetPlayer) {
+    public void sendPrivate(CommandSender sender, Player targetPlayer, String reason) {
         sendPrivateMessageToSender(sender, targetPlayer);
-        sendPrivateMessageToTargetPlayer(sender, targetPlayer);
+        sendPrivateMessageToTargetPlayer(sender, targetPlayer, reason);
     }
 
     private void sendPrivateMessageToSender(CommandSender sender, Player targetPlayer) {
@@ -70,11 +66,18 @@ public class KudosNotification {
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudo.player-assigned-kudo"), valuesSender));
     }
 
-    private void sendPrivateMessageToTargetPlayer(CommandSender sender, Player targetPlayer) {
+    private void sendPrivateMessageToTargetPlayer(CommandSender sender, Player targetPlayer, String reason) {
         Map<String, String> valuesTargetPlayer = new HashMap<>();
         valuesTargetPlayer.put("kudos_player_name", sender.getName());
         valuesTargetPlayer.put("kudos_player_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId()) + 1));
-        kudosMessage.send(targetPlayer, kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player"), valuesTargetPlayer));
+
+        String awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player"), valuesTargetPlayer);
+
+        if (reason != null) {
+            valuesTargetPlayer.put("kudos_award_reason", reason);
+            awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-player-with-reason"), valuesTargetPlayer);
+        }
+        kudosMessage.send(targetPlayer, awardMessage);
     }
 
 }
