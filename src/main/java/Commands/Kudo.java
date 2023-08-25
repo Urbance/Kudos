@@ -69,7 +69,16 @@ public class Kudo implements CommandExecutor, TabCompleter {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return false;
         }
-
+        if (Bukkit.getPlayer(args[0]) == null) {
+            Map<String, String> placeholderValues = new HashMap<>();
+            placeholderValues.put("kudos_targetplayer_name", args[0]);
+            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-online"), placeholderValues));
+            return false;
+        }
+        if (sender == Bukkit.getPlayer(args[0])) {
+            kudosMessage.sendSender(sender, locale.getString("error.cant-give-yourself-kudo"));
+            return false;
+        }
         if (args.length > 1) {
             if (config.getBoolean("kudo-award.enable-reasons")) {
                 int maximumReasonLength = config.getInt("general.reason-length");
@@ -80,16 +89,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 return false;
             }
             kudosMessage.wrongUsage(sender);
-            return false;
-        }
-        if (Bukkit.getPlayer(args[0]) == null) {
-            Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("kudos_targetplayer_name", args[0]);
-            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-online"), placeholderValues));
-            return false;
-        }
-        if (sender == Bukkit.getPlayer(args[0])) {
-            kudosMessage.sendSender(sender, locale.getString("error.cant-give-yourself-kudo"));
             return false;
         }
         return true;

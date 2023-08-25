@@ -28,12 +28,19 @@ public class KudosNotification {
         this.awardReasonsAreEnabled = plugin.config.getBoolean("kudo-award.enable-reasons");
     }
 
-    public void fromConsole(Player targetPlayer) {
+    public void fromConsole(Player targetPlayer, String reason) {
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
         values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayerUUID) + 1));
-        kudosMessage.broadcast(kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console"), values));
+
+        String awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console"), values);
+
+        if (reason != null) {
+            values.put("kudos_award_reason", reason);
+            awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-from-console-with-reason"), values);
+        }
+        kudosMessage.broadcast(awardMessage);
     }
 
     public void sendBroadcastMessage(CommandSender sender, Player targetPlayer, String reason) {
@@ -43,13 +50,13 @@ public class KudosNotification {
         values.put("kudos_targetplayer_name", targetPlayer.getName());
         values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayerUUID) + 1));
 
-        String broadcastMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast"), values);
+        String awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast"), values);
 
         if (reason != null) {
             values.put("kudos_award_reason", reason);
-            broadcastMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast-with-reason"), values);
+            awardMessage = kudosMessage.setPlaceholders(locale.getString("kudo.player-award-kudo-broadcast-with-reason"), values);
         }
-        kudosMessage.broadcast(broadcastMessage);
+        kudosMessage.broadcast(awardMessage);
     }
 
     public void sendPrivate(CommandSender sender, Player targetPlayer) {

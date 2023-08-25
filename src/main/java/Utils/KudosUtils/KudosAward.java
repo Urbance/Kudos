@@ -2,6 +2,7 @@ package Utils.KudosUtils;
 
 import de.urbance.Main;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,8 +34,8 @@ public class KudosAward {
         String notificationMode = kudosManagement.getNotificationMode();
         playNotificationSound(sender, targetPlayer, notificationMode);
 
-        if (!(sender instanceof Player)) {
-            kudosNotification.fromConsole(targetPlayer);
+        if (sender instanceof ConsoleCommandSender) {
+            kudosNotification.fromConsole(targetPlayer, reason);
             return;
         }
         switch (notificationMode) {
