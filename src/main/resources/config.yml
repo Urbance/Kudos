@@ -44,9 +44,10 @@ kudo-award:
         - effect give %kudos_player_name% minecraft:speed 600
   milestones:
     enabled: true
-    span-between-kudos: 10
     enable-playsound: true
+    enable-reasons: true
     playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
+    span-between-kudos: 10
     rewards:
       items:
         item-1:

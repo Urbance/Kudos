@@ -3,7 +3,6 @@ package Commands;
 import Utils.KudosUtils.*;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -43,7 +42,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         if (sender instanceof Player) this.playerCooldown = plugin.cooldownManager.getCooldown(((Player) sender).getUniqueId());
         if (!playerCanReceiveKudo(sender, targetPlayer)) return;
         if (kudosManagement.isMilestone(targetPlayer)) {
-            if (!new KudosMilestone().sendMilestone(sender, targetPlayer)) {
+            if (!new KudosMilestone().sendMilestone(sender, targetPlayer, reason)) {
                 if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
                 return;
             }
