@@ -159,6 +159,7 @@ public class SQLGetter {
             while (results.next()) {
                 String entryNumber = results.getString("KudoID");
                 String receivedFromPlayer;
+
                 try {
                     receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
                 } catch (Exception e) {
@@ -168,7 +169,7 @@ public class SQLGetter {
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
 
-                kudos.add("&7" + entryNumber + " | " + receivedFromPlayer + " | " + reason + " | " + date);
+                kudos.add(String.format("&cID&7: %s | &cfrom &7%s | &cat&7 %s \n&cReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
 
         } catch (SQLException e) {

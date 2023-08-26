@@ -192,7 +192,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         }
 
         int totalEntries = entryKudosList.size();
-        int entriesPerPage = 5;
+        int entriesPerPage = 4;
         int maxPages = (int) Math.ceil((double) totalEntries / entriesPerPage);
         int requestedPage = 1;
 
@@ -215,10 +215,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int endIndex = Math.min(startIndex + entriesPerPage, totalEntries);
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("&7========= &c&l Kudos from Player %player_name% [%current_page%/%max_pages%] &7=========\n");
-        stringBuilder.append("&aID &7| &aFrom Player &7| &aReason &7| &aReceived At\n");
+        stringBuilder.append("&7» &cKudos &7from Player &c%player_name% &7[&c%current_page%&7/&c%max_pages%&7]\n");
 
         for (int entry = startIndex; entry < endIndex; entry++) {
+            stringBuilder.append(" \n");
             stringBuilder.append(entryKudosList.get(entry)).append("\n");
         }
 
