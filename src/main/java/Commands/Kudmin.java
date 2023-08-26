@@ -159,9 +159,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String reason = kudosManagement.getReason(args, 4);
         String playerName = args[1];
         int amountKudos = Integer.parseInt(args[2]);
-
         UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
+        if (amountKudos > 2500) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "You're trying to add a high amount of Kudos to a player. To avoid server crashes, the maximum number of Kudos that can be added is limited to 2500."));
+            return;
+        }
         if (reason.length() > maximumReasonLength) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The reason can't be longer than &e" + maximumReasonLength + " &7chars."));
             return;
