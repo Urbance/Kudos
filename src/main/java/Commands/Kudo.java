@@ -28,7 +28,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
         String reason = null;
-        if (config.getBoolean("kudo-award.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
+        if (config.getBoolean("kudo-award.notification.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
         if (!validateInput(args, sender, reason)) return false;
 
         awardKudo(sender, args, reason);
@@ -79,7 +79,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
         if (args.length > 1) {
-            if (config.getBoolean("kudo-award.enable-reasons")) {
+            if (config.getBoolean("kudo-award.notification.enable-reasons")) {
                 int maximumReasonLength = config.getInt("general.reason-length");
                 if (reason.length() < maximumReasonLength) {
                     return true;
@@ -136,7 +136,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
             }
             case 2 -> {
-                if (config.getBoolean("kudo-award.enable-reasons")) {
+                if (config.getBoolean("kudo-award.notification.enable-reasons")) {
                     tabCompletions.add("reason");
                 }
                 StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);

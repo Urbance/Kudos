@@ -6,13 +6,13 @@ general:
   reason-length: 18
 kudo-award:
   cooldown: 900
-  enable-reasons: true
-  no-reason-given: "No reason was given"
   notification:
     enabled: true
     notification-mode: "broadcast"
     enable-playsound: true
     playsound-type: "ENTITY_PLAYER_LEVELUP"
+    enable-reasons: true
+    no-reason-given: "No reason was given"
   limitation:
     enabled: true
     cooldown: 86400
