@@ -169,7 +169,7 @@ public class SQLGetter {
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
 
-                kudos.add(String.format("&cID&7: %s | &cfrom &7%s | &cat&7 %s \n&cReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
+                kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
 
         } catch (SQLException e) {
