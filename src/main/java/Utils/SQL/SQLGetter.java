@@ -15,13 +15,17 @@ import java.util.Date;
 
 public class SQLGetter {
     public static String driverClassName;
+    private Main plugin;
+    private FileConfiguration config;
     private FileConfiguration guiConfig;
 
     public SQLGetter(Main plugin) {
         this.guiConfig = new FileManager("gui.yml", plugin).getConfig();
+        this.plugin = Main.getPlugin(Main.class);
+        this.config = plugin.config;
     }
 
-    public boolean initDatabases() {
+    public boolean initTables() {
         return createPlayersTable() && createKudosTable();
     }
 
@@ -244,6 +248,85 @@ public class SQLGetter {
             e.printStackTrace();
         }
         return Collections.emptyList();
+    }
+
+    public boolean checkIfKudosTableHasOldTableSchematic() {
+        String statement = "SELECT COUNT(*) AS ENTRIES FROM pragma_table_info('kudos') WHERE name='Kudos' or name='Assigned'";
+        boolean useMySQL = config.getBoolean("general.use-SQL");
+
+        if (useMySQL) {
+            FileConfiguration mysqlConfig = plugin.mysqlConfig;
+            String databaseName = mysqlConfig.getString("database");
+            statement = ("SELECT COUNT(*) AS ENTRIES FROM information_schema.columns\n" +
+                    "WHERE TABLE_SCHEMA='%s'\n" +
+                    "AND TABLE_NAME='kudos'\n" +
+                    "AND COLUMN_NAME='UUID'\n" +
+                    "OR TABLE_SCHEMA='%s'\n" +
+                    "AND TABLE_NAME='kudos'\n" +
+                    "AND COLUMN_NAME='Kudos';").replace("%s", databaseName);
+
+            try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+                ResultSet results = preparedStatement.executeQuery();
+                while (results.next()) {
+                    int result = results.getInt("ENTRIES");
+                    if (result > 0) return true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return false;
+        }
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                int result = results.getInt("ENTRIES");
+                if (result > 0) return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    public boolean migrateOldTableSchemeToNewTableScheme() {
+        HashMap<UUID, Integer> oldKudosTablePlayerData = new HashMap<>();
+
+        // get old kudos table player data
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID, Kudos FROM kudos;")) {
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                UUID uuid = UUID.fromString(results.getString("UUID"));
+                int totalKudos = results.getInt("Kudos");
+                oldKudosTablePlayerData.put(uuid, totalKudos);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // remove old kudos table
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DROP TABLE kudos")) {
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // init tables
+        if (!initTables()) return false;
+
+        // migrate old player data
+        for (Map.Entry<UUID, Integer> entry : oldKudosTablePlayerData.entrySet()) {
+            UUID uuid = entry.getKey();
+            int totalKudos = entry.getValue();
+            createPlayer(uuid);
+            addKudos(uuid, config.getString("general.console-name") , null, totalKudos);
+            // TODO return true
+        }
+        return false;
     }
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {

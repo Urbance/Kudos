@@ -29,6 +29,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
     public boolean isConnected;
+    public boolean oldTableScheme;
 
     @Override
     public void onEnable() {
@@ -37,15 +38,15 @@ public final class Main extends JavaPlugin implements Listener {
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
+        checkNewUpdateAndCurrentVersion();
+        setupMetrics();
         setupConfigs();
         try {
             setupSQL();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        checkNewUpdateAndCurrentVersion();
         registerListenerAndCommands();
-        setupMetrics();
     }
 
     @Override
@@ -55,17 +56,17 @@ public final class Main extends JavaPlugin implements Listener {
 
     public void registerListenerAndCommands() {
         PluginManager pluginManager = Bukkit.getPluginManager();
+
         pluginManager.registerEvents(new OnPlayerJoin(), this);
-        if (!isConnected) {
-            return;
-        }
+        if (!isConnected) return;
+        getCommand("kudmin").setExecutor(new Kudmin());
+        getCommand("kudmin").setTabCompleter(new Kudmin());
+        if (oldTableScheme) return;
         pluginManager.registerEvents(new KudosGUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudos").setTabCompleter(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
         getCommand("kudo").setTabCompleter(new Kudo());
-        getCommand("kudmin").setExecutor(new Kudmin());
-        getCommand("kudmin").setTabCompleter(new Kudmin());
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new KudosExpansion().register();
         }
@@ -85,9 +86,12 @@ public final class Main extends JavaPlugin implements Listener {
         }
         if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
-            if (!data.initDatabases()) return false;
+            if (!data.initTables()) return false;
             this.isConnected = true;
         }
+
+        oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
+
         return true;
     }
 

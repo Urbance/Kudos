@@ -45,6 +45,17 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The plugin is running on version &c" + pluginDescriptionFile.getVersion()));
             return false;
         }
+
+        if (plugin.oldTableScheme) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start data migration"));
+
+            if (!data.migrateOldTableSchemeToNewTableScheme()) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Errors have occurred. Please check the console for more information!"));
+                return false;
+            }
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Done."));
+            return false;
+        }
         performAction(sender, args);
         return false;
     }
@@ -254,6 +265,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return;
         }
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Removed Kudo with ID &e" + kudoID + " &7from player &e" + targetPlayerName + "&7."));
+    }
+
+    private void performMigrate(CommandSender sender, String[] args) {
+        if (!args[0].equals("migrate")) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + ""));
+        }
     }
 
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
