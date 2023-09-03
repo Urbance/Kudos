@@ -326,7 +326,6 @@ public class SQLGetter {
             addKudos(uuid, config.getString("general.console-name") , null, totalKudos);
 
         }
-        // TODO return true: Check if tables are existing with the right columns?
         return true;
     }
 
