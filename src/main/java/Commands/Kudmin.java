@@ -174,7 +174,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performAdd(CommandSender sender, String[] args) {
-        int maximumReasonLength = config.getInt("general.reason-length");
+        int maximumReasonLength = config.getInt("kudo-award.reason-length");
 
         if (!validateInput(args, sender, 3 + maximumReasonLength, 1, true, true)) return;
         if (args.length == 3) {

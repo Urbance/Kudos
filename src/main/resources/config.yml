@@ -3,16 +3,16 @@ general:
   prefix: "&7» &eKudos&7: "
   use-SQL: false
   console-name: "SERVER"
-  reason-length: 18
 kudo-award:
   cooldown: 900
+  enable-reasons: true
   no-reason-given: "No reason was given"
+  reason-length: 18
   notification:
     enabled: true
     notification-mode: "broadcast"
     enable-playsound: true
     playsound-type: "ENTITY_PLAYER_LEVELUP"
-    enable-reasons: true
   limitation:
     enabled: true
     cooldown: 86400
@@ -45,7 +45,6 @@ kudo-award:
   milestones:
     enabled: true
     enable-playsound: true
-    enable-reasons: true
     playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
     span-between-kudos: 10
     rewards:
