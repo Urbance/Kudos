@@ -97,7 +97,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 "&7/kudmin help\n" +
                 "&7/kudmin add &ekudos [player] [amount]\n" +
                 "&7/kudmin get &e[kudos/assigned_kudos] [player] [page]\n" +
-                "&7/kudmin remove &ekudos [player] [amount]\n" +
+                "&7/kudmin remove &ekudos [player] [KudoID]\n" +
                 "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
                 "&7/kudmin clearall &e[player]\n" +
                 "&7/kudmin reload\n" +
