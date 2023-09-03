@@ -173,7 +173,7 @@ public class SQLGetter {
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
-                if (reason == null) reason = config.getString("kudo-award.notification.no-reason-given");
+                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
                 if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
 
 
