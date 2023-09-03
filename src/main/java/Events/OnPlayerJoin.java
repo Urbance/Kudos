@@ -21,7 +21,7 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        sendOldTableSchemeMessage(player, prefix);
+        sendOldTableSchemeMessage(player);
         if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
     }
 
@@ -31,7 +31,7 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private void sendOldTableSchemeMessage(Player player, String prefix) {
+    private void sendOldTableSchemeMessage(Player player) {
         if (!Main.oldTableScheme || !player.hasPermission("kudos.kudmin.*")) return;
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', Kudmin.prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server"));
     }
