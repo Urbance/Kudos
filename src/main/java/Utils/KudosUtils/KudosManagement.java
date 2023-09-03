@@ -34,7 +34,6 @@ public class KudosManagement {
     }
 
     public void addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
-        if (reason == null) reason = config.getString("kudo-award.notification.no-reason-given");
         if (sender instanceof Player) {
             if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1)) kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
             return;

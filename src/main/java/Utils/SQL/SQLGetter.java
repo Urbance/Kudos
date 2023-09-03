@@ -172,6 +172,7 @@ public class SQLGetter {
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
+                if (reason == null) reason = config.getString("kudo-award.notification.no-reason-given");
 
                 kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
