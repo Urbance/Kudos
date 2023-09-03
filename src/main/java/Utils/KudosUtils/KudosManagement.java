@@ -38,7 +38,7 @@ public class KudosManagement {
             if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1)) kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
             return;
         }
-        if (!data.addKudos(targetPlayerUUID, config.getString("general.console-name"), reason, 1)) {
+        if (!data.addKudos(targetPlayerUUID, SQLGetter.consoleCommandSenderPrefix, reason, 1)) {
             kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
         }
     }

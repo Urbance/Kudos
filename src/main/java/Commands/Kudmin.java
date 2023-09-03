@@ -9,10 +9,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -67,7 +64,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             }
         }
         if (data.checkIfKudosTableHasOldTableSchematic()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server. The statistics of how many Kudos a player has awarded will be reset!"));
             return true;
         }
         if (performedMigration) {
@@ -184,11 +181,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
         }
+
         KudosManagement kudosManagement = new KudosManagement();
         String reason = kudosManagement.getReason(args, 4);
         String playerName = args[1];
+        UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+        String receivedFromPlayer = String.valueOf(playerUUID);
         int amountKudos = Integer.parseInt(args[2]);
-        UUID player = Bukkit.getOfflinePlayer(playerName).getUniqueId();
 
         if (amountKudos > 2500) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "You're trying to add a high amount of Kudos to a player. To avoid server crashes, the maximum number of Kudos that can be added is limited to 2500."));
@@ -198,13 +197,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The reason can't be longer than &e" + maximumReasonLength + " &7chars."));
             return;
         }
-
         if (reason.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred. Can't get reason."));
             return;
         }
-
-        data.addKudos(player, config.getString("general.console-name"), reason, amountKudos);
+        if (sender instanceof ConsoleCommandSender) receivedFromPlayer = SQLGetter.consoleCommandSenderPrefix;
+        data.addKudos(playerUUID, receivedFromPlayer, reason, amountKudos);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
     }
 

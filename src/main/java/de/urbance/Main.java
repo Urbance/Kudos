@@ -73,7 +73,7 @@ public final class Main extends JavaPlugin implements Listener {
         }
 
         oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
-        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server");
+        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server. The statistics of how many Kudos a player has awarded will be reset!");
 
         return true;
     }

@@ -15,6 +15,7 @@ import java.util.Date;
 
 public class SQLGetter {
     public static String driverClassName;
+    public static String consoleCommandSenderPrefix = "%ConsoleCommandSender%";
     private Main plugin;
     private FileConfiguration config;
     private FileConfiguration guiConfig;
@@ -173,6 +174,8 @@ public class SQLGetter {
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
                 if (reason == null) reason = config.getString("kudo-award.notification.no-reason-given");
+                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
+
 
                 kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
@@ -324,7 +327,7 @@ public class SQLGetter {
             UUID uuid = entry.getKey();
             int totalKudos = entry.getValue();
             createPlayer(uuid);
-            addKudos(uuid, config.getString("general.console-name") , null, totalKudos);
+            addKudos(uuid, SQLGetter.consoleCommandSenderPrefix, null, totalKudos);
 
         }
         return true;
