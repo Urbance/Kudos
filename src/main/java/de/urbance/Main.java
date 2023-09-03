@@ -21,6 +21,7 @@ import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
     public final CooldownManager cooldownManager = new CooldownManager();
+    public static boolean oldTableScheme;
     public String prefix;
     public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
@@ -29,7 +30,6 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
     public boolean isConnected;
-    public boolean oldTableScheme;
 
     @Override
     public void onEnable() {
@@ -54,24 +54,6 @@ public final class Main extends JavaPlugin implements Listener {
         Utils.SQL.SQL.disconnect();
     }
 
-    public void registerListenerAndCommands() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        if (!isConnected) return;
-        getCommand("kudmin").setExecutor(new Kudmin());
-        getCommand("kudmin").setTabCompleter(new Kudmin());
-        if (oldTableScheme) return;
-        pluginManager.registerEvents(new KudosGUI(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudos").setTabCompleter(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudo").setTabCompleter(new Kudo());
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new KudosExpansion().register();
-        }
-    }
-
     public boolean setupSQL() throws SQLException {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
@@ -91,8 +73,27 @@ public final class Main extends JavaPlugin implements Listener {
         }
 
         oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
+        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server");
 
         return true;
+    }
+
+    public void registerListenerAndCommands() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (!isConnected) return;
+        getCommand("kudmin").setExecutor(new Kudmin());
+        if (oldTableScheme) return;
+        getCommand("kudmin").setTabCompleter(new Kudmin());
+        pluginManager.registerEvents(new KudosGUI(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudos").setTabCompleter(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudo").setTabCompleter(new Kudo());
+        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new KudosExpansion().register();
+        }
     }
 
     public void setupConfigs() {

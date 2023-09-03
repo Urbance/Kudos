@@ -1,5 +1,6 @@
 package Events;
 
+import Commands.Kudmin;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -21,7 +22,7 @@ public class OnPlayerJoin implements Listener {
 
         sendNoDatabaseFoundMessage(player, prefix);
         sendOldTableSchemeMessage(player, prefix);
-        if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin.");
+        if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
@@ -31,12 +32,13 @@ public class OnPlayerJoin implements Listener {
     }
 
     private void sendOldTableSchemeMessage(Player player, String prefix) {
-        if (!plugin.oldTableScheme || !player.hasPermission("kudos.kudmin.*")) return;
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cOld table scheme found.."));
+        if (!Main.oldTableScheme || !player.hasPermission("kudos.kudmin.*")) return;
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', Kudmin.prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server"));
     }
 
     private boolean createDatabasePlayer(UUID uuid) {
-        if (!plugin.isConnected || plugin.oldTableScheme) return false;
+        if (!plugin.isConnected) return false;
+        if (Main.oldTableScheme) return true;
         SQLGetter data = new SQLGetter(plugin);
         return data.createPlayer(uuid);
     }

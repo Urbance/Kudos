@@ -23,14 +23,14 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private String prefix;
+    private static boolean performedMigration = false;
+    public static String prefix = "&7» &cKudmin&7: ";
     private Main plugin;
     private SQLGetter data;
     private FileConfiguration config;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        this.prefix = "&7» &cKudmin&7: ";
         this.plugin = Main.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
         this.config = plugin.config;
@@ -46,17 +46,35 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (plugin.oldTableScheme) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start data migration"));
+        if (performMigration(sender, args)) return false;
 
-            if (!data.migrateOldTableSchemeToNewTableScheme()) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Errors have occurred. Please check the console for more information!"));
-                return false;
-            }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Done."));
-            return false;
-        }
         performAction(sender, args);
+        return false;
+    }
+
+    private boolean performMigration(CommandSender sender, String[] args) {
+        if (Main.oldTableScheme) {
+            if (args[0].equals("migrate") && args.length == 1) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start data migration"));
+
+                if (!data.migrateOldTableSchemeToNewTableScheme()) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Errors have occurred. Please check the console for more information!"));
+                    return true;
+                }
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration successful. Please restart the server to complete the data migration"));
+                performedMigration = true;
+                return true;
+            }
+        }
+        if (data.checkIfKudosTableHasOldTableSchematic()) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server"));
+            return true;
+        }
+        if (performedMigration) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please restart the server to complete the migration"));
+            return true;
+        }
+
         return false;
     }
 

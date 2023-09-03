@@ -324,9 +324,10 @@ public class SQLGetter {
             int totalKudos = entry.getValue();
             createPlayer(uuid);
             addKudos(uuid, config.getString("general.console-name") , null, totalKudos);
-            // TODO return true
+
         }
-        return false;
+        // TODO return true: Check if tables are existing with the right columns?
+        return true;
     }
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
