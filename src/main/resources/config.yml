@@ -2,8 +2,12 @@ general:
   update-notification: true
   prefix: "&7» &eKudos&7: "
   use-SQL: false
+  console-name: "SERVER"
 kudo-award:
   cooldown: 900
+  enable-reasons: true
+  no-reason-given: "No reason was given"
+  reason-length: 18
   notification:
     enabled: true
     notification-mode: "broadcast"
@@ -40,9 +44,9 @@ kudo-award:
         - effect give %kudos_player_name% minecraft:speed 600
   milestones:
     enabled: true
-    span-between-kudos: 10
     enable-playsound: true
     playsound-type: "ENTITY_FIREWORK_ROCKET_TWINKLE"
+    span-between-kudos: 10
     rewards:
       items:
         item-1:

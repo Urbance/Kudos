@@ -74,8 +74,8 @@ public class KudosGUI implements Listener {
             for (int i = 0; i < lore.size(); i++) {
                 lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
                 if (player != null) {
-                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_kudos%", String.valueOf(data.getKudos(player.getUniqueId())))));
-                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_assigned_kudos%", String.valueOf(data.getAssignedKudo(player.getUniqueId())))));
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_kudos%", String.valueOf(data.getAmountKudos(player.getUniqueId())))));
+                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_assigned_kudos%", String.valueOf(data.getAssignedKudos(player.getUniqueId())))));
                 }
             }
         }

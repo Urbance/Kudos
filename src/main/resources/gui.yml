@@ -16,7 +16,7 @@ slot:
     item-name: "&e&lHelp"
     item-slot: 4
     lore:
-      - "&7/kudo [player] - Award a player a Kudo"
+      - "&7/kudo [player] (reason) - Give a Kudo to a player, optionally with reason"
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the players Kudos"
   kudos-leaderboard:

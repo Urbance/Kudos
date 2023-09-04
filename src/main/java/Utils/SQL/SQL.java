@@ -40,12 +40,17 @@ public class SQL {
             hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
             hikariConfig.setUsername(username);
             hikariConfig.setPassword(password);
+            hikariConfig.addDataSourceProperty("prepStmtCacheSize", 250);
+            hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+            hikariConfig.addDataSourceProperty("cachePrepStmts", true);
+            hikariConfig.addDataSourceProperty("useServerPrepStmts ", true);
         } else {
             String dataFolderPath = (String.format("%s/data", plugin.getDataFolder()));
             createDataFolder(dataFolderPath);
             hikariConfig.setJdbcUrl(String.format("jdbc:sqlite:%s/database.db", dataFolderPath));
             hikariConfig.setDriverClassName("org.sqlite.JDBC");
         }
+        SQLGetter.driverClassName = hikariConfig.getDriverClassName();
         hikariDataSource = new HikariDataSource(hikariConfig);
     }
 

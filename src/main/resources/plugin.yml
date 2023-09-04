@@ -13,13 +13,13 @@ commands:
   kudmin:
     description: Administrator tools
 permissions:
-  kudos.gui:
-    description: Allows to open the GUI
-  kudos.show:
-    description: Allows viewing of Kudos from other players and itself
-  kudos.*:
+  kudos.player.*:
     description: Allows all kudos user commands
-  kudos.award:
+  kudos.player.gui:
+    description: Allows to open the GUI
+  kudos.player.show:
+    description: Allows viewing of Kudos from other players and itself
+  kudos.player.award:
     description: Allows the awarding of Kudos
-  kudmin:
+  kudos.admin.*:
     description: Allows to execute administrator commands

@@ -4,11 +4,13 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import Utils.CooldownManager;
+import Utils.FileManager;
 import Utils.KudosUtils.KudosExpansion;
-import Utils.*;
 import Utils.KudosUtils.KudosGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
+import Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -19,6 +21,7 @@ import java.sql.SQLException;
 
 public final class Main extends JavaPlugin implements Listener {
     public final CooldownManager cooldownManager = new CooldownManager();
+    public static boolean oldTableScheme;
     public String prefix;
     public FileConfiguration localeConfig;
     public Utils.SQL.SQL SQL;
@@ -35,15 +38,15 @@ public final class Main extends JavaPlugin implements Listener {
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
+        checkNewUpdateAndCurrentVersion();
+        setupMetrics();
         setupConfigs();
         try {
             setupSQL();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        checkNewUpdateAndCurrentVersion();
         registerListenerAndCommands();
-        setupMetrics();
     }
 
     @Override
@@ -51,25 +54,7 @@ public final class Main extends JavaPlugin implements Listener {
         Utils.SQL.SQL.disconnect();
     }
 
-    public void registerListenerAndCommands() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        if (!isConnected) {
-            return;
-        }
-        pluginManager.registerEvents(new KudosGUI(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudos").setTabCompleter(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudo").setTabCompleter(new Kudo());
-        getCommand("kudmin").setExecutor(new Kudmin());
-        getCommand("kudmin").setTabCompleter(new Kudmin());
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new KudosExpansion().register();
-        }
-    }
-
-    public void setupSQL() throws SQLException {
+    public boolean setupSQL() throws SQLException {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
@@ -83,8 +68,31 @@ public final class Main extends JavaPlugin implements Listener {
         }
         if (!Utils.SQL.SQL.getConnection().isClosed()) {
             getLogger().info("Database is connected");
-            data.createTable();
+            if (!data.initTables()) return false;
             this.isConnected = true;
+        }
+
+        oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
+        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server. The statistics of how many Kudos a player has awarded will be reset!");
+
+        return true;
+    }
+
+    public void registerListenerAndCommands() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (!isConnected) return;
+        getCommand("kudmin").setExecutor(new Kudmin());
+        if (oldTableScheme) return;
+        getCommand("kudmin").setTabCompleter(new Kudmin());
+        pluginManager.registerEvents(new KudosGUI(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudos").setTabCompleter(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudo").setTabCompleter(new Kudo());
+        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new KudosExpansion().register();
         }
     }
 

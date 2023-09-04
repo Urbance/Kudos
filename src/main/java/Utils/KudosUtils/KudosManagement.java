@@ -3,30 +3,24 @@ package Utils.KudosUtils;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.awt.*;
 import java.util.*;
 
-public class KudosManager {
+public class KudosManagement {
     private Main plugin;
     private SQLGetter data;
     private FileConfiguration config;
     private FileConfiguration locale;
     private KudosMessage kudosMessage;
 
-    public KudosManager() {
+    public KudosManagement() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
         this.config = plugin.config;
@@ -39,18 +33,20 @@ public class KudosManager {
         MILESTONE
     }
 
-    public void addKudo(CommandSender sender, UUID targetPlayerUUID) {
+    public void addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
         if (sender instanceof Player) {
-            data.addKudos(targetPlayerUUID, ((Player) sender).getUniqueId(), 1);
-        } else {
-            data.addKudos(targetPlayerUUID, null, 1);
+            if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1)) kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+            return;
+        }
+        if (!data.addKudos(targetPlayerUUID, SQLGetter.consoleCommandSenderPrefix, reason, 1)) {
+            kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
         }
     }
 
     public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {
         Map<String, String> values = new HashMap<>();
         values.put("kudos_targetplayer_name", targetPlayer.getName());
-        values.put("kudos_targetplayer_kudos", String.valueOf(data.getKudos(targetPlayer.getUniqueId())));
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId())));
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
 
@@ -85,7 +81,7 @@ public class KudosManager {
 
     public boolean isMilestone(Player targetPlayer) {
         if (config.getBoolean("kudo-award.milestones.enabled")) {
-            int targetPlayerKudos = data.getKudos(targetPlayer.getUniqueId()) + 1;
+            int targetPlayerKudos = data.getAmountKudos(targetPlayer.getUniqueId()) + 1;
             return targetPlayerKudos % config.getInt("kudo-award.milestones.span-between-kudos") == 0;
         }
         return false;
@@ -171,6 +167,15 @@ public class KudosManager {
             itemStacks.add(itemCreator.get());
         }
         return itemStacks;
+    }
+
+    public String getReason(String[] args, int startIndex) {
+        String reason = args[startIndex - 1];
+        int endIndex = args.length;
+
+        for (int argumentPosition = startIndex; argumentPosition < endIndex; argumentPosition++) reason += " " + args[argumentPosition];
+
+        return reason;
     }
 }
 

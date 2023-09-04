@@ -3,7 +3,6 @@ package Utils.KudosUtils;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.List;
@@ -33,9 +32,7 @@ public class KudosExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String parameter) {
-        if (player == null)  {
-            return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
-        }
+        if (player == null) return "KUDOS_PLACEHOLDER_PLAYER_NOT_FOUND";
 
         Main plugin = Main.getPlugin(Main.class);
         SQLGetter data = new SQLGetter(plugin);
@@ -48,10 +45,10 @@ public class KudosExpansion extends PlaceholderExpansion {
                 return player.getName();
             }
             case "player_kudos" -> {
-                return String.valueOf(data.getKudos(playerUUID));
+                return String.valueOf(data.getAmountKudos(playerUUID));
             }
             case "player_assigned_kudos" -> {
-                return String.valueOf(data.getAssignedKudo(playerUUID));
+                return String.valueOf(data.getAssignedKudos(playerUUID));
             }
             case "top1_kudos" -> {
                 if (topPlayerKudos.isEmpty())

@@ -1,7 +1,7 @@
 package Commands;
 
 import Utils.KudosUtils.KudosGUI;
-import Utils.KudosUtils.KudosManager;
+import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
@@ -25,7 +25,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     SQLGetter data;
     String prefix;
     OfflinePlayer targetPlayer;
-    KudosManager kudosManager;
+    KudosManagement kudosManagement;
     KudosMessage kudosMessage;
 
 
@@ -34,7 +34,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
-        this.kudosManager = new KudosManager();
+        this.kudosManagement = new KudosManagement();
         this.kudosMessage = new KudosMessage(plugin);
 
         if (!validateInput(args, sender))
@@ -53,7 +53,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             Bukkit.getServer().getLogger().info("Please use /kudos [player]");
             return;
         }
-        if (!(sender.hasPermission("kudos.gui") || sender.hasPermission("kudos.*"))) {
+        if (!(sender.hasPermission("kudos.player.gui") || sender.hasPermission("kudos.player.*"))) {
             kudosMessage.noPermission(sender);
             return;
         }
@@ -68,11 +68,11 @@ public class Kudos implements CommandExecutor, TabCompleter {
     }
 
     public void showKudos(CommandSender sender) {
-        if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) {
+        if (!(sender.hasPermission("kudos.player.show") || sender.hasPermission("kudos.player.*"))) {
             kudosMessage.noPermission(sender);
             return;
         }
-        kudosManager.showPlayerKudos(sender, targetPlayer);
+        kudosManagement.showPlayerKudos(sender, targetPlayer);
 }
 
     public boolean validateInput(String[] args, CommandSender sender) {
@@ -96,7 +96,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> playerNameList = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
-        if (!(sender.hasPermission("kudos.show") || sender.hasPermission("kudos.*"))) return playerNameList;
+        if (!(sender.hasPermission("kudos.player.show") || sender.hasPermission("kudos.player.*"))) return playerNameList;
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 playerNameList.add(player.getName());

@@ -1,13 +1,18 @@
 kudo:
   player-award-kudo-broadcast: "&7The player &e%kudos_player_name% &7gave &e%kudos_targetplayer_name% &7a Kudo! The player has now&e %kudos_targetplayer_kudos% &7Kudos!"
+  player-award-kudo-broadcast-with-reason: "&7The player &e%kudos_player_name% &7gave &e%kudos_targetplayer_name% &7a Kudo for &e%kudos_award_reason%&7! The player has now&e %kudos_targetplayer_kudos% &7Kudos!"
   player-award-kudo-from-console: "&7A higher power honors you, &e%kudos_targetplayer_name%&7! The player &e%kudos_targetplayer_name% &7has now &e%kudos_targetplayer_kudos% &7Kudos"
+  player-award-kudo-from-console-with-reason: "&7A higher power honors you for &e%kudos_award_reason%&7, &e%kudos_targetplayer_name%&7! The player &e%kudos_targetplayer_name% &7has now &e%kudos_targetplayer_kudos% &7Kudos"
   player-award-kudo-from-player: "&7The player &e%kudos_player_name% &7gave you a Kudo! You have now &e%kudos_player_kudos% &7Kudos!"
+  player-award-kudo-from-player-with-reason: "&7The player &e%kudos_player_name% &7gave you a Kudo for &e%kudos_award_reason%&7! You have now &e%kudos_player_kudos% &7Kudos!"
   player-assigned-kudo: "&7You gave the player &e%kudos_targetplayer_name% &7a Kudo!"
 kudos:
   show-player-kudos: "&7The player &e%kudos_targetplayer_name% &7has &e%kudos_targetplayer_kudos% &7Kudos"
 milestone:
   player-reaches-milestone: "&7The player &e%kudos_player_name% &7gave &e%kudos_targetplayer_name% &7a Kudo! &e%kudos_targetplayer_name% &7has now incredible &e%kudos_targetplayer_kudos% &7Kudos!"
+  player-reaches-milestone-with-reason: "&7The player &e%kudos_player_name% &7gave &e%kudos_targetplayer_name% &7a Kudo for &e%kudos_award_reason%&7! &e%kudos_targetplayer_name% &7has now incredible &e%kudos_targetplayer_kudos% &7Kudos!"
   player-reaches-milestone-through-console: "&7The player &e%kudos_targetplayer_name% &7reaches a milestone with &e%kudos_targetplayer_kudos% &7Kudos!"
+  player-reaches-milestone-through-console-with-reason: "&7The player &e%kudos_targetplayer_name% &7received a Kudo for &e%kudos_award_reason% &7and reaches a milestone with &e%kudos_targetplayer_kudos% &7Kudos!"
 error:
   no-permission: "&7You don't have the permission to do this!"
   wrong-usage: "&7Wrong usage! Type &e/kudos &7for more informations"
@@ -18,3 +23,5 @@ error:
   player-received-too-many-kudos-last-time: "&7The player &e%kudos_targetplayer_name% &7received too many Kudos last time!"
   cant-give-yourself-kudo: "&7You can't give yourself a Kudo!"
   must-wait-before-use-again: "&7You must wait &e%kudos_cooldown% seconds &7before you can use it again!"
+  award-reason-is-too-long: "The reason can't be longer than &e%kudos_maximum_award_reason_chars% &7chars."
+  something-went-wrong-by-sending-milestone-broadcast: "Something went wrong when sending the milestone broadcast. Please contact the server administrator."
