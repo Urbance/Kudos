@@ -33,7 +33,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         this.config = plugin.config;
         FileConfiguration locale = plugin.localeConfig;
 
-        if (!sender.hasPermission("kudos.kudmin.*")) {
+        if (!sender.hasPermission("kudos.admin.*")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
             return false;
         }
@@ -335,7 +335,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
-        if (!sender.hasPermission("kudos.kudmin.*")) return commandArguments;
+        if (!sender.hasPermission("kudos.admin.*")) return commandArguments;
 
         switch (args.length) {
             case 1 -> {

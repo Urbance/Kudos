@@ -60,7 +60,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean validateInput(String[] args, CommandSender sender, String reason) {
-        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) {
+        if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) {
             kudosMessage.noPermission(sender);
             return false;
         }
@@ -127,7 +127,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         List<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         FileConfiguration config = Main.getPlugin(Main.class).config;
-        if (!(sender.hasPermission("kudos.award") || sender.hasPermission("kudos.*"))) return commandArguments;
+        if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) return commandArguments;
         switch (args.length) {
             case 1 -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
