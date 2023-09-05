@@ -283,12 +283,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Removed Kudo with ID &e" + kudoID + " &7from player &e" + targetPlayerName + "&7."));
     }
 
-    private void performMigrate(CommandSender sender, String[] args) {
-        if (!args[0].equals("migrate")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + ""));
-        }
-    }
-
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
