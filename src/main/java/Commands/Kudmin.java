@@ -4,6 +4,7 @@ import Utils.ComponentCreator;
 import Utils.FileManager;
 import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
+import Utils.ValidationManagement;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -295,11 +296,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
-        if (args.length < 3 || !isValueAnInteger(args[2]) || Integer.parseInt(args[2]) < 0) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
-            return false;
-        }
-        return true;
+        ValidationManagement validationManagement = new ValidationManagement();
+
+        if (args.length > 3 || validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) return true;
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
+
+        return false;
     }
 
     private boolean isValueAnInteger(String value) {
