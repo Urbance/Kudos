@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>4.0.0-PRE3</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
