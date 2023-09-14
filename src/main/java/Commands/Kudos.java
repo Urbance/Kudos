@@ -28,7 +28,6 @@ public class Kudos implements CommandExecutor, TabCompleter {
     KudosManagement kudosManagement;
     KudosMessage kudosMessage;
 
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.prefix = plugin.prefix;
@@ -73,7 +72,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         kudosManagement.showPlayerKudos(sender, targetPlayer);
-}
+    }
 
     public boolean validateInput(String[] args, CommandSender sender) {
         if (args.length > 1) {

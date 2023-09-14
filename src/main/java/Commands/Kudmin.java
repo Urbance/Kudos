@@ -4,6 +4,7 @@ import Utils.ComponentCreator;
 import Utils.FileManager;
 import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
+import Utils.ValidationManagement;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -25,12 +26,14 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     private Main plugin;
     private SQLGetter data;
     private FileConfiguration config;
+    private ValidationManagement validationManagement;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.plugin = Main.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
         this.config = plugin.config;
+        this.validationManagement = new ValidationManagement();
         FileConfiguration locale = plugin.localeConfig;
 
         if (!sender.hasPermission("kudos.admin.*")) {
@@ -212,7 +215,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
         List<String> entryKudosList = data.getAllPlayerKudos(playerUUID);
-
         if (entryKudosList.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
             return;
@@ -223,7 +225,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int maxPages = (int) Math.ceil((double) totalEntries / entriesPerPage);
         int requestedPage = 1;
 
-        if (args.length == 3 && isValueAnInteger(args[2])) requestedPage = Integer.parseInt(args[2]);
+        if (args.length == 3 && validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) requestedPage = Integer.parseInt(args[2]);
 
         if (requestedPage > maxPages || requestedPage == 0) {
             if (requestedPage == 0 && maxPages == 1) {
@@ -264,7 +266,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [Player] [site]&7."));
             return;
         }
-        if (args.length == 3 && !isValueAnInteger(args[2])) {
+        if (args.length == 3 && !validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Invalid Kudos ID."));
             return;
         }
@@ -283,12 +285,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Removed Kudo with ID &e" + kudoID + " &7from player &e" + targetPlayerName + "&7."));
     }
 
-    private void performMigrate(CommandSender sender, String[] args) {
-        if (!args[0].equals("migrate")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + ""));
-        }
-    }
-
     private boolean validateInput(String[] args, CommandSender sender, int maxArgs, int playerArgumentPosition, boolean validateTargetPlayer, boolean validateValue) {
         if (args.length > maxArgs) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. For more informations see &e/kudmin help!"));
@@ -301,20 +297,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
-        if (args.length < 3 || !isValueAnInteger(args[2]) || Integer.parseInt(args[2]) < 0) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
-            return false;
-        }
-        return true;
-    }
 
-    private boolean isValueAnInteger(String value) {
-        try {
-            Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
+        if (args.length > 3 || validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) return true;
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
+
+        return false;
     }
 
     private boolean targetPlayerExists(CommandSender sender, String[] args, int playerArgumentPosition) {

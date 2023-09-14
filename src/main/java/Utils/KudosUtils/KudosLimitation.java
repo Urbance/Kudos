@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class KudosLimitation {
-
     private final Map<UUID, Integer> receivedKudos = new HashMap<>();
     private final Map<UUID, Date> receivedKudosTime = new HashMap<>();
     FileConfiguration config;
