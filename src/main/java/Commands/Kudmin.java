@@ -126,9 +126,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performClear(CommandSender sender, String[] args) {
-        if (!validateInput(args, sender, 3, 1, true, false)) {
-            return;
-        }
+        if (!validateInput(args, sender, 3, 1, true, false)) return;
 
         if (args.length < 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Wrong usage. Please choose between &ekudos &7or &eassigned_kudos&7!"));
@@ -215,6 +213,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
         List<String> entryKudosList = data.getAllPlayerKudos(playerUUID);
+
         if (entryKudosList.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
             return;
@@ -297,7 +296,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
-
         if (args.length > 3 || validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) return true;
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
