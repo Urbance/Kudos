@@ -28,25 +28,25 @@ public class KudosGUI implements Listener {
     public Inventory create(Player player) {
         String inventoryTitle = guiConfig.getString("general.title");
         Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
-        ItemCreator statisticsItem = new ItemCreator(guiConfig.getString("slot.statistics.item"))
-                .setDisplayName(guiConfig.getString("slot.statistics.item-name"));
-        ItemStack helpItem = new ItemCreator(guiConfig.getString("slot.help.item"))
-                .setDisplayName(guiConfig.getString("slot.help.item-name"))
-                .setLore(guiConfig.getStringList("slot.help.lore"))
-                .get();
-        ItemStack leaderboardItem = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
-                .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
-                .setLore(data.getTopPlayersKudos())
-                .get();
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
+            ItemCreator statisticsItem = new ItemCreator(guiConfig.getString("slot.statistics.item"))
+                    .setDisplayName(guiConfig.getString("slot.statistics.item-name"));
             statisticsItem.setLore(setStatisticsValuesLore(guiConfig.getStringList("slot.statistics.lore"), player));
             inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem.get());
         }
         if (guiConfig.getBoolean("slot.help.enabled")) {
+            ItemStack helpItem = new ItemCreator(guiConfig.getString("slot.help.item"))
+                    .setDisplayName(guiConfig.getString("slot.help.item-name"))
+                    .setLore(guiConfig.getStringList("slot.help.lore"))
+                    .get();
             inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
         }
         if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
+            ItemStack leaderboardItem = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
+                    .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
+                    .setLore(data.getTopPlayersKudos())
+                    .get();
             inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), leaderboardItem);
         }
         return inventory;
