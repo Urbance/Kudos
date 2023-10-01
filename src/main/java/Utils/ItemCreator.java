@@ -13,24 +13,27 @@ public class ItemCreator {
     private ItemMeta itemMeta;
     private int amount;
 
-    public ItemCreator(Material material) {
-        this.itemStack = new ItemStack(material);
+    public ItemCreator(String material) {
+        this.itemStack = new ItemStack(Material.valueOf(material));
         this.itemMeta = itemStack.getItemMeta();
         this.amount = 1;
     }
 
-    public void setDisplayName(String displayName) {
+    public ItemCreator setDisplayName(String displayName) {
         itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+        return this;
     }
 
-    public void setLore(List<String> lore) {
-        lore.replaceAll(s -> ChatColor.translateAlternateColorCodes('&', s));
-        itemMeta.setLore(lore);
-    }
-
-    public void setAmount(int amount) {
+    public ItemCreator setAmount(int amount) {
         this.amount = amount;
         itemStack.setAmount(this.amount);
+        return this;
+    }
+
+    public ItemCreator setLore(List<String> lore) {
+        lore.replaceAll(s -> ChatColor.translateAlternateColorCodes('&', s));
+        itemMeta.setLore(lore);
+        return this;
     }
 
     public ItemStack get() {

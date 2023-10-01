@@ -2,7 +2,6 @@ package Utils;
 
 public class ValidationManagement {
 
-
     public boolean isValueAnInteger(String value) {
         try {
             Integer.parseInt(value);

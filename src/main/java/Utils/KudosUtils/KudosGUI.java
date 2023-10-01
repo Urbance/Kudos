@@ -1,6 +1,7 @@
 package Utils.KudosUtils;
 
 import Commands.Kudos;
+import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -14,72 +15,56 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class KudosGUI implements Listener {
-    public Main plugin = Main.getPlugin(Main.class);
-    public FileConfiguration guiConfig;
-    public SQLGetter data = new SQLGetter(plugin);
-
-    public KudosGUI() {
-        this.guiConfig = plugin.guiConfig;
-    }
+    private Main plugin = Main.getPlugin(Main.class);
+    private SQLGetter data = new SQLGetter(plugin);
+    private FileConfiguration guiConfig = plugin.guiConfig;
 
     public Inventory create(Player player) {
         String inventoryTitle = guiConfig.getString("general.title");
         Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
+        ItemCreator statisticsItem = new ItemCreator(guiConfig.getString("slot.statistics.item"))
+                .setDisplayName(guiConfig.getString("slot.statistics.item-name"));
+        ItemStack helpItem = new ItemCreator(guiConfig.getString("slot.help.item"))
+                .setDisplayName(guiConfig.getString("slot.help.item-name"))
+                .setLore(guiConfig.getStringList("slot.help.lore"))
+                .get();
+        ItemStack leaderboardItem = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
+                .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
+                .setLore(data.getTopPlayersKudos())
+                .get();
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
-            ItemStack statisticsItem = createItem(
-                    player,
-                    Material.getMaterial(guiConfig.getString("slot.statistics.item")),
-                    guiConfig.getString("slot.statistics.item-name"),
-                    guiConfig.getStringList("slot.statistics.lore"));
-            inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem);
+            statisticsItem.setLore(setStatisticsValuesLore(guiConfig.getStringList("slot.statistics.lore"), player));
+            inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem.get());
         }
         if (guiConfig.getBoolean("slot.help.enabled")) {
-            ItemStack helpItem = createItem(
-                    null,
-                    Material.getMaterial(guiConfig.getString("slot.help.item")),
-                    guiConfig.getString("slot.help.item-name"),
-                    guiConfig.getStringList("slot.help.lore"));
             inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
         }
         if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
-            ItemStack topKudosPlayersItem = createItem(
-                    null,
-                    Material.getMaterial(guiConfig.getString("slot.kudos-leaderboard.item")),
-                    guiConfig.getString("slot.kudos-leaderboard.item-name"),
-                    data.getTopPlayersKudos());
-            inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), topKudosPlayersItem);
+            inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), leaderboardItem);
         }
         return inventory;
     }
 
-    private ItemStack createItem(Player player, Material material, String displayName, List<String> lore) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta itemMeta = item.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+    private List<String> setStatisticsValuesLore(List<String> lore, Player player) {
+        if (lore == null) return null;
 
-        itemMeta.setLore(setLore(lore, player));
-        item.setItemMeta(itemMeta);
-        return item;
-    }
-
-    private List<String> setLore(List<String> lore, Player player) {
-        if (lore != null) {
-            for (int i = 0; i < lore.size(); i++) {
-                lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i)));
-                if (player != null) {
-                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_kudos%", String.valueOf(data.getAmountKudos(player.getUniqueId())))));
-                    lore.set(i, ChatColor.translateAlternateColorCodes('&', lore.get(i).replaceAll("%kudos_player_assigned_kudos%", String.valueOf(data.getAssignedKudos(player.getUniqueId())))));
-                }
+        List<String> modifiedLore = new ArrayList<>();
+        for (String entry : lore) {
+            entry = ChatColor.translateAlternateColorCodes('&', entry);
+            if (player != null) {
+                entry = entry.replace("%kudos_player_kudos%", String.valueOf(data.getAmountKudos(player.getUniqueId())));
+                entry = entry.replace("%kudos_player_assigned_kudos%", String.valueOf(data.getAssignedKudos(player.getUniqueId())));
             }
+            modifiedLore.add(entry);
         }
-        return lore;
+        return modifiedLore;
     }
 
     private void updatePlayerHead(Inventory inventory, Player player) {
