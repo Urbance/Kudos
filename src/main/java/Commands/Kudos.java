@@ -4,8 +4,11 @@ import Utils.KudosUtils.KudosGUI;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -62,8 +65,14 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return;
         }
         Player player = Bukkit.getPlayer(sender.getName());
-        inventory = new KudosGUI().create(player);
-        player.openInventory(inventory);
+        String guiTitle = guiConfig.getString("general.title");
+        ChestGui kudosGUI = new ChestGui(1, ChatColor.translateAlternateColorCodes('&', guiTitle));
+        StaticPane kudosMainPane = new KudosGUI().createKudosMainPane(player);
+
+        kudosGUI.setOnGlobalClick(event -> event.setCancelled(true));
+        kudosGUI.addPane(kudosMainPane);
+
+        kudosGUI.show(player);
     }
 
     public void showKudos(CommandSender sender) {

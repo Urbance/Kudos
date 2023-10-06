@@ -1,18 +1,17 @@
 package Utils.KudosUtils;
 
-import Commands.Kudos;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -25,31 +24,34 @@ public class KudosGUI implements Listener {
     private SQLGetter data = new SQLGetter(plugin);
     private FileConfiguration guiConfig = plugin.guiConfig;
 
-    public Inventory create(Player player) {
-        String inventoryTitle = guiConfig.getString("general.title");
-        Inventory inventory = Bukkit.createInventory(null, 9, ChatColor.translateAlternateColorCodes('&', inventoryTitle));
+    public StaticPane createKudosMainPane(Player player) {
+        StaticPane kudosMainPane = new StaticPane(0, 0, 9, 1);
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
-            ItemCreator statisticsItem = new ItemCreator(guiConfig.getString("slot.statistics.item"))
-                    .setDisplayName(guiConfig.getString("slot.statistics.item-name"));
-            statisticsItem.setLore(setStatisticsValuesLore(guiConfig.getStringList("slot.statistics.lore"), player));
-            inventory.setItem(guiConfig.getInt("slot.statistics.item-slot"), statisticsItem.get());
+            ItemCreator statisticsItemItemStack = new ItemCreator(guiConfig.getString("slot.statistics.item"))
+                    .setDisplayName(guiConfig.getString("slot.statistics.item-name"))
+                    .setLore(setStatisticsValuesLore(guiConfig.getStringList("slot.statistics.lore"), player))
+                    .replaceSkullWithPlayerSkull(player);
+            GuiItem guiItem = new GuiItem(statisticsItemItemStack.get());
+            kudosMainPane.addItem(guiItem, Slot.fromIndex(guiConfig.getInt("slot.statistics.item-slot")));
         }
         if (guiConfig.getBoolean("slot.help.enabled")) {
-            ItemStack helpItem = new ItemCreator(guiConfig.getString("slot.help.item"))
+            ItemCreator helpItemItemStack = new ItemCreator(guiConfig.getString("slot.help.item"))
                     .setDisplayName(guiConfig.getString("slot.help.item-name"))
                     .setLore(guiConfig.getStringList("slot.help.lore"))
-                    .get();
-            inventory.setItem(guiConfig.getInt("slot.help.item-slot"), helpItem);
+                    .replaceSkullWithPlayerSkull(player);
+            GuiItem helpItem = new GuiItem(helpItemItemStack.get());
+            kudosMainPane.addItem(helpItem, Slot.fromIndex(guiConfig.getInt("slot.help.item-slot")));
         }
         if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
-            ItemStack leaderboardItem = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
+            ItemCreator leaderboardItemItemStack = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
                     .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
                     .setLore(data.getTopPlayersKudos())
-                    .get();
-            inventory.setItem(guiConfig.getInt("slot.kudos-leaderboard.item-slot"), leaderboardItem);
+                    .replaceSkullWithPlayerSkull(player);
+            GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get());
+            kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
         }
-        return inventory;
+        return kudosMainPane;
     }
 
     private List<String> setStatisticsValuesLore(List<String> lore, Player player) {
@@ -77,25 +79,6 @@ public class KudosGUI implements Listener {
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
             itemStack.setItemMeta(skullMeta);
         }
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        Inventory inventory = Kudos.inventory;
-        if (event.getInventory().equals(inventory)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent event) {
-        Player player = (Player) event.getPlayer();
-        Inventory inventory = Kudos.inventory;
-
-        if (!event.getInventory().equals(inventory))
-            return;
-
-        updatePlayerHead(inventory, player);
     }
 }
 
