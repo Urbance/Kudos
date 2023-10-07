@@ -21,7 +21,7 @@ import java.util.List;
 
 public class KudosGUI implements Listener {
     private Main plugin = Main.getPlugin(Main.class);
-    private SQLGetter data = new SQLGetter(plugin);
+    private SQLGetter data = plugin.data;
     private FileConfiguration guiConfig = plugin.guiConfig;
 
     public StaticPane createKudosMainPane(Player player) {
@@ -67,18 +67,6 @@ public class KudosGUI implements Listener {
             modifiedLore.add(entry);
         }
         return modifiedLore;
-    }
-
-    private void updatePlayerHead(Inventory inventory, Player player) {
-        for (int slot = 0; slot < inventory.getSize(); slot++) {
-            if (inventory.getItem(slot) == null) continue;
-            ItemStack itemStack = inventory.getItem(slot);
-            if (!(itemStack.getType() == Material.PLAYER_HEAD)) continue;
-
-            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
-            itemStack.setItemMeta(skullMeta);
-        }
     }
 }
 
