@@ -4,11 +4,8 @@ import Utils.KudosUtils.KudosGUI;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
-import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
-import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,13 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.util.StringUtil;
 
 import java.util.*;
 
 public class Kudos implements CommandExecutor, TabCompleter {
-    public static Inventory inventory;
     Main plugin = Main.getPlugin(Main.class);
     FileConfiguration locale;
     SQLGetter data;
@@ -64,15 +59,11 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return;
         }
+
         Player player = Bukkit.getPlayer(sender.getName());
-        String guiTitle = guiConfig.getString("general.title");
-        ChestGui kudosGUI = new ChestGui(1, ChatColor.translateAlternateColorCodes('&', guiTitle));
-        StaticPane kudosMainPane = new KudosGUI().createKudosMainPane(player);
 
-        kudosGUI.setOnGlobalClick(event -> event.setCancelled(true));
-        kudosGUI.addPane(kudosMainPane);
-
-        kudosGUI.show(player);
+        KudosGUI kudosGUI = new KudosGUI();
+        kudosGUI.open(player);
     }
 
     public void showKudos(CommandSender sender) {

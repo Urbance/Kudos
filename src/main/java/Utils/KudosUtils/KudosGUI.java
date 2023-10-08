@@ -3,18 +3,15 @@ package Utils.KudosUtils;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +20,24 @@ public class KudosGUI implements Listener {
     private Main plugin = Main.getPlugin(Main.class);
     private SQLGetter data = plugin.data;
     private FileConfiguration guiConfig = plugin.guiConfig;
+    private PaginatedPane paginatedPane;
+    private ChestGui kudosGUI;
+    private Player player;
 
-    public StaticPane createKudosMainPane(Player player) {
+    private void createGUI() {
+        String guiTitle = guiConfig.getString("general.title");
+        this.kudosGUI = new ChestGui(1, ChatColor.translateAlternateColorCodes('&', guiTitle));
+        kudosGUI.setOnGlobalClick(event -> event.setCancelled(true));
+        setPages();
+    }
+
+    private void setPages() {
+        this.paginatedPane = new PaginatedPane(0, 0, 9, 1);
+        paginatedPane.addPane(0, getKudosMainPane(this.player));
+        kudosGUI.addPane(paginatedPane);
+    }
+
+    private StaticPane getKudosMainPane(Player player) {
         StaticPane kudosMainPane = new StaticPane(0, 0, 9, 1);
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
@@ -51,6 +64,13 @@ public class KudosGUI implements Listener {
             GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get());
             kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
         }
+        if (guiConfig.getBoolean("slot.receivedKudos.enabled")) {
+            ItemCreator receivedKudosListFoo = new ItemCreator(guiConfig.getString("slot.receivedKudos.item"))
+                    .setDisplayName(guiConfig.getString("slot.receivedKudos.item-name"))
+                    .setLore(guiConfig.getStringList("slot.receivedKudos.lore"));
+            GuiItem leaderboardItem = new GuiItem(receivedKudosListFoo.get());
+            kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.receivedKudos.item-slot")));
+        }
         return kudosMainPane;
     }
 
@@ -67,6 +87,12 @@ public class KudosGUI implements Listener {
             modifiedLore.add(entry);
         }
         return modifiedLore;
+    }
+
+    public void open(Player player) {
+        this.player = player;
+        createGUI();
+        kudosGUI.show(player);
     }
 }
 
