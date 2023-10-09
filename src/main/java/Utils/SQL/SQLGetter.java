@@ -155,7 +155,12 @@ public class SQLGetter {
         return clearAssignedKudos(uuid) && clearKudos(uuid);
     }
 
-    public List<String> getAllPlayerKudos(UUID uuid) {
+    public enum FormattingStyle {
+        KUDMIN_GET,
+        KUDOS_GUI_RECEIVED_KUDOS
+    }
+
+    public List<String> getAllPlayerKudos(UUID uuid, FormattingStyle formattingStyle) {
         List<String> kudos = new ArrayList<>();
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=?;")) {
             preparedStatement.setString(1, uuid.toString());
@@ -176,8 +181,10 @@ public class SQLGetter {
                 if (reason == null) reason = config.getString("kudo-award.no-reason-given");
                 if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
 
-
-                kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
+                switch (formattingStyle) {
+                    case KUDMIN_GET -> kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
+                    case KUDOS_GUI_RECEIVED_KUDOS -> kudos.add(String.format("&eat&r&7 %s|&eReason: &7%s", date, reason));
+                }
             }
 
         } catch (SQLException e) {
