@@ -186,7 +186,6 @@ public class SQLGetter {
                     case KUDOS_GUI_RECEIVED_KUDOS -> kudos.add(String.format("&eat&r&7 %s|&eReason: &7%s", date, reason));
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
