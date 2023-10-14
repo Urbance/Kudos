@@ -25,7 +25,7 @@ public class KudosGUI implements Listener {
     private PaginatedPane paginatedPane;
     private ChestGui kudosGUI;
     private Player player;
-    private int maximumPages;
+    private int lastPage;
     private List<String> receivedKudosList;
     private boolean receivedKudosExists = false;
 
@@ -71,13 +71,8 @@ public class KudosGUI implements Listener {
             kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
         }
         if (guiConfig.getBoolean("slot.receivedKudos.enabled")) {
-            // TODO refactor to gui.yml
-            List<String> lore = new ArrayList<>();
-            lore.add("You don't have any received Kudos.");
-            if (data.getAmountKudos(player.getUniqueId()) > 0) {
-                lore.clear();
-                lore = guiConfig.getStringList("slot.receivedKudos.lore");
-            }
+            List<String> lore = guiConfig.getStringList("slot.receivedKudos.lore-no-received-kudos");
+            if (data.getAmountKudos(player.getUniqueId()) > 0) lore = guiConfig.getStringList("slot.receivedKudos.lore");
             ItemCreator receivedKudosItemItemCreator = new ItemCreator(guiConfig.getString("slot.receivedKudos.item"))
                     .setDisplayName(guiConfig.getString("slot.receivedKudos.item-name"))
                     .setLore(lore);
@@ -93,14 +88,6 @@ public class KudosGUI implements Listener {
     }
 
     private void setReceivedKudosPages() {
-        /*
-        ToDo-List
-        - translations
-        - playsound on page switching
-        - kudo by server: gear head
-        - arrow heads loading issue
-         */
-
         this.receivedKudosList = data.getAllPlayerKudos(player.getUniqueId(), SQLGetter.FormattingStyle.KUDOS_GUI_RECEIVED_KUDOS);
 
         // calculate maximum needed pages
@@ -109,43 +96,43 @@ public class KudosGUI implements Listener {
         if (receivedKudosList.isEmpty()) return;
         receivedKudosExists = true;
 
-        int entriesPerPage = 5;
-        this.maximumPages = (int) Math.ceil((double) totalEntries / entriesPerPage);
+        int entriesPerPane = 5;
+        this.lastPage = (int) Math.ceil((double) totalEntries / entriesPerPane);
 
-        createReceivedKudosPanes(entriesPerPage, totalEntries);
+        createReceivedKudosPanes(entriesPerPane, totalEntries);
     }
 
-    private void createReceivedKudosPanes(int entriesPerPage, int totalEntries) {
-        for (int pageCounter = 1; pageCounter <=  maximumPages; pageCounter++) {
+    private void createReceivedKudosPanes(int entriesPerPane, int totalEntries) {
+        for (int page = 1; page <=  lastPage; page++) {
             StaticPane staticPane = new StaticPane(0, 0, 9, 1);
-            paginatedPane.addPane(pageCounter, staticPane);
-            fillReceivedKudosPane(staticPane, pageCounter, entriesPerPage, totalEntries);
+            paginatedPane.addPane(page, staticPane);
+            fillReceivedKudosPane(staticPane, page, entriesPerPane, totalEntries);
         }
     }
 
-    private void fillReceivedKudosPane(StaticPane staticPane, int page, int entriesPerPage, int totalEntries) {
+    private void fillReceivedKudosPane(StaticPane staticPane, int currentPage, int entriesPerPane, int totalEntries) {
         GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .setDisplayName("&c&lBack")
+                .setDisplayName(guiConfig.getString("slot.receivedKudos.backwards-item-name"))
                 .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer("MHF_ArrowLeft"))
                 .get(), inventoryClickEvent -> {
-            paginatedPane.setPage(page - 1);
+            paginatedPane.setPage(currentPage - 1);
             kudosGUI.update();
-            Bukkit.broadcastMessage("Go to page " + (page - 1));
+            Bukkit.broadcastMessage("Go to page " + (currentPage - 1));
         });
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer("MHF_ArrowRight"))
-                .setDisplayName("&c&lForward")
+                .setDisplayName(guiConfig.getString("slot.receivedKudos.forwards-item-name"))
                 .get(), inventoryClickEvent -> {
-            paginatedPane.setPage(page + 1);
+            paginatedPane.setPage(currentPage + 1);
             kudosGUI.update();
-            Bukkit.broadcastMessage("Go to page " + (page + 1));
+            Bukkit.broadcastMessage("Go to page " + (currentPage + 1));
         });
 
         int inventorySlot = 2;
-        int firstKudosReceivedListEntry = (page - 1) * 5;
-        int lastKudosReceivedListEntry = Math.min(firstKudosReceivedListEntry + entriesPerPage, totalEntries);
+        int firstKudoReceivedListEntry = (currentPage - 1) * 5;
+        int lastKudoReceivedListEntry = Math.min(firstKudoReceivedListEntry + entriesPerPane, totalEntries);
 
-        for (int entry = firstKudosReceivedListEntry; entry < lastKudosReceivedListEntry; entry++) {
+        for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             ItemCreator playerHead = new ItemCreator("PLAYER_HEAD")
                     .replaceSkullWithPlayerSkull(player) // replace with player from received kudos list
                     .setDisplayName("&2" + player.getName());
@@ -158,34 +145,8 @@ public class KudosGUI implements Listener {
         }
 
         staticPane.addItem(arrowLeft, Slot.fromIndex(0));
-        if (page != maximumPages) staticPane.addItem(arrowRight, Slot.fromIndex(8));
+        if (currentPage != lastPage) staticPane.addItem(arrowRight, Slot.fromIndex(8));
     }
-
-//    private void fillReceivedKudosPaneFoo() {
-//
-//
-//
-//
-//        int startSlot = 2;
-//        int endIndex = Math.min(entriesPerPage, totalEntries);
-//
-//        for (int slot = startSlot; slot < endIndex; slot++) {
-//            ItemCreator playerHeadFoo = new ItemCreator("PLAYER_HEAD")
-//                    .replaceSkullWithPlayerSkull(player) // replace with player from received kudos list
-//                    .setDisplayName("&2" + player.getName());
-//
-//            String[] unsplittedList = receivedKudosList.get(slot).split("\\|");
-//            List<String> lore = new ArrayList<>(Arrays.asList(unsplittedList));
-//
-//            playerHeadFoo.setLore(lore);
-//            staticPane.addItem(new GuiItem(playerHeadFoo.get()), Slot.fromIndex(inventorySlotCounter));
-//            inventorySlotCounter++;
-//        }
-//            staticPane.addItem(arrowLeft, Slot.fromIndex(0));
-//            staticPane.addItem(arrowRight, Slot.fromIndex(8));
-//
-//
-//    }
 
     private List<String> setStatisticsValuesLore(List<String> lore, Player player) {
         if (lore == null) return null;
