@@ -10,13 +10,16 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class KudosGUI implements Listener {
     private Main plugin = Main.getPlugin(Main.class);
@@ -26,7 +29,7 @@ public class KudosGUI implements Listener {
     private ChestGui kudosGUI;
     private Player player;
     private int lastPage;
-    private List<String> receivedKudosList;
+    private HashMap<Integer, String> receivedKudosList;
     private boolean receivedKudosExists = false;
 
     private void createGUI() {
@@ -88,7 +91,7 @@ public class KudosGUI implements Listener {
     }
 
     private void setReceivedKudosPages() {
-        this.receivedKudosList = data.getAllPlayerKudos(player.getUniqueId(), SQLGetter.FormattingStyle.KUDOS_GUI_RECEIVED_KUDOS);
+        this.receivedKudosList = data.getPlayerReceivedKudosGUI(player.getUniqueId());
 
         // calculate maximum needed pages
         int totalEntries = receivedKudosList.size();
@@ -133,13 +136,27 @@ public class KudosGUI implements Listener {
         int lastKudoReceivedListEntry = Math.min(firstKudoReceivedListEntry + entriesPerPane, totalEntries);
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
-            ItemCreator playerHead = new ItemCreator("PLAYER_HEAD")
-                    .replaceSkullWithPlayerSkull(player) // replace with player from received kudos list
-                    .setDisplayName("&2" + player.getName());
-            String[] unsplittedList = receivedKudosList.get(entry).split("\\|");
-            List<String> lore = new ArrayList<>(Arrays.asList(unsplittedList));
+            String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
+            String playerName = unsplittedReceivedKudosList[0];
+            String awardReason = unsplittedReceivedKudosList[1];
+            String awardDate = unsplittedReceivedKudosList[2];
 
-            playerHead.setLore(lore);
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+
+            List<String> itemLore = guiConfig.getStringList("slot.receivedKudos.lore-received-kudos");
+
+            ArrayList<String> modifiedItemLore = new ArrayList<>();
+            for (String itemLoreEntry : itemLore) {
+                itemLoreEntry = itemLoreEntry.replace("%kudos_award_reason%", awardReason);
+                itemLoreEntry = itemLoreEntry.replace("%kudos_award_date%", awardDate);
+                itemLoreEntry = itemLoreEntry.replace("%kudos_award_player%", playerName);
+                modifiedItemLore.add(itemLoreEntry);
+            }
+
+            ItemCreator playerHead = new ItemCreator("PLAYER_HEAD")
+                    .replaceSkullWithPlayerSkull(offlinePlayer) // replace with player from received kudos list
+                    .setDisplayName("&2" + offlinePlayer.getName())
+                    .setLore(modifiedItemLore);
             staticPane.addItem(new GuiItem(playerHead.get()), Slot.fromIndex(inventorySlot));
             inventorySlot++;
         }

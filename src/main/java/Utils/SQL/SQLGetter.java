@@ -155,12 +155,7 @@ public class SQLGetter {
         return clearAssignedKudos(uuid) && clearKudos(uuid);
     }
 
-    public enum FormattingStyle {
-        KUDMIN_GET,
-        KUDOS_GUI_RECEIVED_KUDOS
-    }
-
-    public List<String> getAllPlayerKudos(UUID uuid, FormattingStyle formattingStyle) {
+    public List<String> getAllPlayerKudos(UUID uuid) {
         List<String> kudos = new ArrayList<>();
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=?;")) {
             preparedStatement.setString(1, uuid.toString());
@@ -181,15 +176,41 @@ public class SQLGetter {
                 if (reason == null) reason = config.getString("kudo-award.no-reason-given");
                 if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
 
-                switch (formattingStyle) {
-                    case KUDMIN_GET -> kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
-                    case KUDOS_GUI_RECEIVED_KUDOS -> kudos.add(String.format("&eat&r&7 %s|&eReason: &7%s", date, reason));
-                }
+                kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return kudos;
+    }
+
+    public HashMap<Integer, String> getPlayerReceivedKudosGUI(UUID uuid) {
+        HashMap<Integer, String> receivedKudos = new HashMap<>();
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=? ORDER BY KudoID DESC;")) {
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+            int entryNumber = 0;
+            while (results.next()) {
+                String receivedFromPlayer;
+
+                try {
+                    receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
+                } catch (Exception e) {
+                    receivedFromPlayer = results.getString("ReceivedFromPlayer");
+                }
+
+                String reason = results.getString("Reason");
+                String date = results.getString("Date");
+                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
+                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
+
+                receivedKudos.put(entryNumber, receivedFromPlayer + "@" + reason + "@" + date);
+                entryNumber++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return receivedKudos;
     }
 
     public int getPlayerKudo(int requestedKudosID) {
