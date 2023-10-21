@@ -114,16 +114,20 @@ public class KudosGUI implements Listener {
     }
 
     private void fillReceivedKudosPane(StaticPane staticPane, int currentPage, int entriesPerPane, int totalEntries) {
+        String arrowLeftURLSkull = "http://textures.minecraft.net/texture/bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9";
+        String arrowRightURLSkull = "http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf";
+
         GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .setDisplayName(guiConfig.getString("slot.receivedKudos.backwards-item-name"))
-                .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer("MHF_ArrowLeft"))
+                .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage - 1);
             kudosGUI.update();
             Bukkit.broadcastMessage("Go to page " + (currentPage - 1));
         });
+
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer("MHF_ArrowRight"))
+                .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
                 .setDisplayName(guiConfig.getString("slot.receivedKudos.forwards-item-name"))
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);

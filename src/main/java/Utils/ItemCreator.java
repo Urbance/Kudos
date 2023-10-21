@@ -1,13 +1,19 @@
 package Utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemCreator {
 
@@ -46,6 +52,28 @@ public class ItemCreator {
         skullMeta.setDisplayName(itemMeta.getDisplayName());
         skullMeta.setLore(itemMeta.getLore());
         this.itemMeta = skullMeta;
+        return this;
+    }
+
+    public ItemCreator replaceSkullWithCustomURLSkull(String url) {
+        if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
+
+        SkullMeta skullMeta = (SkullMeta) itemMeta;
+        PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID());
+        PlayerTextures playerTextures = playerProfile.getTextures();
+
+        try {
+            playerTextures.setSkin(new URL(url));
+        } catch (MalformedURLException e) {
+
+            throw new RuntimeException(e);
+        }
+
+        playerProfile.setTextures(playerTextures);
+
+        skullMeta.setOwnerProfile(playerProfile);
+        this.itemMeta = skullMeta;
+
         return this;
     }
 
