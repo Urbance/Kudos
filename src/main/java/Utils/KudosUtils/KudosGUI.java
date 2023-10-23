@@ -16,10 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.checkerframework.checker.units.qual.A;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class KudosGUI implements Listener {
     private Main plugin = Main.getPlugin(Main.class);
@@ -116,6 +113,7 @@ public class KudosGUI implements Listener {
     private void fillReceivedKudosPane(StaticPane staticPane, int currentPage, int entriesPerPane, int totalEntries) {
         String arrowLeftURLSkull = "http://textures.minecraft.net/texture/bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9";
         String arrowRightURLSkull = "http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf";
+        String serverURLSkull = "http://textures.minecraft.net/texture/b0f10e85418e334f82673eb4940b208ecaee0c95c287685e9eaf24751a315bfa";
 
         GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .setDisplayName(guiConfig.getString("slot.receivedKudos.backwards-item-name"))
@@ -123,7 +121,6 @@ public class KudosGUI implements Listener {
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage - 1);
             kudosGUI.update();
-            Bukkit.broadcastMessage("Go to page " + (currentPage - 1));
         });
 
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
@@ -132,7 +129,6 @@ public class KudosGUI implements Listener {
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
             kudosGUI.update();
-            Bukkit.broadcastMessage("Go to page " + (currentPage + 1));
         });
 
         int inventorySlot = 2;
@@ -141,15 +137,13 @@ public class KudosGUI implements Listener {
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
-            String playerName = unsplittedReceivedKudosList[0];
+            String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general.console-name") : unsplittedReceivedKudosList[0];
             String awardReason = unsplittedReceivedKudosList[1];
             String awardDate = unsplittedReceivedKudosList[2];
 
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-
             List<String> itemLore = guiConfig.getStringList("slot.receivedKudos.lore-received-kudos");
-
             ArrayList<String> modifiedItemLore = new ArrayList<>();
+
             for (String itemLoreEntry : itemLore) {
                 itemLoreEntry = itemLoreEntry.replace("%kudos_award_reason%", awardReason);
                 itemLoreEntry = itemLoreEntry.replace("%kudos_award_date%", awardDate);
@@ -157,10 +151,18 @@ public class KudosGUI implements Listener {
                 modifiedItemLore.add(itemLoreEntry);
             }
 
-            ItemCreator playerHead = new ItemCreator("PLAYER_HEAD")
-                    .replaceSkullWithPlayerSkull(offlinePlayer) // replace with player from received kudos list
-                    .setDisplayName("&2" + offlinePlayer.getName())
-                    .setLore(modifiedItemLore);
+            ItemCreator playerHead = new ItemCreator("PLAYER_HEAD");
+
+            if (playerName.equals(plugin.config.getString("general.console-name"))) {
+                    playerHead.setDisplayName("&2" + playerName)
+                            .replaceSkullWithCustomURLSkull(serverURLSkull);
+            } else {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
+                playerHead.setDisplayName("&2" + offlinePlayer.getName())
+                        .replaceSkullWithPlayerSkull(offlinePlayer);
+            }
+            playerHead.setLore(modifiedItemLore);
+
             staticPane.addItem(new GuiItem(playerHead.get()), Slot.fromIndex(inventorySlot));
             inventorySlot++;
         }
