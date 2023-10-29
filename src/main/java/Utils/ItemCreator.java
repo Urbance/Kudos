@@ -1,5 +1,6 @@
 package Utils;
 
+import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,6 +21,7 @@ public class ItemCreator {
     private ItemStack itemStack;
     private ItemMeta itemMeta;
     private int amount;
+    Main plugin = Main.getPlugin(Main.class);
 
     public ItemCreator(String material) {
         this.itemStack = new ItemStack(Material.valueOf(material));
@@ -65,13 +67,14 @@ public class ItemCreator {
         try {
             playerTextures.setSkin(new URL(url));
         } catch (MalformedURLException e) {
-
-            throw new RuntimeException(e);
+            plugin.getLogger().warning("An error occurred! Please report the error to the plugin developer:");
+            e.printStackTrace();
+            return this;
         }
 
         playerProfile.setTextures(playerTextures);
-
         skullMeta.setOwnerProfile(playerProfile);
+
         this.itemMeta = skullMeta;
 
         return this;
