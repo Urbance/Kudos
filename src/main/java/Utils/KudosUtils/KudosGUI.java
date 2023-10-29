@@ -14,8 +14,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.checkerframework.checker.units.qual.A;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class KudosGUI implements Listener {
@@ -70,11 +72,11 @@ public class KudosGUI implements Listener {
             GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get());
             kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
         }
-        if (guiConfig.getBoolean("slot.receivedKudos.enabled")) {
-            List<String> lore = guiConfig.getStringList("slot.receivedKudos.lore-no-received-kudos");
-            if (data.getAmountKudos(player.getUniqueId()) > 0) lore = guiConfig.getStringList("slot.receivedKudos.lore");
-            ItemCreator receivedKudosItemItemCreator = new ItemCreator(guiConfig.getString("slot.receivedKudos.item"))
-                    .setDisplayName(guiConfig.getString("slot.receivedKudos.item-name"))
+        if (guiConfig.getBoolean("slot.received-kudos.enabled")) {
+            List<String> lore = guiConfig.getStringList("slot.received-kudos.lore-no-received-kudos");
+            if (data.getAmountKudos(player.getUniqueId()) > 0) lore = guiConfig.getStringList("slot.received-kudos.lore");
+            ItemCreator receivedKudosItemItemCreator = new ItemCreator(guiConfig.getString("slot.received-kudos.item"))
+                    .setDisplayName(guiConfig.getString("slot.received-kudos.item-name"))
                     .setLore(lore);
 
             GuiItem receivedKudosItem = new GuiItem(receivedKudosItemItemCreator.get(), event -> {
@@ -82,7 +84,7 @@ public class KudosGUI implements Listener {
                 paginatedPane.setPage(1);
                 kudosGUI.update();
             });
-            kudosMainPane.addItem(receivedKudosItem, Slot.fromIndex(guiConfig.getInt("slot.receivedKudos.item-slot")));
+            kudosMainPane.addItem(receivedKudosItem, Slot.fromIndex(guiConfig.getInt("slot.received-kudos.item-slot")));
         }
         return kudosMainPane;
     }
@@ -116,7 +118,7 @@ public class KudosGUI implements Listener {
         String serverURLSkull = "http://textures.minecraft.net/texture/b0f10e85418e334f82673eb4940b208ecaee0c95c287685e9eaf24751a315bfa";
 
         GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .setDisplayName(guiConfig.getString("slot.receivedKudos.backwards-item-name"))
+                .setDisplayName(guiConfig.getString("received-kudos-list.backwards-item.item-name"))
                 .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage - 1);
@@ -125,7 +127,7 @@ public class KudosGUI implements Listener {
 
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
-                .setDisplayName(guiConfig.getString("slot.receivedKudos.forwards-item-name"))
+                .setDisplayName(guiConfig.getString("received-kudos-list.forwards-item.item-name"))
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
             kudosGUI.update();
@@ -134,19 +136,29 @@ public class KudosGUI implements Listener {
         int inventorySlot = 2;
         int firstKudoReceivedListEntry = (currentPage - 1) * 5;
         int lastKudoReceivedListEntry = Math.min(firstKudoReceivedListEntry + entriesPerPane, totalEntries);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
             String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general.console-name") : unsplittedReceivedKudosList[0];
             String awardReason = unsplittedReceivedKudosList[1];
-            String awardDate = unsplittedReceivedKudosList[2];
+            String awardDateString = unsplittedReceivedKudosList[2];
+            Date date;
 
-            List<String> itemLore = guiConfig.getStringList("slot.receivedKudos.lore-received-kudos");
+            try {
+                date = dateFormat.parse(awardDateString);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+            awardDateString = dateFormat.format(date);
+
+            List<String> itemLore = guiConfig.getStringList("received-kudos-list.received-kudos-item.lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
                 itemLoreEntry = itemLoreEntry.replace("%kudos_award_reason%", awardReason);
-                itemLoreEntry = itemLoreEntry.replace("%kudos_award_date%", awardDate);
+                itemLoreEntry = itemLoreEntry.replace("%kudos_award_date%", awardDateString);
                 itemLoreEntry = itemLoreEntry.replace("%kudos_award_player%", playerName);
                 modifiedItemLore.add(itemLoreEntry);
             }
@@ -155,12 +167,13 @@ public class KudosGUI implements Listener {
 
             if (playerName.equals(plugin.config.getString("general.console-name"))) {
                     playerHead.setDisplayName("&2" + playerName)
-                            .replaceSkullWithCustomURLSkull(serverURLSkull);
+                        .replaceSkullWithCustomURLSkull(serverURLSkull);
             } else {
                 OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
                 playerHead.setDisplayName("&2" + offlinePlayer.getName())
                         .replaceSkullWithPlayerSkull(offlinePlayer);
             }
+
             playerHead.setLore(modifiedItemLore);
 
             staticPane.addItem(new GuiItem(playerHead.get()), Slot.fromIndex(inventorySlot));
