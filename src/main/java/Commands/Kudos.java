@@ -13,13 +13,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.util.StringUtil;
 
 import java.util.*;
 
 public class Kudos implements CommandExecutor, TabCompleter {
-    public static Inventory inventory;
     Main plugin = Main.getPlugin(Main.class);
     FileConfiguration locale;
     SQLGetter data;
@@ -61,9 +59,11 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return;
         }
+
         Player player = Bukkit.getPlayer(sender.getName());
-        inventory = new KudosGUI().create(player);
-        player.openInventory(inventory);
+
+        KudosGUI kudosGUI = new KudosGUI();
+        kudosGUI.open(player);
     }
 
     public void showKudos(CommandSender sender) {

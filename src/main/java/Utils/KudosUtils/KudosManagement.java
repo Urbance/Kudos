@@ -160,7 +160,7 @@ public class KudosManagement {
         for (String itemKey : config.getConfigurationSection(configItemRewardsListPath).getKeys(false)) {
             String configItemRewardsPathKey = configItemRewardsListPath + "." + itemKey;
             if (!config.getBoolean(configItemRewardsPathKey + ".enabled")) continue;
-            ItemCreator itemCreator = new ItemCreator(Material.getMaterial(config.getString(configItemRewardsPathKey + ".material")));
+            ItemCreator itemCreator = new ItemCreator(config.getString(configItemRewardsPathKey + ".material"));
             itemCreator.setDisplayName(config.getString(configItemRewardsPathKey + ".item-name"));
             itemCreator.setAmount(config.getInt(configItemRewardsPathKey + ".amount"));
             if (config.getBoolean(configItemRewardsPathKey + ".use-lore")) itemCreator.setLore(config.getStringList(configItemRewardsPathKey + ".item-lore"));

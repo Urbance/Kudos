@@ -176,14 +176,41 @@ public class SQLGetter {
                 if (reason == null) reason = config.getString("kudo-award.no-reason-given");
                 if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
 
-
                 kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return kudos;
+    }
+
+    public HashMap<Integer, String> getPlayerReceivedKudosGUI(UUID uuid) {
+        HashMap<Integer, String> receivedKudos = new HashMap<>();
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM `kudos` WHERE AwardedToPlayer=? ORDER BY KudoID DESC;")) {
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+            int entryNumber = 0;
+            while (results.next()) {
+                String receivedFromPlayer;
+
+                try {
+                    receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
+                } catch (Exception e) {
+                    receivedFromPlayer = results.getString("ReceivedFromPlayer");
+                }
+
+                String reason = results.getString("Reason");
+                String date = results.getString("Date");
+
+                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
+
+                receivedKudos.put(entryNumber, receivedFromPlayer + "@" + reason + "@" + date);
+                entryNumber++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return receivedKudos;
     }
 
     public int getPlayerKudo(int requestedKudosID) {

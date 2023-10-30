@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -43,6 +43,10 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.1] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
+                                <relocation>
+                                    <pattern>com.github.stefvanschie.inventoryframework</pattern>
+                                    <shadedPattern>de.urbance.shaded.inventoryframework</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>com.zaxxer</pattern>
                                     <shadedPattern>de.urbance.shaded.hikaricp</shadedPattern>
@@ -117,6 +121,11 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.0</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefvanschie.inventoryframework</groupId>
+            <artifactId>IF</artifactId>
+            <version>0.10.12</version>
         </dependency>
     </dependencies>
 </project>

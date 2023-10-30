@@ -6,15 +6,24 @@ slot:
     enabled: true
     item: PLAYER_HEAD
     item-name: "&2&lStatistics"
-    item-slot: 2
+    item-slot: 1
     lore:
       - "&7&e%kudos_player_kudos% &7Kudos received"
       - "&7&e%kudos_player_assigned_kudos% &7Kudos assigned"
+  received-kudos:
+    enabled: true
+    item: BOOK
+    item-name: "&9&lReceived Kudos"
+    item-slot: 3
+    lore:
+      - "&7&o*Click*"
+    lore-no-received-kudos:
+      - "&7You haven't received any Kudos yet"
   help:
     enabled: true
     item: POPPY
     item-name: "&e&lHelp"
-    item-slot: 4
+    item-slot: 5
     lore:
       - "&7/kudo [player] (reason) - Give a Kudo to a player, optionally with reason"
       - "&7/kudos - Opens GUI"
@@ -23,7 +32,16 @@ slot:
     enabled: true
     item: EMERALD
     item-name: "&c&lLeaderboard"
-    item-slot: 6
+    item-slot: 7
     lore-format: "&e%top_kudos% &7%top_player%"
     not-assigned-kudos: "&eNot assigned"
     display-players: 3
+received-kudos:
+  received-kudos-item:
+    lore:
+      - "&7%kudos_award_reason%"
+      - "&7%kudos_award_date%"
+  backwards-item:
+    item-name: "&eBackwards"
+  forwards-item:
+    item-name: "&eForwards"
