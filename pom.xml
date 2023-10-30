@@ -125,7 +125,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.10.11</version>
+            <version>0.10.12</version>
         </dependency>
     </dependencies>
 </project>
