@@ -118,7 +118,7 @@ public class KudosGUI implements Listener {
         String serverURLSkull = "http://textures.minecraft.net/texture/b0f10e85418e334f82673eb4940b208ecaee0c95c287685e9eaf24751a315bfa";
 
         GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .setDisplayName(guiConfig.getString("received-kudos-list.backwards-item.item-name"))
+                .setDisplayName(guiConfig.getString("received-kudos.backwards-item.item-name"))
                 .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage - 1);
@@ -127,7 +127,7 @@ public class KudosGUI implements Listener {
 
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
-                .setDisplayName(guiConfig.getString("received-kudos-list.forwards-item.item-name"))
+                .setDisplayName(guiConfig.getString("received-kudos.forwards-item.item-name"))
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
             kudosGUI.update();
@@ -153,7 +153,7 @@ public class KudosGUI implements Listener {
 
             awardDateString = dateFormat.format(date);
 
-            List<String> itemLore = guiConfig.getStringList("received-kudos-list.received-kudos-item.lore");
+            List<String> itemLore = guiConfig.getStringList("received-kudos.received-kudos-item.lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
