@@ -23,7 +23,7 @@ Which permissions are available? What does *insert feature* actually do? All the
 You can try Kudos on my dev server:
 ~~~
 Dev Server Sponsored by Ember Host | Dedicated Resources | Ryzen 7950X3D | 99% uptime | NVMe SSD Storage
-IP: 213.239.215.108:25217
+IP: 157.90.4.108:25571
 Version: 1.20.1
 ~~~
 
