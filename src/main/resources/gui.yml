@@ -1,6 +1,7 @@
 general:
   title: "&rKudos"
   enabled: true
+  rows: 1
 slot:
   statistics:
     enabled: true

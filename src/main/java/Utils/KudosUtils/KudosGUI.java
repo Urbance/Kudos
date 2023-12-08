@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigKey;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
@@ -21,32 +22,58 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class KudosGUI implements Listener {
-    private Main plugin = Main.getPlugin(Main.class);
-    private SQLGetter data = plugin.data;
-    private FileConfiguration guiConfig = plugin.guiConfig;
+    private final Main plugin;
+    private final SQLGetter data;
+    private final FileConfiguration guiConfig;
     private PaginatedPane paginatedPane;
     private ChestGui kudosGUI;
+    private ChestGui receivedKudosGUI;
     private Player player;
     private int lastPage;
     private HashMap<Integer, String> receivedKudosList;
-    private boolean receivedKudosExists = false;
+    private boolean receivedKudosExists;
+    private final ConfigKey configKey;
 
-    private void createGUI() {
-        String guiTitle = guiConfig.getString("general.title");
-        this.kudosGUI = new ChestGui(1, ChatColor.translateAlternateColorCodes('&', guiTitle));
-        kudosGUI.setOnGlobalClick(event -> event.setCancelled(true));
-        setPages();
+    public KudosGUI() {
+        this.plugin = Main.getPlugin(Main.class);
+        this.data = plugin.data;
+        this.guiConfig = plugin.guiConfig;
+        this.receivedKudosExists = false;
+        this.configKey = plugin.configKey;
     }
 
-    private void setPages() {
-        this.paginatedPane = new PaginatedPane(0, 0, 9, 1);
-        paginatedPane.addPane(0, getKudosMainPane(this.player));
-        kudosGUI.addPane(paginatedPane);
-        setReceivedKudosPages();
+    private void init() {
+        if (!createMainKudosGUI()) return;
+        createReceivedKudosGUI();
+    }
+
+    private boolean createMainKudosGUI() {
+        String guiTitle = guiConfig.getString("general.title");
+        int size = configKey.guiGeneralRows();
+
+        if (size == 0) {
+            plugin.getLogger().warning("Error: Please set the value for the key \"rows\" in the gui.yml between 1 and 6.");
+            return false;
+        }
+
+        this.kudosGUI = new UrbanceGUI().create(guiTitle, size)
+                .cancelOnGlobalClick(true)
+                .get();
+        this.kudosGUI.addPane(getKudosMainPane(this.player));
+
+        return kudosGUI != null;
+    }
+
+    private void createReceivedKudosGUI() {
+        this.receivedKudosGUI = new UrbanceGUI().create(kudosGUI.getTitle(), 1)
+                .cancelOnGlobalClick(true)
+                .get();
+        fillReceivedKudosGUI();
+        this.receivedKudosGUI.addPane(paginatedPane);
     }
 
     private StaticPane getKudosMainPane(Player player) {
-        StaticPane kudosMainPane = new StaticPane(0, 0, 9, 1);
+        StaticPane kudosMainPane = new StaticPane(0, 0, 9, kudosGUI.getRows());
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
             ItemCreator statisticsItemItemStack = new ItemCreator(guiConfig.getString("slot.statistics.item"))
@@ -81,15 +108,15 @@ public class KudosGUI implements Listener {
 
             GuiItem receivedKudosItem = new GuiItem(receivedKudosItemItemCreator.get(), event -> {
                 if (!receivedKudosExists) return;
-                paginatedPane.setPage(1);
-                kudosGUI.update();
+                openReceivedKudosGUI();
             });
             kudosMainPane.addItem(receivedKudosItem, Slot.fromIndex(guiConfig.getInt("slot.received-kudos.item-slot")));
         }
         return kudosMainPane;
     }
 
-    private void setReceivedKudosPages() {
+    private void fillReceivedKudosGUI() {
+        this.paginatedPane = new PaginatedPane(0, 0, 9, 1);
         this.receivedKudosList = data.getPlayerReceivedKudosGUI(player.getUniqueId());
 
         // calculate maximum needed pages
@@ -121,8 +148,12 @@ public class KudosGUI implements Listener {
                 .setDisplayName(guiConfig.getString("received-kudos.backwards-item.item-name"))
                 .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get(), inventoryClickEvent -> {
-            paginatedPane.setPage(currentPage - 1);
-            kudosGUI.update();
+            if (currentPage == 1) {
+                kudosGUI.show(player);
+            } else {
+                paginatedPane.setPage(currentPage - 1);
+                receivedKudosGUI.update();
+            }
         });
 
         GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
@@ -130,7 +161,7 @@ public class KudosGUI implements Listener {
                 .setDisplayName(guiConfig.getString("received-kudos.forwards-item.item-name"))
                 .get(), inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
-            kudosGUI.update();
+            receivedKudosGUI.update();
         });
 
         int inventorySlot = 2;
@@ -199,9 +230,19 @@ public class KudosGUI implements Listener {
         return modifiedLore;
     }
 
+    private void openReceivedKudosGUI() {
+        paginatedPane.setPage(1);
+        receivedKudosGUI.show(player);
+    }
+
     public void open(Player player) {
         this.player = player;
-        createGUI();
+        init();
+        if (this.kudosGUI == null) {
+            String errorMessage = configKey.errorSomethingWentWrongPleaseContactServerAdministrator();
+            if (player != null) new KudosMessage(plugin).send(player, errorMessage);
+            return;
+        }
         kudosGUI.show(player);
     }
 }
