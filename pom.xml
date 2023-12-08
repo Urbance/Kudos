@@ -41,7 +41,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.1] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.2] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>com.github.stefvanschie.inventoryframework</pattern>
