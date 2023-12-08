@@ -22,9 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class KudosGUI implements Listener {
-    private Main plugin;
-    private SQLGetter data;
-    private FileConfiguration guiConfig;
+    private final Main plugin;
+    private final SQLGetter data;
+    private final FileConfiguration guiConfig;
     private PaginatedPane paginatedPane;
     private ChestGui kudosGUI;
     private ChestGui receivedKudosGUI;
@@ -32,7 +32,7 @@ public class KudosGUI implements Listener {
     private int lastPage;
     private HashMap<Integer, String> receivedKudosList;
     private boolean receivedKudosExists;
-    private ConfigKey configKey;
+    private final ConfigKey configKey;
 
     public KudosGUI() {
         this.plugin = Main.getPlugin(Main.class);
@@ -42,24 +42,38 @@ public class KudosGUI implements Listener {
         this.configKey = plugin.configKey;
     }
 
-    private void createKudosGUI() {
+    private void init() {
+        if (!createMainKudosGUI()) return;
+        createReceivedKudosGUI();
+    }
+
+    private boolean createMainKudosGUI() {
         String guiTitle = guiConfig.getString("general.title");
         int size = configKey.guiGeneralRows();
+
         if (size == 0) {
-            String errorMessage = configKey.errorSomethingWentWrongPleaseContactServerAdministrator();
-            new KudosMessage(plugin).send(player, errorMessage);
             plugin.getLogger().warning("Error: Please set the value for the key \"rows\" in the gui.yml between 1 and 6.");
-            return;
+            return false;
         }
-        kudosGUI = new UrbanceGUI().create(guiTitle, size)
+
+        this.kudosGUI = new UrbanceGUI().create(guiTitle, size)
                 .cancelOnGlobalClick(true)
                 .get();
-        kudosGUI.addPane(getKudosMainPane(this.player));
-        setReceivedKudosGUI();
+        this.kudosGUI.addPane(getKudosMainPane(this.player));
+
+        return kudosGUI != null;
+    }
+
+    private void createReceivedKudosGUI() {
+        this.receivedKudosGUI = new UrbanceGUI().create(kudosGUI.getTitle(), 1)
+                .cancelOnGlobalClick(true)
+                .get();
+        fillReceivedKudosGUI();
+        this.receivedKudosGUI.addPane(paginatedPane);
     }
 
     private StaticPane getKudosMainPane(Player player) {
-        StaticPane kudosMainPane = new StaticPane(0, 0, 9, 1);
+        StaticPane kudosMainPane = new StaticPane(0, 0, 9, kudosGUI.getRows());
 
         if (guiConfig.getBoolean("slot.statistics.enabled")) {
             ItemCreator statisticsItemItemStack = new ItemCreator(guiConfig.getString("slot.statistics.item"))
@@ -101,16 +115,7 @@ public class KudosGUI implements Listener {
         return kudosMainPane;
     }
 
-    private void openReceivedKudosGUI() {
-        receivedKudosGUI = new UrbanceGUI().create(kudosGUI.getTitle(), 1).
-                cancelOnGlobalClick(true)
-                .get();
-        receivedKudosGUI.addPane(paginatedPane);
-        paginatedPane.setPage(1);
-        receivedKudosGUI.show(player);
-    }
-
-    private void setReceivedKudosGUI() {
+    private void fillReceivedKudosGUI() {
         this.paginatedPane = new PaginatedPane(0, 0, 9, 1);
         this.receivedKudosList = data.getPlayerReceivedKudosGUI(player.getUniqueId());
 
@@ -225,10 +230,20 @@ public class KudosGUI implements Listener {
         return modifiedLore;
     }
 
+    private void openReceivedKudosGUI() {
+        paginatedPane.setPage(1);
+        receivedKudosGUI.show(player);
+    }
+
     public void open(Player player) {
         this.player = player;
-        createKudosGUI();
-        if (this.kudosGUI != null) kudosGUI.show(player);
+        init();
+        if (this.kudosGUI == null) {
+            String errorMessage = configKey.errorSomethingWentWrongPleaseContactServerAdministrator();
+            if (player != null) new KudosMessage(plugin).send(player, errorMessage);
+            return;
+        }
+        kudosGUI.show(player);
     }
 }
 
