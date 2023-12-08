@@ -4,6 +4,7 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import Utils.ConfigKey;
 import Utils.CooldownManager;
 import Utils.FileManager;
 import Utils.KudosUtils.KudosExpansion;
@@ -29,6 +30,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration config;
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
+    public ConfigKey configKey;
     public boolean isConnected;
 
     @Override
@@ -41,6 +43,7 @@ public final class Main extends JavaPlugin implements Listener {
         checkNewUpdateAndCurrentVersion();
         setupMetrics();
         setupConfigs();
+
         try {
             setupSQL();
         } catch (SQLException e) {
@@ -119,6 +122,8 @@ public final class Main extends JavaPlugin implements Listener {
         this.guiConfig = guiManager.getConfig();
         guiConfig.options().copyDefaults(true);
         guiManager.save();
+
+        this.configKey = new ConfigKey();
     }
 
     private void setupMetrics() {

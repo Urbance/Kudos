@@ -25,3 +25,4 @@ error:
   must-wait-before-use-again: "&7You must wait &e%kudos_cooldown% seconds &7before you can use it again!"
   award-reason-is-too-long: "The reason can't be longer than &e%kudos_maximum_award_reason_chars% &7chars."
   something-went-wrong-by-sending-milestone-broadcast: "Something went wrong when sending the milestone broadcast. Please contact the server administrator."
+  something-went-wrong-please-contact-server-administrator: "Something went wrong. Please contact the server administrator."

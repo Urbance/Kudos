@@ -1,6 +1,7 @@
 package Commands;
 
 import Utils.ComponentCreator;
+import Utils.ConfigKey;
 import Utils.FileManager;
 import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
@@ -123,6 +124,8 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         new FileManager("messages.yml", plugin).reload();
         new FileManager("mysql.yml", plugin).reload();
         new FileManager("gui.yml", plugin).reload();
+
+        plugin.configKey = new ConfigKey();
     }
 
     private void performClear(CommandSender sender, String[] args) {
