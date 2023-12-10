@@ -1,6 +1,6 @@
 package Commands;
 
-import Utils.KudosUtils.KudosGUI;
+import GUI.KudosGUI;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
