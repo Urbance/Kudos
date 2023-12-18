@@ -32,6 +32,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     private HashMap<Integer, String> receivedKudosList;
     private Player player;
     private int lastPage;
+    private UrbanceGUI urbanceGUI;
 
     public ReceivedKudosGUI() {
         this.plugin = Main.getPlugin(Main.class);
@@ -61,8 +62,9 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     }
 
     private void createGUI() {
-        // TODO build gui dynamically 
-        this.receivedKudosGUI = new UrbanceGUI().create("Kudos", 1)
+        // TODO build gui title dynamically
+        this.urbanceGUI = new UrbanceGUI();
+        this.receivedKudosGUI = urbanceGUI.create("Kudos", 1)
                 .cancelOnGlobalClick(true)
                 .get();
     }
@@ -76,14 +78,10 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     }
 
     private void fillReceivedKudosPane(StaticPane staticPane, int currentPage, int entriesPerPane, int totalEntries) {
-        String arrowLeftURLSkull = "http://textures.minecraft.net/texture/bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9";
-        String arrowRightURLSkull = "http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf";
         String serverURLSkull = "http://textures.minecraft.net/texture/b0f10e85418e334f82673eb4940b208ecaee0c95c287685e9eaf24751a315bfa";
 
-        GuiItem arrowLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .setDisplayName(guiConfig.getString("received-kudos.backwards-item.item-name"))
-                .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
-                .get(), inventoryClickEvent -> {
+        GuiItem pageSwitchterLeft = urbanceGUI.getPageSwitcherLeftItem();
+        pageSwitchterLeft.setAction(inventoryClickEvent -> {
             if (currentPage == 1) {
                 new KudosGUI().open(player);
             } else {
@@ -92,10 +90,8 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
             }
         });
 
-        GuiItem arrowRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
-                .setDisplayName(guiConfig.getString("received-kudos.forwards-item.item-name"))
-                .get(), inventoryClickEvent -> {
+        GuiItem pageSwitchterRight = urbanceGUI.getPageSwitcherRightItem();
+        pageSwitchterRight.setAction(inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
             receivedKudosGUI.update();
         });
@@ -147,8 +143,8 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
             inventorySlot++;
         }
 
-        staticPane.addItem(arrowLeft, Slot.fromIndex(0));
-        if (currentPage != lastPage) staticPane.addItem(arrowRight, Slot.fromIndex(8));
+        staticPane.addItem(pageSwitchterLeft, Slot.fromIndex(0));
+        if (currentPage != lastPage) staticPane.addItem(pageSwitchterRight, Slot.fromIndex(8));
     }
 
     @Override
