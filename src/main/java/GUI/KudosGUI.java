@@ -73,11 +73,18 @@ public class KudosGUI implements Listener {
             kudosMainPane.addItem(helpItem, Slot.fromIndex(guiConfig.getInt("slot.help.item-slot")));
         }
         if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
+            List<String> leaderboardTopKudosData = data.getTopPlayersKudos(6);
+            List<String> lore = configKey.slot_kudos_leaderboard_lore();
+            if (leaderboardTopKudosData.isEmpty()) lore = configKey.slot_kudos_leaderboard_lore_no_kudos_exists();
+
             ItemCreator leaderboardItemItemStack = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
                     .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
-                    .setLore(data.getTopPlayersKudos())
+                    .setLore(lore)
                     .replaceSkullWithPlayerSkull(player);
-            GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get());
+            GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get(), event -> {
+                if (leaderboardTopKudosData.isEmpty()) return;
+                new LeaderboardGUI(leaderboardTopKudosData).open(player);
+            });
             kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
         }
         if (guiConfig.getBoolean("slot.received-kudos.enabled")) {

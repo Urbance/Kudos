@@ -80,8 +80,8 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     private void fillReceivedKudosPane(StaticPane staticPane, int currentPage, int entriesPerPane, int totalEntries) {
         String serverURLSkull = "http://textures.minecraft.net/texture/b0f10e85418e334f82673eb4940b208ecaee0c95c287685e9eaf24751a315bfa";
 
-        GuiItem pageSwitchterLeft = urbanceGUI.getPageSwitcherLeftItem();
-        pageSwitchterLeft.setAction(inventoryClickEvent -> {
+        GuiItem pageSwitcherLeft = urbanceGUI.getBackwardsPageSwitcher();
+        pageSwitcherLeft.setAction(inventoryClickEvent -> {
             if (currentPage == 1) {
                 new KudosGUI().open(player);
             } else {
@@ -90,8 +90,8 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
             }
         });
 
-        GuiItem pageSwitchterRight = urbanceGUI.getPageSwitcherRightItem();
-        pageSwitchterRight.setAction(inventoryClickEvent -> {
+        GuiItem pageSwitcherRight = urbanceGUI.getForwardsPageSwitcher();
+        pageSwitcherRight.setAction(inventoryClickEvent -> {
             paginatedPane.setPage(currentPage + 1);
             receivedKudosGUI.update();
         });
@@ -143,8 +143,8 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
             inventorySlot++;
         }
 
-        staticPane.addItem(pageSwitchterLeft, Slot.fromIndex(0));
-        if (currentPage != lastPage) staticPane.addItem(pageSwitchterRight, Slot.fromIndex(8));
+        staticPane.addItem(pageSwitcherLeft, Slot.fromIndex(0));
+        if (currentPage != lastPage) staticPane.addItem(pageSwitcherRight, Slot.fromIndex(8));
     }
 
     @Override

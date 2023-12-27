@@ -31,21 +31,21 @@ public class UrbanceGUI {
         return this;
     }
 
-    public GuiItem getPageSwitcherLeftItem() {
+    public GuiItem getBackwardsPageSwitcher() {
         String arrowLeftURLSkull = "http://textures.minecraft.net/texture/bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9";
         GuiItem pageSwitchterLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
-                .setDisplayName(guiConfig.getString("received-kudos.backwards-item.item-name"))
+                .setDisplayName(guiConfig.getString("general.page-switcher.backwards.item-name"))
                 .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get());
 
         return pageSwitchterLeft;
     }
 
-    public GuiItem getPageSwitcherRightItem() {
+    public GuiItem getForwardsPageSwitcher() {
         String arrowRightURLSkull = "http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf";
         GuiItem pageSwitchterRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
-                .setDisplayName(guiConfig.getString("received-kudos.forwards-item.item-name"))
+                .setDisplayName(guiConfig.getString("general.page-switcher.forwards.item-name"))
                 .get());
 
         return pageSwitchterRight;

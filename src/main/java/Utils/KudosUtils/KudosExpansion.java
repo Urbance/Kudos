@@ -38,7 +38,7 @@ public class KudosExpansion extends PlaceholderExpansion {
         SQLGetter data = new SQLGetter(plugin);
         UUID playerUUID = player.getUniqueId();
         String notAssignedKudos = plugin.guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos");
-        List<String> topPlayerKudos = data.getTopPlayersKudos();
+        List<String> topPlayerKudos = data.getTopPlayersKudosTemp();
 
         switch (parameter) {
             case "player_name" -> {

@@ -2,6 +2,11 @@ general:
   title: "&rKudos"
   enabled: true
   rows: 1
+  page-switcher:
+    backwards:
+      item-name: "&eBackwards"
+    forwards:
+      item-name: "&eForwards"
 slot:
   statistics:
     enabled: true
@@ -34,6 +39,10 @@ slot:
     item: EMERALD
     item-name: "&c&lLeaderboard"
     item-slot: 7
+    lore:
+      - "&7&o*Click*"
+    lore-no-kudos-exists:
+    - "&7No Kudos have been awarded"
     lore-format: "&e%top_kudos% &7%top_player%"
     not-assigned-kudos: "&eNot assigned"
     display-players: 3
@@ -42,7 +51,8 @@ received-kudos:
     lore:
       - "&7%kudos_award_reason%"
       - "&7%kudos_award_date%"
-  backwards-item:
-    item-name: "&eBackwards"
-  forwards-item:
-    item-name: "&eForwards"
+leaderboard:
+  player-leaderboard-item:
+    item-name: "&2%kudos_leaderboard_name%"
+    lore:
+      - "&7Total Kudos: %kudos_leaderboard_kudos%"

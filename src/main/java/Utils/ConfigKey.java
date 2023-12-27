@@ -1,7 +1,10 @@
 package Utils;
 
 import de.urbance.Main;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.List;
 
 public class ConfigKey {
     private Main plugin;
@@ -27,6 +30,22 @@ public class ConfigKey {
             return 0;
         }
         return 0;
+    }
+
+    public String leaderboard_player_leaderboard_item_item_name() {
+        return guiConfig.getString("leaderboard.player-leaderboard-item.item-name");
+    }
+
+    public List<String> leaderboard_player_leaderboard_item_item_lore() {
+        return guiConfig.getStringList("leaderboard.player-leaderboard-item.lore");
+    }
+
+    public List<String> slot_kudos_leaderboard_lore() {
+        return guiConfig.getStringList("slot.kudos-leaderboard.lore");
+    }
+
+    public List<String> slot_kudos_leaderboard_lore_no_kudos_exists() {
+        return guiConfig.getStringList("slot.kudos-leaderboard.lore-no-kudos-exists");
     }
 
     /*
