@@ -381,7 +381,7 @@ public class SQLGetter {
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
-        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.lore-format");
+        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.papi.lore-format");
 
         for (int entry = 0; entry < amountDisplayPlayers; entry++) {
             list.add(loreFormat);
@@ -392,7 +392,7 @@ public class SQLGetter {
     private List<String> setNotAssignedKudosText(List<String> lore) {
         for (int entry = 0; entry < lore.size(); entry++) {
             if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos")));
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.papi.not-assigned-kudos")));
             }
         }
         return lore;
