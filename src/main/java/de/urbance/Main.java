@@ -8,6 +8,7 @@ import GUI.ReceivedKudosGUI;
 import Utils.ConfigKey;
 import Utils.CooldownManager;
 import Utils.FileManager;
+import Utils.KudosUtils.ConfigWorkaroundManagement;
 import Utils.KudosUtils.KudosExpansion;
 import GUI.KudosGUI;
 import Utils.SQL.SQL;
@@ -51,6 +52,11 @@ public final class Main extends JavaPlugin implements Listener {
             throw new RuntimeException(e);
         }
         registerListenerAndCommands();
+
+
+        // perform workarounds
+        ConfigWorkaroundManagement configWorkaroundManagement = new ConfigWorkaroundManagement();
+        configWorkaroundManagement.performWorkarounds();
     }
 
     @Override
