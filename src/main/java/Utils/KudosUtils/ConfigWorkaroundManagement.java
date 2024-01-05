@@ -61,7 +61,7 @@ public class ConfigWorkaroundManagement {
             guiConfig.set(oldLoreFormatPapiKeyPath, null);
         }
 
-        // replace with FileManager
+        // TODO replace with FileManager
         guiConfigManager.save();
         plugin.guiConfig = guiConfigManager.getConfig();
     }
