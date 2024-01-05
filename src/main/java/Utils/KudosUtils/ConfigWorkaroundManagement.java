@@ -9,8 +9,6 @@ import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.List;
-
 public class ConfigWorkaroundManagement {
     private Main plugin;
     private FileManager guiConfigManager;
@@ -24,6 +22,23 @@ public class ConfigWorkaroundManagement {
 
     public void performWorkarounds() {
         // 4.3.0 Minor Update
+        // move received kudos page switcher to general key
+        String receivedKudosBackwardsItemNameKeyPath = "received-kudos.backwards-item.item-name";
+        String receivedKudosForwardsItemNameKeyPath = "received-kudos.forwards-item.item-name";
+
+        String generalPageSwitcherBackwardsItemNameKeyPath = "general.page-switcher.backwards.item-name";
+        String generalPageSwitcherForwardsItemNameKeyPath = "general.page-switcher.forwards.item-name";
+
+        if (guiConfig.getString(receivedKudosBackwardsItemNameKeyPath) != null) {
+            guiConfig.set(generalPageSwitcherBackwardsItemNameKeyPath, guiConfig.getString(receivedKudosBackwardsItemNameKeyPath));
+            guiConfig.set("received-kudos.backwards-item", null);
+        }
+
+        if (guiConfig.getString(receivedKudosForwardsItemNameKeyPath) != null) {
+            guiConfig.set(generalPageSwitcherForwardsItemNameKeyPath, guiConfig.getString(receivedKudosForwardsItemNameKeyPath));
+            guiConfig.set("received-kudos.forwards-item", null);
+        }
+
         // refactored papi leaderboard config key values into a separated key
         String oldNotAssignedKudosPapiKeyPath = "slot.kudos-leaderboard.not-assigned-kudos";
         String oldLoreFormatPapiKeyPath = "slot.kudos-leaderboard.lore-format";
@@ -44,10 +59,9 @@ public class ConfigWorkaroundManagement {
 
             guiConfig.set(newLoreFormatPapiKeyPath, oldLoreFormatPapiKeyValue);
             guiConfig.set(oldLoreFormatPapiKeyPath, null);
-
-            Bukkit.getLogger().info("Test");
         }
 
+        // replace with FileManager
         guiConfigManager.save();
         plugin.guiConfig = guiConfigManager.getConfig();
     }
