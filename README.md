@@ -30,4 +30,3 @@ Version: 1.20.1
 ## Impressions
 ![GUI Overview](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjQyODA3MzI4Y2JhZTI3MzIzYTI1ZDZkMjQxYjUyYWNlY2NiMWUxMCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/ohLlAJdrAoHLpELVXw/giphy.gif)
 <br>![Awarding a Kudo](https://media.giphy.com/media/zg1JlSMlPyK0iuLH9i/giphy.gif)
-<br>![Item Reward](https://camo.githubusercontent.com/6886102453a4214ed531b9aefc21b45a7bc1a91aefab4dc7e9f7fa70e53223ca/68747470733a2f2f692e6962622e636f2f42737830786a532f41776172642d4974656d2e706e67)
