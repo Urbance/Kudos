@@ -24,7 +24,7 @@ Which permissions are available? What does *insert feature* actually do? All the
 <br>Quicklinks: [Wiki](https://urbance.gitbook.io/kudos-v4-wiki/getting-started/home) | [Installation & Setup](https://urbance.gitbook.io/kudos-v4-wiki/getting-started/installation-and-setup) | [Commands and Permissions](https://urbance.gitbook.io/kudos-v4-wiki/getting-started/permissions-and-commands)
 
 ## Wanna try it out before installing?
-You can try Kudos on my dev server:
+You can try Kudos on my demonstration server:
 ~~~
 IP: 157.90.4.108:25571
 Version: 1.20.4
