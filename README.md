@@ -7,6 +7,10 @@
 Kudos is an open source praise system. Players have the opportunity to praise each other.
 <br>It includes an editable GUI with various statistics and many ways to award rewards for praises.
 
+## Sponsored by Ember Host
+Thanks to Ember Host for supporting me by providing the demonstration server.
+<a href="https://ember.host"><img src="https://raw.githubusercontent.com/Urbance/Kudos-Media/main/Kudos/Ember%20Host%20Banner%20Resized.png"/></a>
+
 ## Features
 * PlaceholderAPI support
 * MySQL support
@@ -22,9 +26,8 @@ Which permissions are available? What does *insert feature* actually do? All the
 ## Wanna try it out before installing?
 You can try Kudos on my dev server:
 ~~~
-Dev Server Sponsored by Ember Host | Dedicated Resources | Ryzen 7950X3D | 99% uptime | NVMe SSD Storage
 IP: 157.90.4.108:25571
-Version: 1.20.1
+Version: 1.20.4
 ~~~
 
 ## Impressions
