@@ -253,7 +253,8 @@ public class SQLGetter {
         return 0;
     }
 
-    public List<String> getTopPlayersKudos() {
+    // TODO: remove function specific coded entries amount: make entries dynamically
+    public List<String> getTopPlayersKudosTemp() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 3")){
             int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
@@ -271,10 +272,28 @@ public class SQLGetter {
                 loreEntry = loreEntry.replaceAll("%top_player%", playerName);
 
                 itemLore.set(counter, loreEntry);
-                counter ++;
+                counter++;
             }
 
             return setNotAssignedKudosText(itemLore);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    public List<String> getTopPlayersKudos(int amountPlayers) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT " + amountPlayers)) {
+            ResultSet results = preparedStatement.executeQuery();
+            List<String> dataMetric = new ArrayList<>();
+
+            while (results.next()) {
+                UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
+                String kudos = results.getString("COUNT(KudoID)");
+
+                dataMetric.add(uuid + "#" + kudos);
+            }
+            return dataMetric;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -362,7 +381,7 @@ public class SQLGetter {
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
-        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.lore-format");
+        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.papi.lore-format");
 
         for (int entry = 0; entry < amountDisplayPlayers; entry++) {
             list.add(loreFormat);
@@ -373,7 +392,7 @@ public class SQLGetter {
     private List<String> setNotAssignedKudosText(List<String> lore) {
         for (int entry = 0; entry < lore.size(); entry++) {
             if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos")));
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.papi.not-assigned-kudos")));
             }
         }
         return lore;

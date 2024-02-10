@@ -52,6 +52,8 @@ public class FileManager {
     public void save() {
         if (this.file == null)
             saveDefaultConfig();
+        if (this.fileConfiguration == null)
+            this.fileConfiguration = YamlConfiguration.loadConfiguration(this.file);
         try {
             fileConfiguration.save(file);
         } catch (IOException e) {

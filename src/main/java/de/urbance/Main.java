@@ -4,11 +4,13 @@ import Commands.Kudmin;
 import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
+import GUI.ReceivedKudosGUI;
 import Utils.ConfigKey;
 import Utils.CooldownManager;
 import Utils.FileManager;
+import Utils.KudosUtils.ConfigWorkaroundManagement;
 import Utils.KudosUtils.KudosExpansion;
-import Utils.KudosUtils.KudosGUI;
+import GUI.KudosGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import Utils.UpdateChecker;
@@ -50,6 +52,11 @@ public final class Main extends JavaPlugin implements Listener {
             throw new RuntimeException(e);
         }
         registerListenerAndCommands();
+
+
+        // perform workarounds
+        ConfigWorkaroundManagement configWorkaroundManagement = new ConfigWorkaroundManagement();
+        configWorkaroundManagement.performWorkarounds();
     }
 
     @Override
@@ -90,6 +97,7 @@ public final class Main extends JavaPlugin implements Listener {
         if (oldTableScheme) return;
         getCommand("kudmin").setTabCompleter(new Kudmin());
         pluginManager.registerEvents(new KudosGUI(), this);
+        pluginManager.registerEvents(new ReceivedKudosGUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudos").setTabCompleter(new Kudos());
         getCommand("kudo").setExecutor(new Kudo());
