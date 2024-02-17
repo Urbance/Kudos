@@ -21,7 +21,7 @@ public class SQLGetter {
     private FileConfiguration guiConfig;
 
     public SQLGetter(Main plugin) {
-        this.guiConfig = new FileManager("gui.yml", plugin).getConfig();
+        this.guiConfig = new FileManager("guis/gui.yml", plugin).getConfig();
         this.plugin = Main.getPlugin(Main.class);
         this.config = plugin.config;
     }

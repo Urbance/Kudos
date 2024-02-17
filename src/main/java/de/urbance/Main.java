@@ -126,7 +126,7 @@ public final class Main extends JavaPlugin implements Listener {
         localeManager.save();
 
         // setup gui.yml
-        FileManager guiManager = new FileManager("gui.yml", this);
+        FileManager guiManager = new FileManager("guis/gui.yml", this);
         this.guiConfig = guiManager.getConfig();
         guiConfig.options().copyDefaults(true);
         guiManager.save();

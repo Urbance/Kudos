@@ -45,7 +45,7 @@ public class FileManager {
             }
             case "messages.yml" -> plugin.localeConfig = fileConfiguration;
             case "mysql.yml" -> plugin.mysqlConfig = fileConfiguration;
-            case "gui.yml" -> plugin.guiConfig = fileConfiguration;
+            case "guis/gui.yml" -> plugin.guiConfig = fileConfiguration;
         }
     }
 
