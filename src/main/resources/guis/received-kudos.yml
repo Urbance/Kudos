@@ -1,0 +1,7 @@
+general-settings:
+  enabled: true
+items:
+  received-kudos-item:
+    item-lore:
+      - "&7%kudos_award_reason%"
+      - "&7%kudos_award_date%"
