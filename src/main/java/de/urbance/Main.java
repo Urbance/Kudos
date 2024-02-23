@@ -32,6 +32,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration config;
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
+    public FileConfiguration receivedKudosConfig;
     public ConfigKey configKey;
     public boolean isConnected;
 
@@ -130,6 +131,12 @@ public final class Main extends JavaPlugin implements Listener {
         this.guiConfig = guiManager.getConfig();
         guiConfig.options().copyDefaults(true);
         guiManager.save();
+
+        // setup received-kudos.yml
+        FileManager receivedKudosManager = new FileManager("guis/received-kudos.yml", this);
+        this.receivedKudosConfig = receivedKudosManager.getConfig();
+        receivedKudosConfig.options().copyDefaults(true);
+        receivedKudosManager.save();
 
         this.configKey = new ConfigKey();
     }

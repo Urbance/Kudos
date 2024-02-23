@@ -47,11 +47,6 @@ slot:
     papi:
       lore-format: "&e%top_kudos% &7%top_player%"
       not-assigned-kudos: "&eNot assigned"
-received-kudos:
-  received-kudos-item:
-    lore:
-      - "&7%kudos_award_reason%"
-      - "&7%kudos_award_date%"
 leaderboard:
   player-leaderboard-item:
     item-name: "&2%kudos_leaderboard_name%"

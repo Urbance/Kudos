@@ -26,7 +26,7 @@ import java.util.List;
 public class ReceivedKudosGUI implements GUI_Interface, Listener {
     private Main plugin;
     private SQLGetter data;
-    private FileConfiguration guiConfig;
+    private FileConfiguration receivedKudosConfig;
     private ChestGui receivedKudosGUI;
     private PaginatedPane paginatedPane;
     private HashMap<Integer, String> receivedKudosList;
@@ -37,7 +37,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     public ReceivedKudosGUI() {
         this.plugin = Main.getPlugin(Main.class);
         this.data = plugin.data;
-        this.guiConfig = plugin.guiConfig;
+        this.receivedKudosConfig = plugin.receivedKudosConfig;
     }
 
     private void init() {
@@ -116,7 +116,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
             awardDateString = dateFormat.format(date);
 
-            List<String> itemLore = guiConfig.getStringList("received-kudos.received-kudos-item.lore");
+            List<String> itemLore = receivedKudosConfig.getStringList("items.received-kudos-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
