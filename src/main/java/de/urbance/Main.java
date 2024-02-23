@@ -33,6 +33,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration mysqlConfig;
     public FileConfiguration guiConfig;
     public FileConfiguration receivedKudosConfig;
+    public FileConfiguration leaderboardConfig;
     public ConfigKey configKey;
     public boolean isConnected;
 
@@ -137,6 +138,12 @@ public final class Main extends JavaPlugin implements Listener {
         this.receivedKudosConfig = receivedKudosManager.getConfig();
         receivedKudosConfig.options().copyDefaults(true);
         receivedKudosManager.save();
+
+        // setup leaderboard.yml
+        FileManager leaderboardManager = new FileManager("guis/leaderboard.yml", this);
+        this.leaderboardConfig = leaderboardManager.getConfig();
+        leaderboardConfig.options().copyDefaults(true);
+        leaderboardManager.save();
 
         this.configKey = new ConfigKey();
     }

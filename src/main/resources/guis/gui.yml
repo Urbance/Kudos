@@ -47,8 +47,3 @@ slot:
     papi:
       lore-format: "&e%top_kudos% &7%top_player%"
       not-assigned-kudos: "&eNot assigned"
-leaderboard:
-  player-leaderboard-item:
-    item-name: "&2%kudos_leaderboard_name%"
-    lore:
-      - "&7Total Kudos: %kudos_leaderboard_kudos%"
