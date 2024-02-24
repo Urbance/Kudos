@@ -7,6 +7,12 @@ general:
       item-name: "&eBackwards"
     forwards:
       item-name: "&eForwards"
+placeholderapi-settings:
+  items:
+    kudos-leaderboard:
+      item-lore-format: "&e%top_kudos% &7%top_player%"
+      item-lore-not-assigned-kudos: "&eNot assigned"
+      display-players: 3
 slot:
   statistics:
     enabled: true
@@ -43,7 +49,3 @@ slot:
       - "&7&o*Click*"
     lore-no-kudos-exists:
     - "&7No Kudos have been awarded"
-    display-players: 3
-    papi:
-      lore-format: "&e%top_kudos% &7%top_player%"
-      not-assigned-kudos: "&eNot assigned"
