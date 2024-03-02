@@ -1,12 +1,6 @@
 general:
-  title: "&rKudos"
   enabled: true
   rows: 1
-  page-switcher:
-    backwards:
-      item-name: "&eBackwards"
-    forwards:
-      item-name: "&eForwards"
 placeholderapi-settings:
   items:
     kudos-leaderboard:
