@@ -20,8 +20,8 @@ public class ConfigWorkaroundManagement {
         // 4.3.0 Minor Update
         // move received kudos page switcher to general key
 
-        FileManager guiConfigManagaerDeprecated = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfigDeprecated = guiConfigManagaerDeprecated.getConfig();
+        FileManager guiConfigManagerDeprecated = new FileManager("gui.yml", plugin);
+        FileConfiguration guiConfigDeprecated = guiConfigManagerDeprecated.getConfig();
 
         String receivedKudosBackwardsItemNameKeyPath = "received-kudos.backwards-item.item-name";
         String receivedKudosForwardsItemNameKeyPath = "received-kudos.forwards-item.item-name";
@@ -62,8 +62,8 @@ public class ConfigWorkaroundManagement {
         }
 
         // TODO replace with FileManager
-        guiConfigManagaerDeprecated.save();
-        plugin.guiConfig = guiConfigManagaerDeprecated.getConfig();
+        guiConfigManagerDeprecated.save();
+        plugin.guiConfig = guiConfigManagerDeprecated.getConfig();
 
     }
 }
