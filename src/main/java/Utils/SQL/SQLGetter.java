@@ -256,7 +256,7 @@ public class SQLGetter {
     // TODO: remove function specific coded entries amount: make entries dynamically
     public List<String> getTopPlayersKudosTemp() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 3")){
-            int amountDisplayPlayers = guiConfig.getInt("placeholderapi-settings.items.kudos-leaderboard.display-players");
+            int amountDisplayPlayers = plugin.globalGuiSettingsConfig.getInt("placeholderapi-settings.items.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
             ResultSet results = preparedStatement.executeQuery();
@@ -381,7 +381,7 @@ public class SQLGetter {
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
-        String loreFormat = guiConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
+        String loreFormat = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
 
         for (int entry = 0; entry < amountDisplayPlayers; entry++) {
             list.add(loreFormat);
@@ -392,7 +392,7 @@ public class SQLGetter {
     private List<String> setNotAssignedKudosText(List<String> lore) {
         for (int entry = 0; entry < lore.size(); entry++) {
             if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos")));
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos")));
             }
         }
         return lore;
