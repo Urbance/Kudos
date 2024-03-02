@@ -37,7 +37,9 @@ public class KudosGUI implements Listener {
     }
 
     private boolean createMainKudosGUI() {
-        String guiTitle = guiConfig.getString("general.title");
+        FileConfiguration globalGuiSettingsConfig = plugin.globalGuiSettingsConfig;
+        String guiTitle = globalGuiSettingsConfig.getString("general-settings.gui-title");
+
         int size = configKey.guiGeneralRows();
 
         if (size == 0) {

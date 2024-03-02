@@ -34,6 +34,7 @@ public final class Main extends JavaPlugin implements Listener {
     public FileConfiguration guiConfig;
     public FileConfiguration receivedKudosConfig;
     public FileConfiguration leaderboardConfig;
+    public FileConfiguration globalGuiSettingsConfig;
     public ConfigKey configKey;
     public boolean isConnected;
 
@@ -54,7 +55,6 @@ public final class Main extends JavaPlugin implements Listener {
             throw new RuntimeException(e);
         }
         registerListenerAndCommands();
-
 
         // perform workarounds
         ConfigWorkaroundManagement configWorkaroundManagement = new ConfigWorkaroundManagement();
@@ -144,6 +144,12 @@ public final class Main extends JavaPlugin implements Listener {
         this.leaderboardConfig = leaderboardManager.getConfig();
         leaderboardConfig.options().copyDefaults(true);
         leaderboardManager.save();
+
+        // setup global-gui-settings.yml
+        FileManager globalGuiSettingsManager = new FileManager("guis/global-gui-settings.yml", this);
+        this.globalGuiSettingsConfig = globalGuiSettingsManager.getConfig();
+        globalGuiSettingsConfig.options().copyDefaults(true);
+        globalGuiSettingsManager.save();
 
         this.configKey = new ConfigKey();
     }

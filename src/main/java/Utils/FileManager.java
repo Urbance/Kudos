@@ -48,6 +48,7 @@ public class FileManager {
             case "guis/received-kudos.yml" -> plugin.receivedKudosConfig = fileConfiguration;
             case "guis/leaderboard.yml" -> plugin.leaderboardConfig = fileConfiguration;
             case "guis/gui.yml" -> plugin.guiConfig = fileConfiguration;
+            case "guis/global-gui-settings.yml" -> plugin.globalGuiSettingsConfig = fileConfiguration;
         }
     }
 
