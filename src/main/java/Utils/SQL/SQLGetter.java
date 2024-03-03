@@ -214,19 +214,16 @@ public class SQLGetter {
     }
 
     public int getPlayerKudo(int requestedKudosID) {
-        int kudosID = 0;
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT KudoID FROM kudos WHERE KudoID=?;")) {
             preparedStatement.setInt(1, requestedKudosID);
             ResultSet results = preparedStatement.executeQuery();
-            while (results.next()) {
-                if (!results.wasNull())
-                    kudosID = results.getInt("KudoID");
-            }
+
+            return results.getInt("KudoID");
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        return kudosID;
+        return 0;
     }
 
     public int getAmountKudos(UUID uuid) {
