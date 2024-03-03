@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>4.3.0</version>
+    <version>4.4.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -41,7 +41,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>F:\Arbeitsbereich\Minecraft\Server\[1.20.2] Paper Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <outputFile>F:\Arbeitsbereich\Programmierung\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>com.github.stefvanschie.inventoryframework</pattern>

@@ -54,9 +54,12 @@ public class LeaderboardGUI implements GUI_Interface {
     }
 
     private void setBackwardsPageSwitcher() {
-        GuiItem backwardsPageSwitcher = new UrbanceGUI().getBackwardsPageSwitcher();
+        UrbanceGUI urbanceGUI = new UrbanceGUI();
+        GuiItem backwardsPageSwitcher = urbanceGUI.getBackwardsPageSwitcher();
+
         backwardsPageSwitcher.setAction(inventoryClickEvent -> {
             new KudosGUI().open(player);
+            urbanceGUI.playsoundPageSwitcher(player);
         });
         staticPane.addItem(backwardsPageSwitcher, Slot.fromIndex(0));
     }

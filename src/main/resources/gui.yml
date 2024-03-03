@@ -7,6 +7,9 @@ general:
       item-name: "&eBackwards"
     forwards:
       item-name: "&eForwards"
+    playsound:
+      enabled: true
+      playsound-type: "ITEM_BOOK_PAGE_TURN"
 slot:
   statistics:
     enabled: true
