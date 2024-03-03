@@ -1,6 +1,7 @@
 package Utils;
 
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -47,7 +48,7 @@ public class FileManager {
             case "mysql.yml" -> plugin.mysqlConfig = fileConfiguration;
             case "guis/received-kudos.yml" -> plugin.receivedKudosConfig = fileConfiguration;
             case "guis/leaderboard.yml" -> plugin.leaderboardConfig = fileConfiguration;
-            case "guis/gui.yml" -> plugin.guiConfig = fileConfiguration;
+            case "guis/overview.yml" -> plugin.guiConfig = fileConfiguration;
             case "guis/global-gui-settings.yml" -> plugin.globalGuiSettingsConfig = fileConfiguration;
         }
     }
@@ -65,8 +66,10 @@ public class FileManager {
     }
 
     public void saveDefaultConfig() {
-        if (fileName.equals("gui.yml"))
+        if (fileName.equals("gui.yml")) {
+            Bukkit.getLogger().info("Hehe0");
             return;
+        }
 
         if (this.file == null)
             this.file = new File(this.plugin.getDataFolder(), fileName);

@@ -22,7 +22,7 @@ public class ConfigKey {
         GUI-Config
     */
     public int guiGeneralRows() {
-        String configKey = "general.rows";
+        String configKey = "general-settings.rows";
         try {
             String size = guiConfig.getString(configKey);
             int sizeAsInteger = Integer.parseInt(size);
