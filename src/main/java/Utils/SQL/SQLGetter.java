@@ -279,22 +279,23 @@ public class SQLGetter {
         return Collections.emptyList();
     }
 
-    public List<String> getTopPlayersKudos(int amountPlayers) {
+    public HashMap<UUID, String> getTopPlayersKudos(int amountPlayers) {
+        HashMap<UUID, String> playerKudos = new HashMap<>();
+
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT " + amountPlayers)) {
             ResultSet results = preparedStatement.executeQuery();
-            List<String> dataMetric = new ArrayList<>();
 
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
                 String kudos = results.getString("COUNT(KudoID)");
 
-                dataMetric.add(uuid + "#" + kudos);
+                playerKudos.put(uuid, kudos);
             }
-            return dataMetric;
+            return playerKudos;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Collections.emptyList();
+        return playerKudos;
     }
 
     public boolean checkIfKudosTableHasOldTableSchematic() {
