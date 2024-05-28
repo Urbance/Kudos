@@ -67,7 +67,6 @@ public class FileManager {
 
     public void saveDefaultConfig() {
         if (fileName.equals("gui.yml")) {
-            Bukkit.getLogger().info("Hehe0");
             return;
         }
 
