@@ -1,15 +1,6 @@
 general:
-  title: "&rKudos"
   enabled: true
   rows: 1
-  page-switcher:
-    backwards:
-      item-name: "&eBackwards"
-    forwards:
-      item-name: "&eForwards"
-    playsound:
-      enabled: true
-      playsound-type: "ITEM_BOOK_PAGE_TURN"
 slot:
   statistics:
     enabled: true
@@ -46,17 +37,3 @@ slot:
       - "&7&o*Click*"
     lore-no-kudos-exists:
     - "&7No Kudos have been awarded"
-    display-players: 3
-    papi:
-      lore-format: "&e%top_kudos% &7%top_player%"
-      not-assigned-kudos: "&eNot assigned"
-received-kudos:
-  received-kudos-item:
-    lore:
-      - "&7%kudos_award_reason%"
-      - "&7%kudos_award_date%"
-leaderboard:
-  player-leaderboard-item:
-    item-name: "&2%kudos_leaderboard_name%"
-    lore:
-      - "&7Total Kudos: %kudos_leaderboard_kudos%"

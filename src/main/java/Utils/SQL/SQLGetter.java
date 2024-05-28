@@ -214,17 +214,19 @@ public class SQLGetter {
     }
 
     public int getPlayerKudo(int requestedKudosID) {
+        int kudosID = 0;
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT KudoID FROM kudos WHERE KudoID=?;")) {
             preparedStatement.setInt(1, requestedKudosID);
             ResultSet results = preparedStatement.executeQuery();
-            if (results.next()) {
-                return results.getInt("KudoID");
+            while (results.next()) {
+                if (!results.wasNull())
+                    kudosID = results.getInt("KudoID");
             }
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+        return kudosID;
     }
 
     public int getAmountKudos(UUID uuid) {
@@ -280,23 +282,22 @@ public class SQLGetter {
         return Collections.emptyList();
     }
 
-    public HashMap<UUID, String> getTopPlayersKudos(int amountPlayers) {
-        HashMap<UUID, String> playerKudos = new HashMap<>();
-
+    public List<String> getTopPlayersKudos(int amountPlayers) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT " + amountPlayers)) {
             ResultSet results = preparedStatement.executeQuery();
+            List<String> dataMetric = new ArrayList<>();
 
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
                 String kudos = results.getString("COUNT(KudoID)");
 
-                playerKudos.put(uuid, kudos);
+                dataMetric.add(uuid + "#" + kudos);
             }
-            return playerKudos;
+            return dataMetric;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return playerKudos;
+        return Collections.emptyList();
     }
 
     public boolean checkIfKudosTableHasOldTableSchematic() {
