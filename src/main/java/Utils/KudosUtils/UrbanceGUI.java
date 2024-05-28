@@ -55,9 +55,9 @@ public class UrbanceGUI {
     }
 
     public void playsoundPageSwitcher(Player player) {
-        if (!globalGuiSettingsConfig.getBoolean("general.page-switcher.playsound.enabled")) return;
+        if (!guiConfig.getBoolean("general.page-switcher.playsound.enabled")) return;
 
-        String sound = globalGuiSettingsConfig.getString("general.page-switcher.playsound.playsound-type");
+        String sound = guiConfig.getString("general.page-switcher.playsound.playsound-type");
         player.playSound(player.getLocation(), Sound.valueOf(sound), 1, 1);
     }
 
