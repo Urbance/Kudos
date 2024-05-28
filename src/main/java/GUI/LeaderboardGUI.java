@@ -15,6 +15,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,12 +25,12 @@ public class LeaderboardGUI implements GUI_Interface {
     private StaticPane staticPane;
     private Player player;
     private ChestGui gui;
-    private List<String> leaderboardTopKudosData;
+    private HashMap<UUID, String> leaderboardData;
 
-    public LeaderboardGUI(List<String> leaderboardKudosData) {
+    public LeaderboardGUI(HashMap<UUID, String> leaderboardData) {
         this.plugin = Main.getPlugin(Main.class);
         this.configKey = plugin.configKey;
-        this.leaderboardTopKudosData = leaderboardKudosData;
+        this.leaderboardData = leaderboardData;
     }
 
     private void init() {
@@ -54,9 +55,12 @@ public class LeaderboardGUI implements GUI_Interface {
     }
 
     private void setBackwardsPageSwitcher() {
-        GuiItem backwardsPageSwitcher = new UrbanceGUI().getBackwardsPageSwitcher();
+        UrbanceGUI urbanceGUI = new UrbanceGUI();
+        GuiItem backwardsPageSwitcher = urbanceGUI.getBackwardsPageSwitcher();
+
         backwardsPageSwitcher.setAction(inventoryClickEvent -> {
             new KudosGUI().open(player);
+            urbanceGUI.playsoundPageSwitcher(player);
         });
         staticPane.addItem(backwardsPageSwitcher, Slot.fromIndex(0));
     }
@@ -64,25 +68,23 @@ public class LeaderboardGUI implements GUI_Interface {
     private void setLeaderboardPlayers() {
         int playerHeadSlot = 2;
 
-        for (String entry : leaderboardTopKudosData) {
-            ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
-
-            String[] splittedEntry = entry.split("#");
-            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(splittedEntry[0]));
-            String displayName = configKey.leaderboard_player_leaderboard_item_item_name().replace("%kudos_leaderboard_name%", offlinePlayer.getName());
-            String totalKudos = splittedEntry[1];
+        for (UUID entry : leaderboardData.keySet()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(entry);
+            String playerTotalKudos = leaderboardData.get(entry);
+            String itemDisplayName = configKey.leaderboard_player_leaderboard_item_item_name().replace("%kudos_leaderboard_name%", player.getName());
 
             List<String> itemLore = configKey.leaderboard_player_leaderboard_item_item_lore();
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
-                itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", totalKudos);
+                itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", playerTotalKudos);
                 modifiedItemLore.add(itemLoreEntry);
             }
 
-            GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(displayName)
+            ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
+            GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
                     .setLore(modifiedItemLore)
-                    .replaceSkullWithPlayerSkull(offlinePlayer)
+                    .replaceSkullWithPlayerSkull(player)
                     .get()
             );
 

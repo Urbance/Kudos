@@ -99,10 +99,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String helpText = "&7========= &c&lKudmin Commands &7=========\n" +
                 " \n" +
                 "&7/kudmin help\n" +
-                "&7/kudmin add &ekudos [player] [amount]\n" +
-                "&7/kudmin get &e[kudos/assigned_kudos] [player] [page]\n" +
-                "&7/kudmin remove &ekudos [player] [KudoID]\n" +
-                "&7/kudmin clear &e[kudos/assigned_kudos] [player]\n" +
+                "&7/kudmin get &e[player] [page]\n" +
+                "&7/kudmin add &e[player] [amount] [reason]\n" +
+                "&7/kudmin remove &e[player] [kudos_id]\n" +
+                "&7/kudmin clear &e[player] [kudos/assigned_kudos]\n" +
                 "&7/kudmin clearall &e[player]\n" +
                 "&7/kudmin reload\n" +
                 " \n" +
@@ -181,6 +181,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int maximumReasonLength = config.getInt("kudo-award.reason-length");
 
         if (!validateInput(args, sender, 3 + maximumReasonLength, 1, true, true)) return;
+
         if (args.length == 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
@@ -265,7 +266,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         if (!validateInput(args, sender, 3, 1, true, false)) return;
 
         if (args.length == 2) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [Player] [site]&7."));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a Kudos ID that you would like to delete. To show Kudos from a player, type &e/kudmin get [player] [page]&7."));
             return;
         }
         if (args.length == 3 && !validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) {
@@ -277,7 +278,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int kudoID = data.getPlayerKudo(Integer.parseInt(args[2]));
 
         if (kudoID == 0) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Kudo with ID &e" + kudoID + " &7not found."));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Kudo with ID &e" + args[2] + " &7not found."));
             return;
         }
         if (!data.removeKudo(kudoID)) {
@@ -299,7 +300,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
-        if (args.length > 3 || validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) return true;
+        if (args.length > 2 && (validationManagement.isValueAnIntegerAndGreaterThanZero(args[2]))) return true;
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
 
@@ -357,7 +358,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                     commandArguments.add("assigned_kudos");
                 }
                 if (args[0].equals("get")) {
-                    commandArguments.add("site");
+                    commandArguments.add("page");
                 }
                 StringUtil.copyPartialMatches(args[2], commandArguments, tabCompletions);
             }

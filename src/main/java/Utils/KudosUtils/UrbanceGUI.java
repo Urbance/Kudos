@@ -8,8 +8,11 @@ import Utils.ItemCreator;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import de.urbance.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class UrbanceGUI {
     private Main plugin;
@@ -49,6 +52,13 @@ public class UrbanceGUI {
                 .get());
 
         return pageSwitchterRight;
+    }
+
+    public void playsoundPageSwitcher(Player player) {
+        if (!guiConfig.getBoolean("general.page-switcher.playsound.enabled")) return;
+
+        String sound = guiConfig.getString("general.page-switcher.playsound.playsound-type");
+        player.playSound(player.getLocation(), Sound.valueOf(sound), 1, 1);
     }
 
     public ChestGui get() {
