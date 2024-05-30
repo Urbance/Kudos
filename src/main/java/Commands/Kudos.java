@@ -18,13 +18,13 @@ import org.bukkit.util.StringUtil;
 import java.util.*;
 
 public class Kudos implements CommandExecutor, TabCompleter {
-    private Main plugin = Main.getPlugin(Main.class);
-    private FileConfiguration locale;
-    private SQLGetter data;
-    private String prefix;
-    private OfflinePlayer targetPlayer;
-    private KudosManagement kudosManagement;
-    private KudosMessage kudosMessage;
+    Main plugin = Main.getPlugin(Main.class);
+    FileConfiguration locale;
+    SQLGetter data;
+    String prefix;
+    OfflinePlayer targetPlayer;
+    KudosManagement kudosManagement;
+    KudosMessage kudosMessage;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
