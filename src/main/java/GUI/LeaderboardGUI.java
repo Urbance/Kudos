@@ -4,7 +4,6 @@ import Utils.ConfigKey;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
-import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -56,7 +55,7 @@ public class LeaderboardGUI implements GUI_Interface {
     private void setBackwardsPageSwitcher() {
         GuiItem backwardsPageSwitcher = new UrbanceGUI().getBackwardsPageSwitcher();
         backwardsPageSwitcher.setAction(inventoryClickEvent -> {
-            new KudosGUI().open(player);
+            new OverviewGUI().open(player);
         });
         staticPane.addItem(backwardsPageSwitcher, Slot.fromIndex(0));
     }

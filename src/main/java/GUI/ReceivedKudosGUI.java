@@ -83,7 +83,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
         GuiItem pageSwitcherLeft = urbanceGUI.getBackwardsPageSwitcher();
         pageSwitcherLeft.setAction(inventoryClickEvent -> {
             if (currentPage == 1) {
-                new KudosGUI().open(player);
+                new OverviewGUI().open(player);
             } else {
                 paginatedPane.setPage(currentPage - 1);
                 receivedKudosGUI.update();

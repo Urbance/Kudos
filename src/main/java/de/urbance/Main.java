@@ -9,7 +9,7 @@ import Utils.ConfigKey;
 import Utils.CooldownManager;
 import Utils.FileManager;
 import Utils.KudosUtils.KudosExpansion;
-import GUI.KudosGUI;
+import GUI.OverviewGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
 import Utils.UpdateChecker;
@@ -93,7 +93,7 @@ public final class Main extends JavaPlugin implements Listener {
         getCommand("kudmin").setExecutor(new Kudmin());
         if (oldTableScheme) return;
         getCommand("kudmin").setTabCompleter(new Kudmin());
-        pluginManager.registerEvents(new KudosGUI(), this);
+        pluginManager.registerEvents(new OverviewGUI(), this);
         pluginManager.registerEvents(new ReceivedKudosGUI(), this);
         getCommand("kudos").setExecutor(new Kudos());
         getCommand("kudos").setTabCompleter(new Kudos());
