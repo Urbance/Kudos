@@ -31,7 +31,7 @@ public final class Main extends JavaPlugin implements Listener {
     public SQLGetter data;
     public FileConfiguration config;
     public FileConfiguration mysqlConfig;
-    public FileConfiguration guiConfig;
+    public FileConfiguration overviewConfig;
     public FileConfiguration receivedKudosConfig;
     public FileConfiguration leaderboardConfig;
     public FileConfiguration globalGuiSettingsConfig;
@@ -129,8 +129,8 @@ public final class Main extends JavaPlugin implements Listener {
 
         // setup gui.yml
         FileManager guiManager = new FileManager("guis/overview.yml", this);
-        this.guiConfig = guiManager.getConfig();
-        guiConfig.options().copyDefaults(true);
+        this.overviewConfig = guiManager.getConfig();
+        overviewConfig.options().copyDefaults(true);
         guiManager.save();
 
         // setup received-kudos.yml

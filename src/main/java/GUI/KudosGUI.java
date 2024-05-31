@@ -20,7 +20,7 @@ import java.util.*;
 public class KudosGUI implements Listener {
     private final Main plugin;
     private final SQLGetter data;
-    private final FileConfiguration guiConfig;
+    private final FileConfiguration overviewConfig;
     private ChestGui kudosGUI;
     private Player player;
     private final ConfigKey configKey;
@@ -28,7 +28,7 @@ public class KudosGUI implements Listener {
     public KudosGUI() {
         this.plugin = Main.getPlugin(Main.class);
         this.data = plugin.data;
-        this.guiConfig = plugin.guiConfig;
+        this.overviewConfig = plugin.overviewConfig;
         this.configKey = plugin.configKey;
     }
 
@@ -58,42 +58,51 @@ public class KudosGUI implements Listener {
     private StaticPane getKudosMainPane(Player player) {
         StaticPane kudosMainPane = new StaticPane(0, 0, 9, kudosGUI.getRows());
 
-        if (guiConfig.getBoolean("slot.statistics.enabled")) {
-            ItemCreator statisticsItemItemStack = new ItemCreator(guiConfig.getString("slot.statistics.item"))
-                    .setDisplayName(guiConfig.getString("slot.statistics.item-name"))
-                    .setLore(setStatisticsValuesLore(guiConfig.getStringList("slot.statistics.lore"), player))
+        // TODO refactoring
+        // Statistics item
+        if (overviewConfig.getBoolean("items.statistics.enabled")) {
+            ItemCreator statisticsItemItemStack = new ItemCreator(overviewConfig.getString("items.statistics.item"))
+                    .setDisplayName(overviewConfig.getString("items.statistics.item-name"))
+                    .setLore(setStatisticsValuesLore(overviewConfig.getStringList("items.statistics.item-lore"), player))
                     .replaceSkullWithPlayerSkull(player);
             GuiItem guiItem = new GuiItem(statisticsItemItemStack.get());
-            kudosMainPane.addItem(guiItem, Slot.fromIndex(guiConfig.getInt("slot.statistics.item-slot")));
+            kudosMainPane.addItem(guiItem, Slot.fromIndex(overviewConfig.getInt("items.statistics.item-slot")));
         }
-        if (guiConfig.getBoolean("slot.help.enabled")) {
-            ItemCreator helpItemItemStack = new ItemCreator(guiConfig.getString("slot.help.item"))
-                    .setDisplayName(guiConfig.getString("slot.help.item-name"))
-                    .setLore(guiConfig.getStringList("slot.help.lore"))
+
+        // Help item
+        if (overviewConfig.getBoolean("items.help.enabled")) {
+            ItemCreator helpItemItemStack = new ItemCreator(overviewConfig.getString("items.help.item"))
+                    .setDisplayName(overviewConfig.getString("items.help.item-name"))
+                    .setLore(overviewConfig.getStringList("items.help.item-lore"))
                     .replaceSkullWithPlayerSkull(player);
             GuiItem helpItem = new GuiItem(helpItemItemStack.get());
-            kudosMainPane.addItem(helpItem, Slot.fromIndex(guiConfig.getInt("slot.help.item-slot")));
+            kudosMainPane.addItem(helpItem, Slot.fromIndex(overviewConfig.getInt("items.help.item-slot")));
         }
-        if (guiConfig.getBoolean("slot.kudos-leaderboard.enabled")) {
+
+        // Leaderboard item
+        // TODO replace configKey class values
+        if (overviewConfig.getBoolean("items.kudos-leaderboard.enabled")) {
             List<String> leaderboardTopKudosData = data.getTopPlayersKudos(6);
             List<String> lore = configKey.slot_kudos_leaderboard_lore();
             if (leaderboardTopKudosData.isEmpty()) lore = configKey.slot_kudos_leaderboard_lore_no_kudos_exists();
 
-            ItemCreator leaderboardItemItemStack = new ItemCreator(guiConfig.getString("slot.kudos-leaderboard.item"))
-                    .setDisplayName(guiConfig.getString("slot.kudos-leaderboard.item-name"))
+            ItemCreator leaderboardItemItemStack = new ItemCreator(overviewConfig.getString("items.kudos-leaderboard.item"))
+                    .setDisplayName(overviewConfig.getString("items.kudos-leaderboard.item-name"))
                     .setLore(lore)
                     .replaceSkullWithPlayerSkull(player);
             GuiItem leaderboardItem = new GuiItem(leaderboardItemItemStack.get(), event -> {
                 if (leaderboardTopKudosData.isEmpty()) return;
                 new LeaderboardGUI(leaderboardTopKudosData).open(player);
             });
-            kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(guiConfig.getInt("slot.kudos-leaderboard.item-slot")));
+            kudosMainPane.addItem(leaderboardItem, Slot.fromIndex(overviewConfig.getInt("items.kudos-leaderboard.item-slot")));
         }
-        if (guiConfig.getBoolean("slot.received-kudos.enabled")) {
-            List<String> lore = guiConfig.getStringList("slot.received-kudos.lore-no-received-kudos");
-            if (data.getAmountKudos(player.getUniqueId()) > 0) lore = guiConfig.getStringList("slot.received-kudos.lore");
-            ItemCreator receivedKudosItemItemCreator = new ItemCreator(guiConfig.getString("slot.received-kudos.item"))
-                    .setDisplayName(guiConfig.getString("slot.received-kudos.item-name"))
+
+        // Received Kudos item
+        if (overviewConfig.getBoolean("items.received-kudos.enabled")) {
+            List<String> lore = overviewConfig.getStringList("items.received-kudos.item-lore-no-received-kudos");
+            if (data.getAmountKudos(player.getUniqueId()) > 0) lore = overviewConfig.getStringList("items.received-kudos.item-lore");
+            ItemCreator receivedKudosItemItemCreator = new ItemCreator(overviewConfig.getString("items.received-kudos.item"))
+                    .setDisplayName(overviewConfig.getString("items.received-kudos.item-name"))
                     .setLore(lore);
 
             GuiItem receivedKudosItem = new GuiItem(receivedKudosItemItemCreator.get(), event -> {
@@ -101,7 +110,7 @@ public class KudosGUI implements Listener {
                 if (receivedKudosList.isEmpty()) return;
                 openReceivedKudosGUI();
             });
-            kudosMainPane.addItem(receivedKudosItem, Slot.fromIndex(guiConfig.getInt("slot.received-kudos.item-slot")));
+            kudosMainPane.addItem(receivedKudosItem, Slot.fromIndex(overviewConfig.getInt("items.received-kudos.item-slot")));
         }
         return kudosMainPane;
     }

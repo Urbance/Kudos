@@ -54,8 +54,8 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission(sender);
             return;
         }
-        FileConfiguration guiConfig = plugin.guiConfig;
-        if (!guiConfig.getBoolean("general-settings.enabled")) {
+        FileConfiguration overviewConfig = plugin.overviewConfig;
+        if (!overviewConfig.getBoolean("general-settings.enabled")) {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return;
         }

@@ -1,20 +1,19 @@
 package Utils;
 
 import de.urbance.Main;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
 
 public class ConfigKey {
     private Main plugin;
-    private FileConfiguration guiConfig;
+    private FileConfiguration overviewConfig;
     private FileConfiguration localeConfig;
     private FileConfiguration leaderboardConfig;
 
     public ConfigKey() {
         this.plugin = Main.getPlugin(Main.class);
-        this.guiConfig = plugin.guiConfig;
+        this.overviewConfig = plugin.overviewConfig;
         this.localeConfig = plugin.localeConfig;
         this.leaderboardConfig = plugin.leaderboardConfig;
     }
@@ -24,7 +23,7 @@ public class ConfigKey {
     public int guiGeneralRows() {
         String configKey = "general-settings.rows";
         try {
-            String size = guiConfig.getString(configKey);
+            String size = overviewConfig.getString(configKey);
             int sizeAsInteger = Integer.parseInt(size);
 
             if (sizeAsInteger > 0 && sizeAsInteger < 7) return sizeAsInteger;
@@ -35,11 +34,11 @@ public class ConfigKey {
     }
 
     public List<String> slot_kudos_leaderboard_lore() {
-        return guiConfig.getStringList("slot.kudos-leaderboard.lore");
+        return overviewConfig.getStringList("items.kudos-leaderboard.item-lore");
     }
 
     public List<String> slot_kudos_leaderboard_lore_no_kudos_exists() {
-        return guiConfig.getStringList("slot.kudos-leaderboard.lore-no-kudos-exists");
+        return overviewConfig.getStringList("items.kudos-leaderboard.item-lore-no-kudos-exists");
     }
 
     // keys from leaderboard.yml

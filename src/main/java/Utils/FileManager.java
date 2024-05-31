@@ -48,7 +48,7 @@ public class FileManager {
             case "mysql.yml" -> plugin.mysqlConfig = fileConfiguration;
             case "guis/received-kudos.yml" -> plugin.receivedKudosConfig = fileConfiguration;
             case "guis/leaderboard.yml" -> plugin.leaderboardConfig = fileConfiguration;
-            case "guis/overview.yml" -> plugin.guiConfig = fileConfiguration;
+            case "guis/overview.yml" -> plugin.overviewConfig = fileConfiguration;
             case "guis/global-gui-settings.yml" -> plugin.globalGuiSettingsConfig = fileConfiguration;
         }
     }

@@ -18,10 +18,10 @@ public class SQLGetter {
     public static String consoleCommandSenderPrefix = "%ConsoleCommandSender%";
     private Main plugin;
     private FileConfiguration config;
-    private FileConfiguration guiConfig;
+    private FileConfiguration overviewConfig;
 
     public SQLGetter(Main plugin) {
-        this.guiConfig = new FileManager("guis/gui.yml", plugin).getConfig();
+        this.overviewConfig = new FileManager("guis/gui.yml", plugin).getConfig();
         this.plugin = Main.getPlugin(Main.class);
         this.config = plugin.config;
     }
