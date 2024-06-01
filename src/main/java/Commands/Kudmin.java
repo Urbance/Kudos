@@ -123,7 +123,10 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         new FileManager("config.yml", plugin).reload();
         new FileManager("messages.yml", plugin).reload();
         new FileManager("mysql.yml", plugin).reload();
-        new FileManager("guis/gui.yml", plugin).reload();
+        new FileManager("guis/overview.yml", plugin).reload();
+        new FileManager("guis/leaderboard.yml", plugin).reload();
+        new FileManager("guis/received-kudos.yml", plugin).reload();
+        new FileManager("guis/global-gui-settings.yml", plugin).reload();
 
         plugin.configKey = new ConfigKey();
     }
