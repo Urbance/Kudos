@@ -122,7 +122,7 @@ public final class Main extends JavaPlugin implements Listener {
         localeConfig.options().copyDefaults(true);
         localeManager.save();
 
-        // setup gui.yml
+        // setup overview.yml
         FileManager guiManager = new FileManager("guis/overview.yml", this);
         this.overviewConfig = guiManager.getConfig();
         overviewConfig.options().copyDefaults(true);

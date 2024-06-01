@@ -40,7 +40,7 @@ public class OverviewGUI implements Listener {
         int size = configKey.guiGeneralRows();
 
         if (size == 0) {
-            plugin.getLogger().warning("Error: Please set the value for the key \"rows\" in the gui.yml between 1 and 6.");
+            plugin.getLogger().warning("Error: Please set the value for the key \"rows\" in the overview.yml between 1 and 6.");
             return;
         }
 

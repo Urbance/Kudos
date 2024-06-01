@@ -66,10 +66,6 @@ public class FileManager {
     }
 
     public void saveDefaultConfig() {
-        if (fileName.equals("gui.yml")) {
-            return;
-        }
-
         if (this.file == null)
             this.file = new File(this.plugin.getDataFolder(), fileName);
 
