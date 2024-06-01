@@ -1,5 +1,3 @@
-general-settings:
-  enabled: true
 items:
   received-kudos-item:
     item-lore:

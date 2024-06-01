@@ -1,5 +1,3 @@
-general-settings:
-  enabled: true
 items:
   player-leaderboard-item:
     item-name: "&2%kudos_leaderboard_name%"
