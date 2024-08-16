@@ -1,6 +1,8 @@
 package Utils;
 
 import de.urbance.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
