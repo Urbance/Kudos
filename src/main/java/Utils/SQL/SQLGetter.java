@@ -215,8 +215,9 @@ public class SQLGetter {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT KudoID FROM kudos WHERE KudoID=?;")) {
             preparedStatement.setInt(1, requestedKudosID);
             ResultSet results = preparedStatement.executeQuery();
-            results.next();
-            return results.getInt("KudoID");
+            if (results.next()) {
+                return results.getInt("KudoID");
+            }
         }
         catch (SQLException e) {
             e.printStackTrace();

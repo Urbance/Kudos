@@ -184,6 +184,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int maximumReasonLength = config.getInt("kudo-award.reason-length");
 
         if (!validateInput(args, sender, 3 + maximumReasonLength, 1, true, true)) return;
+
         if (args.length == 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please define a reason for adding Kudos to that player."));
             return;
@@ -302,7 +303,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private boolean checkIfKudminValueIsValid(CommandSender sender, String[] args) {
-        if (args.length > 3 || validationManagement.isValueAnIntegerAndGreaterThanZero(args[2])) return true;
+        if (args.length > 2 && (validationManagement.isValueAnIntegerAndGreaterThanZero(args[2]))) return true;
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Please enter a positive integer number!"));
 
