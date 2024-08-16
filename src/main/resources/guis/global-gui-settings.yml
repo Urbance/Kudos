@@ -1,10 +1,14 @@
 general-settings:
   gui-title: "&rKudos"
 page-switcher:
-  backwards:
-    item-name: "&eBackwards"
-  forwards:
-    item-name: "&eForwards"
+  playsound:
+    enabled: true
+    playsound-type: "ITEM_BOOK_PAGE_TURN"
+  direction:
+    backwards:
+      item-name: "&eBackwards"
+    forwards:
+      item-name: "&eForwards"
 placeholderapi-settings:
   items:
     kudos-leaderboard:
