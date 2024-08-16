@@ -280,7 +280,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         int kudoID = data.getPlayerKudo(Integer.parseInt(args[2]));
 
         if (kudoID == 0) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Kudo with ID &e" + kudoID + " &7not found."));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Kudo with ID &e" + args[2] + " &7not found."));
             return;
         }
         if (!data.removeKudo(kudoID)) {
