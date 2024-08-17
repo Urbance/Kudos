@@ -297,47 +297,6 @@ public class SQLGetter {
         return playerKudos;
     }
 
-    public boolean checkIfKudosTableHasOldTableSchematic() {
-        String statement = "SELECT COUNT(*) AS ENTRIES FROM pragma_table_info('kudos') WHERE name='Kudos' or name='Assigned'";
-        boolean useMySQL = config.getBoolean("general.use-SQL");
-
-        if (useMySQL) {
-            FileConfiguration mysqlConfig = plugin.mysqlConfig;
-            String databaseName = mysqlConfig.getString("database");
-            statement = ("SELECT COUNT(*) AS ENTRIES FROM information_schema.columns\n" +
-                    "WHERE TABLE_SCHEMA='%s'\n" +
-                    "AND TABLE_NAME='kudos'\n" +
-                    "AND COLUMN_NAME='UUID'\n" +
-                    "OR TABLE_SCHEMA='%s'\n" +
-                    "AND TABLE_NAME='kudos'\n" +
-                    "AND COLUMN_NAME='Kudos';").replace("%s", databaseName);
-
-            try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
-                ResultSet results = preparedStatement.executeQuery();
-                while (results.next()) {
-                    int result = results.getInt("ENTRIES");
-                    if (result > 0) return true;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
-            return false;
-        }
-
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
-            ResultSet results = preparedStatement.executeQuery();
-            while (results.next()) {
-                int result = results.getInt("ENTRIES");
-                if (result > 0) return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return false;
-    }
-
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
         String loreFormat = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
