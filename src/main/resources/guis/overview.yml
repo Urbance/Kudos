@@ -2,14 +2,6 @@ general-settings:
   enabled: true
   rows: 1
 items:
-  page-switcher:
-    backwards:
-      item-name: "&eBackwards"
-    forwards:
-      item-name: "&eForwards"
-    playsound:
-      enabled: true
-      playsound-type: "ITEM_BOOK_PAGE_TURN"
   statistics:
     enabled: true
     item: PLAYER_HEAD
