@@ -79,9 +79,6 @@ public final class Main extends JavaPlugin implements Listener {
             this.isConnected = true;
         }
 
-        oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
-        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server. The statistics of how many Kudos a player has awarded will be reset!");
-
         return true;
     }
 
@@ -91,7 +88,6 @@ public final class Main extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new OnPlayerJoin(), this);
         if (!isConnected) return;
         getCommand("kudmin").setExecutor(new Kudmin());
-        if (oldTableScheme) return;
         getCommand("kudmin").setTabCompleter(new Kudmin());
         pluginManager.registerEvents(new OverviewGUI(), this);
         pluginManager.registerEvents(new ReceivedKudosGUI(), this);

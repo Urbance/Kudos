@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private static boolean performedMigration = false;
     public static String prefix = "&7» &cKudmin&7: ";
     private Main plugin;
     private SQLGetter data;
@@ -47,35 +46,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (performMigration(sender, args)) return false;
-
         performAction(sender, args);
-        return false;
-    }
-
-    private boolean performMigration(CommandSender sender, String[] args) {
-        if (Main.oldTableScheme) {
-            if (args[0].equals("migrate") && args.length == 1) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start data migration"));
-
-                if (!data.migrateOldTableSchemeToNewTableScheme()) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Errors have occurred. Please check the console for more information!"));
-                    return true;
-                }
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration successful. Please restart the server to complete the data migration"));
-                performedMigration = true;
-                return true;
-            }
-        }
-        if (data.checkIfKudosTableHasOldTableSchematic()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server. The statistics of how many Kudos a player has awarded will be reset!"));
-            return true;
-        }
-        if (performedMigration) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please restart the server to complete the migration"));
-            return true;
-        }
-
         return false;
     }
 

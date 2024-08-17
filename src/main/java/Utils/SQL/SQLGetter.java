@@ -338,44 +338,6 @@ public class SQLGetter {
         return false;
     }
 
-    public boolean migrateOldTableSchemeToNewTableScheme() {
-        HashMap<UUID, Integer> oldKudosTablePlayerData = new HashMap<>();
-
-        // get old kudos table player data
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID, Kudos FROM kudos;")) {
-            ResultSet results = preparedStatement.executeQuery();
-            while (results.next()) {
-                UUID uuid = UUID.fromString(results.getString("UUID"));
-                int totalKudos = results.getInt("Kudos");
-                oldKudosTablePlayerData.put(uuid, totalKudos);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        // remove old kudos table
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DROP TABLE kudos")) {
-            preparedStatement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        // init tables
-        if (!initTables()) return false;
-
-        // migrate old player data
-        for (Map.Entry<UUID, Integer> entry : oldKudosTablePlayerData.entrySet()) {
-            UUID uuid = entry.getKey();
-            int totalKudos = entry.getValue();
-            createPlayer(uuid);
-            addKudos(uuid, SQLGetter.consoleCommandSenderPrefix, null, totalKudos);
-
-        }
-        return true;
-    }
-
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
         String loreFormat = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
