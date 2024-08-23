@@ -1,7 +1,7 @@
 general-settings:
   update-notification: true
   prefix: "&7» &eKudos&7: "
-  use-SQL: false
+  use-MySQL: false
   console-name: "SERVER"
 kudo-award:
   general-settings:
