@@ -35,7 +35,7 @@ public class SQL {
     }
 
     public void connect() {
-        if (config.getBoolean("general.use-SQL")) {
+        if (config.getBoolean("general-settings.use-SQL")) {
             hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?&useSSL=%s", host, port, database, useSSL));
             hikariConfig.setDriverClassName("com.mysql.jdbc.Driver");
             hikariConfig.setUsername(username);

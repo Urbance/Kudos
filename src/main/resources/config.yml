@@ -1,13 +1,14 @@
-general:
+general-settings:
   update-notification: true
   prefix: "&7» &eKudos&7: "
   use-SQL: false
   console-name: "SERVER"
 kudo-award:
-  cooldown: 900
-  enable-reasons: true
-  no-reason-given: "No reason was given"
-  reason-length: 18
+  general-settings:
+    cooldown: 900
+    enable-reasons: true
+    no-reason-given: "No reason was given"
+    reason-length: 18
   notification:
     enabled: true
     notification-mode: "broadcast"

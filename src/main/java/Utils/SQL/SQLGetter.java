@@ -171,8 +171,8 @@ public class SQLGetter {
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
-                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
-                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
+                if (reason == null) reason = config.getString("kudo-award.general-settings.no-reason-given");
+                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general-settings.console-name"));
 
                 kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
@@ -200,7 +200,7 @@ public class SQLGetter {
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
 
-                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
+                if (reason == null) reason = config.getString("kudo-award.general-settings.no-reason-given");
 
                 receivedKudos.put(entryNumber, receivedFromPlayer + "@" + reason + "@" + date);
                 entryNumber++;

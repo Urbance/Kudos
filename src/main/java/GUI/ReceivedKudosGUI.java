@@ -105,7 +105,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
-            String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general.console-name") : unsplittedReceivedKudosList[0];
+            String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general-settings.console-name") : unsplittedReceivedKudosList[0];
             String awardReason = unsplittedReceivedKudosList[1];
             String awardDateString = unsplittedReceivedKudosList[2];
             Date date;
@@ -130,7 +130,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
             ItemCreator playerHead = new ItemCreator("PLAYER_HEAD");
 
-            if (playerName.equals(plugin.config.getString("general.console-name"))) {
+            if (playerName.equals(plugin.config.getString("general-settings.console-name"))) {
                 playerHead.setDisplayName("&2" + playerName)
                         .replaceSkullWithCustomURLSkull(serverURLSkull);
             } else {

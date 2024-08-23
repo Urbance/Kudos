@@ -28,7 +28,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
         String reason = null;
-        if (config.getBoolean("kudo-award.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
+        if (config.getBoolean("kudo-award.general-settings.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
         if (!validateInput(args, sender, reason)) return false;
 
         awardKudo(sender, args, reason);
@@ -79,8 +79,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
         if (args.length > 1) {
-            if (config.getBoolean("kudo-award.enable-reasons")) {
-                int maximumReasonLength = config.getInt("kudo-award.reason-length");
+            if (config.getBoolean("kudo-award.general-settings.enable-reasons")) {
+                int maximumReasonLength = config.getInt("kudo-award.general-settings.reason-length");
                 if (reason.length() < maximumReasonLength) {
                     return true;
                 }
@@ -96,11 +96,11 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private void setCooldown(CommandSender sender) {
         if (!(sender instanceof Player))
             return;
-        if (config.getInt("kudo-award.cooldown") == 0)
+        if (config.getInt("kudo-award.general-settings.cooldown") == 0)
             return;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
-        plugin.cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.cooldown"));
+        plugin.cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.general-settings.cooldown"));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -136,7 +136,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
             }
             case 2 -> {
-                if (config.getBoolean("kudo-award.enable-reasons")) {
+                if (config.getBoolean("kudo-award.general-settings.enable-reasons")) {
                     tabCompletions.add("reason");
                 }
                 StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);
