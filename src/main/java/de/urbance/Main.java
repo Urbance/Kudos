@@ -5,14 +5,11 @@ import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
 import GUI.ReceivedKudosGUI;
-import Utils.ConfigKey;
-import Utils.CooldownManager;
-import Utils.FileManager;
+import Utils.*;
 import Utils.KudosUtils.KudosExpansion;
 import GUI.OverviewGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
-import Utils.UpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,6 +44,9 @@ public final class Main extends JavaPlugin implements Listener {
         checkNewUpdateAndCurrentVersion();
         setupMetrics();
         setupConfigs();
+
+        new WorkaroundManagement().perform500Workaround();
+
 
         this.prefix = config.getString("general-settings.prefix");
 
