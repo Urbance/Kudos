@@ -9,6 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class FileManager {
     public String fileName;
@@ -71,6 +75,28 @@ public class FileManager {
 
         if (!this.file.exists()) {
             this.plugin.saveResource(fileName, false);
+        }
+    }
+
+    public boolean createBackup() {
+        String fileNameWithoutFileExtension = fileName.substring(0, fileName.indexOf("."));
+
+        Path sourcePath = file.toPath();
+        Path targetPath = file.getParentFile().toPath().resolve(fileNameWithoutFileExtension + "-backup.yml.");
+
+        int backupFileCounter = 1;
+
+        while (Files.exists(targetPath)) {
+            targetPath = file.getParentFile().toPath().resolve(fileNameWithoutFileExtension + "-backup-" + backupFileCounter + ".yml");
+            backupFileCounter++;
+        }
+
+        try {
+            Files.copy(sourcePath, targetPath);
+            return true;
+        } catch (IOException e) {
+            Bukkit.getLogger().severe("Cannot create backup file from " + fileName + ". " + e.getMessage());
+            return false;
         }
     }
 }
