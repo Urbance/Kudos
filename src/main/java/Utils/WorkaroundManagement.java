@@ -96,6 +96,7 @@ public class WorkaroundManagement {
         // TODO Add and overthink Papi Settings
 
         // Step 4: gui.yml refactoring -> leaderboard.yml
+
         String oldGuiItemsPlayerLeaderboardItemItemName = guiConfig.getString("leaderboard.player-leaderboard-item.item-name");
         List<String> oldGuiItemsPlayerLeaderboardItemItemLore = guiConfig.getStringList("leaderboard.player-leaderboard-item.lore");
 
@@ -103,12 +104,16 @@ public class WorkaroundManagement {
         leaderboardGuiConfig.set("items.player-leaderboard-item.item-lore", oldGuiItemsPlayerLeaderboardItemItemLore);
 
 
-        // Step 5: gui.yml refactoring statistics slot -> overview.yml
+        // Step 5: gui.yml refactoring general -> overview.yml
+
         String oldGuiEnabled = guiConfig.getString("general.enabled");
         String oldGuiRows = guiConfig.getString("general.rows");
 
         overviewGuiConfig.set("general-settings.enabled", oldGuiEnabled);
         overviewGuiConfig.set("general-settings.rows", oldGuiRows);
+
+
+        // Step 6: gui.yml refactoring statistics slot -> overview.yml
 
         String oldGuiStatisticsEnabled = guiConfig.getString("slot.statistics.enabled");
         String oldGuiStatisticsItem = guiConfig.getString("slot.statistics.item");
@@ -122,6 +127,9 @@ public class WorkaroundManagement {
         overviewGuiConfig.set("items.statistics.item-slot", oldGuiStatisticsItemSlot);
         overviewGuiConfig.set("items.statistics.item-lore", oldGuiStatisticsItemLore);
 
+
+        // Step 7: gui.yml refactoring received-kudos slot -> overview.yml
+
         String oldGuiReceivedKudosEnabled = guiConfig.getString("slot.received-kudos.enabled");
         String oldGuiReceivedKudosItem = guiConfig.getString("slot.received-kudos.item");
         String oldGuiReceivedKudosItemName = guiConfig.getString("slot.received-kudos.item-name");
@@ -129,9 +137,44 @@ public class WorkaroundManagement {
         List<String> oldGuiReceivedKudosItemLore = guiConfig.getStringList("slot.received-kudos.lore");
         List<String> oldGuiReceivedKudosLoreNoReceivedKudos = guiConfig.getStringList("slot.received-kudos.lore-no-received-kudos");
 
-        // TODO move values
+        overviewGuiConfig.set("items.received-kudos.enabled", oldGuiReceivedKudosEnabled);
+        overviewGuiConfig.set("items.received-kudos.item", oldGuiReceivedKudosItem);
+        overviewGuiConfig.set("items.received-kudos.item-name", oldGuiReceivedKudosItemName);
+        overviewGuiConfig.set("items.received-kudos.item-slot", oldGuiReceivedKudosItemSlot);
+        overviewGuiConfig.set("items.received-kudos.item-lore", oldGuiReceivedKudosItemLore);
+        overviewGuiConfig.set("items.received-kudos.item-lore-no-received-kudos", oldGuiReceivedKudosLoreNoReceivedKudos);
 
 
+        // Step 8: gui.yml refactoring help slot -> overview.yml
+
+        String oldGuiHelpEnabled = guiConfig.getString("slot.help.enabled");
+        String oldGuiHelpItem = guiConfig.getString("slot.help.item");
+        String oldGuiHelpItemName = guiConfig.getString("slot.help.item-name");
+        String oldGuiHelpItemSlot = guiConfig.getString("slot.help.item-slot");
+        List<String> oldGuiHelpItemLore = guiConfig.getStringList("slot.help.lore");
+
+        overviewGuiConfig.set("items.help.enabled", oldGuiHelpEnabled);
+        overviewGuiConfig.set("items.help.item", oldGuiHelpItem);
+        overviewGuiConfig.set("items.help.item-name", oldGuiHelpItemName);
+        overviewGuiConfig.set("items.help.item-slot", oldGuiHelpItemSlot);
+        overviewGuiConfig.set("items.help.item-lore", oldGuiHelpItemLore);
+
+        // Step 9: gui.yml refactoring kudos-leaderboard slot -> overview.yml
+
+        String oldGuiKudosLeaderboardEnabled = guiConfig.getString("slot.kudos-leadearboard.enabled");
+        String oldGuiKudosLeaderboardItem = guiConfig.getString("slot.kudos-leadearboard.item");
+        String oldGuiKudosLeaderboardItemName = guiConfig.getString("slot.kudos-leadearboard.item-name");
+        String oldGuiKudosLeaderboardItemSlot = guiConfig.getString("slot.kudos-leadearboard.item-slot");
+        List<String> oldGuiKudosLeaderboardItemLore = guiConfig.getStringList("slot.kudos-leadearboard.lore");
+        List<String> oldGuiKudosLeaderboardItemLoreNoKudosExists = guiConfig.getStringList("slot.kudos-leadearboard.lore-no-kudos-exists");
+
+        overviewGuiConfig.set("items.kudos-leaderboard.enabled", oldGuiKudosLeaderboardEnabled);
+        overviewGuiConfig.set("items.kudos-leaderboard.item", oldGuiKudosLeaderboardItem);
+        overviewGuiConfig.set("items.kudos-leaderboard.item-name", oldGuiKudosLeaderboardItemName);
+        overviewGuiConfig.set("items.kudos-leaderboard.item-slot", oldGuiKudosLeaderboardItemSlot);
+        overviewGuiConfig.set("items.kudos-leaderboard.item-lore", oldGuiKudosLeaderboardItemLore);
+        overviewGuiConfig.set("items.kudos-leaderboard.item-lore-no-kudos-exists", oldGuiKudosLeaderboardItemLoreNoKudosExists);
+        
         // remove gui config file
 
 
