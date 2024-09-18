@@ -4,29 +4,42 @@ import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 public class WorkaroundManagement {
 
     public boolean perform500Workaround() {
-        Main plugin = Main.getPlugin(Main.class);
+        if (!Files.exists(Path.of("plugins\\Kudos\\gui.yml"))) {
+            return false;
+        }
 
+        Main plugin = Main.getPlugin(Main.class);
 
         FileManager configFileManager = new FileManager("config.yml", plugin);
         FileConfiguration config = configFileManager.getConfig();
+        config.options().copyDefaults(true);
 
         FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
         FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        guiConfig.options().copyDefaults(true);
 
         FileManager globalGuiSettingsConfigManager = new FileManager("guis/global-gui-settings.yml", plugin);
         FileConfiguration globalGuiSettingsConfig = globalGuiSettingsConfigManager.getConfig();
+        globalGuiSettingsConfig.options().copyDefaults(true);
 
         FileManager leaderboardGuiConfigManager = new FileManager("guis/leaderboard.yml", plugin);
         FileConfiguration leaderboardGuiConfig = globalGuiSettingsConfigManager.getConfig();
+        leaderboardGuiConfig.options().copyDefaults(true);
 
         FileManager overviewGuiConfigManager = new FileManager("guis/overview.yml", plugin);
         FileConfiguration overviewGuiConfig = overviewGuiConfigManager.getConfig();
+        overviewGuiConfig.options().copyDefaults(true);
+
+        // create config backup files
+        configFileManager.createBackup();
+        guiConfigFileManager.createBackup();
 
         /*
         > TODO, NOTES
@@ -35,9 +48,6 @@ public class WorkaroundManagement {
 
          */
 
-        // check
-
-        // TODO: Step: Create backup from config.yml and from gui.yml
 
         // perform workaround
         // Step 1: config.yml - general
@@ -89,8 +99,6 @@ public class WorkaroundManagement {
         globalGuiSettingsConfig.set("page-switcher.playsound.playsound-type", oldGuiPageSwitcherPlaysoundType);
         globalGuiSettingsConfig.set("page-switcher.direction.backwards.item-name", oldGuiPageSwitcherBackwardsItemName);
         globalGuiSettingsConfig.set("page-switcher.direction.forwards.item-name", oldGuiPageSwitcherForwardsItemName);
-
-        guiConfig.set("general", null);
 
 
         // TODO Add and overthink Papi Settings
@@ -161,12 +169,12 @@ public class WorkaroundManagement {
 
         // Step 9: gui.yml refactoring kudos-leaderboard slot -> overview.yml
 
-        String oldGuiKudosLeaderboardEnabled = guiConfig.getString("slot.kudos-leadearboard.enabled");
-        String oldGuiKudosLeaderboardItem = guiConfig.getString("slot.kudos-leadearboard.item");
-        String oldGuiKudosLeaderboardItemName = guiConfig.getString("slot.kudos-leadearboard.item-name");
-        String oldGuiKudosLeaderboardItemSlot = guiConfig.getString("slot.kudos-leadearboard.item-slot");
-        List<String> oldGuiKudosLeaderboardItemLore = guiConfig.getStringList("slot.kudos-leadearboard.lore");
-        List<String> oldGuiKudosLeaderboardItemLoreNoKudosExists = guiConfig.getStringList("slot.kudos-leadearboard.lore-no-kudos-exists");
+        String oldGuiKudosLeaderboardEnabled = guiConfig.getString("slot.kudos-leaderboard.enabled");
+        String oldGuiKudosLeaderboardItem = guiConfig.getString("slot.kudos-leaderboard.item");
+        String oldGuiKudosLeaderboardItemName = guiConfig.getString("slot.kudos-leaderboard.item-name");
+        String oldGuiKudosLeaderboardItemSlot = guiConfig.getString("slot.kudos-leaderboard.item-slot");
+        List<String> oldGuiKudosLeaderboardItemLore = guiConfig.getStringList("slot.kudos-leaderboard.lore");
+        List<String> oldGuiKudosLeaderboardItemLoreNoKudosExists = guiConfig.getStringList("slot.kudos-leaderboard.lore-no-kudos-exists");
 
         overviewGuiConfig.set("items.kudos-leaderboard.enabled", oldGuiKudosLeaderboardEnabled);
         overviewGuiConfig.set("items.kudos-leaderboard.item", oldGuiKudosLeaderboardItem);
@@ -174,14 +182,12 @@ public class WorkaroundManagement {
         overviewGuiConfig.set("items.kudos-leaderboard.item-slot", oldGuiKudosLeaderboardItemSlot);
         overviewGuiConfig.set("items.kudos-leaderboard.item-lore", oldGuiKudosLeaderboardItemLore);
         overviewGuiConfig.set("items.kudos-leaderboard.item-lore-no-kudos-exists", oldGuiKudosLeaderboardItemLoreNoKudosExists);
-        
-        // remove gui config file
-
 
         configFileManager.save();
         globalGuiSettingsConfigManager.save();
         guiConfigFileManager.save();
         leaderboardGuiConfigManager.save();
+        overviewGuiConfigManager.save();
 
         // check if workaround was successfully (assert object?)
         return false;
