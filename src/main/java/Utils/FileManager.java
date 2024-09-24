@@ -84,7 +84,7 @@ public class FileManager {
         Path sourcePath = file.toPath();
         Path targetPath = file.getParentFile().toPath().resolve(fileNameWithoutFileExtension + "-backup.yml.");
 
-        int backupFileCounter = 1;
+        int backupFileCounter = 2;
 
         while (Files.exists(targetPath)) {
             targetPath = file.getParentFile().toPath().resolve(fileNameWithoutFileExtension + "-backup-" + backupFileCounter + ".yml");
