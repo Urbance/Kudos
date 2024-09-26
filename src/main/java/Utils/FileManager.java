@@ -78,6 +78,10 @@ public class FileManager {
         }
     }
 
+    public boolean deleteConfigFile() {
+        return file.delete();
+    }
+
     public boolean createBackup() {
         String fileNameWithoutFileExtension = fileName.substring(0, fileName.indexOf("."));
 
