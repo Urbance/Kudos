@@ -48,7 +48,6 @@ public class LeaderboardGUI implements GUI_Interface {
     }
 
     private void createGUI() {
-        // TODO build gui title dynamically -> extra config key?
         this.gui = new UrbanceGUI().create("Kudos", 1)
                 .cancelOnGlobalClick(true)
                 .get();

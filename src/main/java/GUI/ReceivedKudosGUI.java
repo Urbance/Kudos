@@ -62,7 +62,6 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     }
 
     private void createGUI() {
-        // TODO build gui title dynamically
         this.urbanceGUI = new UrbanceGUI();
         this.receivedKudosGUI = urbanceGUI.create("Kudos", 1)
                 .cancelOnGlobalClick(true)
