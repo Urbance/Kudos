@@ -2,7 +2,7 @@ package Utils;
 
 public class ValidationManagement {
 
-    public boolean isValueAnInteger(String value) {
+    public static boolean isValueAnInteger(String value) {
         try {
             Integer.parseInt(value);
             return true;
@@ -11,7 +11,7 @@ public class ValidationManagement {
         }
     }
 
-    public boolean isValueAnIntegerAndGreaterThanZero(String value) {
+    public static boolean isValueAnIntegerAndGreaterThanZero(String value) {
         if (!isValueAnInteger(value)) return false;
 
         int number = Integer.parseInt(value);
