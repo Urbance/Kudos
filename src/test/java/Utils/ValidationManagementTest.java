@@ -6,41 +6,39 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ValidationManagementTest {
 
-    private ValidationManagement validationManagement = new ValidationManagement();
-
     @Test
     void isValueAnInteger_charAIsNotAnInteger() {
-        assertFalse(validationManagement.isValueAnInteger("A"));
+        assertFalse(ValidationManagement.isValueAnInteger("A"));
     }
 
     @Test
     void isValueAnInteger_numberThreeIsAnInteger() {
-        assertTrue(validationManagement.isValueAnInteger("3"));
+        assertTrue(ValidationManagement.isValueAnInteger("3"));
     }
 
     @Test
     void isValueAnInteger_numberGreaterThanAnIntegerEqualsFalse() {
-        assertFalse(validationManagement.isValueAnInteger("2147483648"));
+        assertFalse(ValidationManagement.isValueAnInteger("2147483648"));
     }
 
     @Test
     void isValueAnIntegerAndGreaterThanZero_negativeTenIsAnIntegerAndEqualsFalse() {
-        assertFalse(validationManagement.isValueAnIntegerAndGreaterThanZero("-10"));
+        assertFalse(ValidationManagement.isValueAnIntegerAndGreaterThanZero("-10"));
     }
 
     @Test
     void isValueAnIntegerAndGreaterThanZero_charAEqualsFalse() {
-        assertFalse(validationManagement.isValueAnIntegerAndGreaterThanZero("A"));
+        assertFalse(ValidationManagement.isValueAnIntegerAndGreaterThanZero("A"));
     }
 
     @Test
     void isValueAnIntegerAndGreaterThanZero_int0EqualsFalse() {
-        assertFalse(validationManagement.isValueAnIntegerAndGreaterThanZero("0"));
+        assertFalse(ValidationManagement.isValueAnIntegerAndGreaterThanZero("0"));
     }
 
     @Test
     void isValueAnIntegerAndGreaterThanZero_int1EqualsTrue() {
-        assertTrue(validationManagement.isValueAnIntegerAndGreaterThanZero("1"));
+        assertTrue(ValidationManagement.isValueAnIntegerAndGreaterThanZero("1"));
     }
 
 }
