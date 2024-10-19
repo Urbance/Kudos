@@ -41,7 +41,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>F:\Arbeitsbereich\Programmierung\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <outputFile>D:\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>com.github.stefvanschie.inventoryframework</pattern>
@@ -136,6 +136,12 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
