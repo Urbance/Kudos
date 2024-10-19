@@ -1,11 +1,8 @@
 package Commands;
 
-import Utils.ComponentCreator;
-import Utils.ConfigKey;
-import Utils.FileManager;
+import Utils.*;
 import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
-import Utils.ValidationManagement;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -50,7 +47,30 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         return false;
     }
 
+    private void handleNeededMigration(CommandSender sender, String[] args) {
+        if (!args[0].equals("migration")) {
+                WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false);
+            return;
+        }
+        performMigration(sender);
+    }
+
+    private void performMigration(CommandSender sender) {
+        if (!WorkaroundManagement.isMigrationNeeded)
+            return;
+
+        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
+        workaroundManagement.performMigrationCheck(true);
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Performed migration successfully."));
+    }
+
     private void performAction(CommandSender sender, String[] args) {
+        if (WorkaroundManagement.isMigrationNeeded) {
+            handleNeededMigration(sender, args);
+            return;
+        }
+
         switch (args[0]) {
             case "help" -> sendHelpMessage(sender, args);
             case "reload" -> reloadConfigs(sender, args);
@@ -300,6 +320,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         if (!sender.hasPermission("kudos.admin.*")) return commandArguments;
+
+        if (WorkaroundManagement.isMigrationNeeded) {
+            if (args.length == 1) commandArguments.add("migration");
+            StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
+            return commandArguments;
+        }
 
         switch (args.length) {
             case 1 -> {

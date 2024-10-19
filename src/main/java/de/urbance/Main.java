@@ -14,12 +14,15 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
+import java.io.File;
 import java.sql.SQLException;
 
-public final class Main extends JavaPlugin implements Listener {
+public class Main extends JavaPlugin implements Listener {
     public final CooldownManager cooldownManager = new CooldownManager();
     public static boolean oldTableScheme;
     public String prefix;
@@ -45,9 +48,6 @@ public final class Main extends JavaPlugin implements Listener {
         setupMetrics();
         setupConfigs();
 
-        new WorkaroundManagement().perform500Workaround();
-
-
         this.prefix = config.getString("general-settings.prefix");
 
         try {
@@ -55,6 +55,7 @@ public final class Main extends JavaPlugin implements Listener {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         registerListenerAndCommands();
     }
 
@@ -89,6 +90,9 @@ public final class Main extends JavaPlugin implements Listener {
 
         pluginManager.registerEvents(new OnPlayerJoin(), this);
         if (!isConnected) return;
+
+        WorkaroundManagement.notifyWhenWorkaroundIsNeeded(null, true);
+
         getCommand("kudmin").setExecutor(new Kudmin());
         getCommand("kudmin").setTabCompleter(new Kudmin());
         pluginManager.registerEvents(new OverviewGUI(), this);

@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 public class FileManager {
     public String fileName;
@@ -101,6 +102,16 @@ public class FileManager {
         } catch (IOException e) {
             Bukkit.getLogger().severe("Cannot create backup file from " + fileName + ". " + e.getMessage());
             return false;
+        }
+    }
+
+    public static void copyConfigValuesBetweenTwoConfigs(Map<String, String> configKeys, FileConfiguration fromConfig, FileConfiguration toConfig) {
+        for (String oldConfigKey : fromConfig.getKeys(true)) {
+            if (configKeys.containsKey(oldConfigKey)) {
+                String newConfigKey = configKeys.get(oldConfigKey);
+                Object configKeyValue = fromConfig.get(oldConfigKey);
+                toConfig.set(newConfigKey, configKeyValue);
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package Commands;
 
 import Utils.KudosUtils.*;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -22,6 +23,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false)) return false;
+
         this.plugin = Main.getPlugin(Main.class);
         this.locale = plugin.localeConfig;
         this.config = plugin.config;
@@ -127,7 +130,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
         List<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         FileConfiguration config = Main.getPlugin(Main.class).config;
+
         if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) return commandArguments;
+
+        if (WorkaroundManagement.isMigrationNeeded) {
+            return tabCompletions;
+        }
+
         switch (args.length) {
             case 1 -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {

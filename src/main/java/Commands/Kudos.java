@@ -4,6 +4,7 @@ import GUI.OverviewGUI;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -28,6 +29,8 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false)) return false;
+
         this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
@@ -95,7 +98,13 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> playerNameList = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
+
         if (!(sender.hasPermission("kudos.player.show") || sender.hasPermission("kudos.player.*"))) return playerNameList;
+
+        if (WorkaroundManagement.isMigrationNeeded) {
+            return tabCompletions;
+        }
+
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 playerNameList.add(player.getName());

@@ -1,6 +1,7 @@
 package Events;
 
 import Utils.SQL.SQLGetter;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,7 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.UUID;
 
 public class OnPlayerJoin implements Listener {
-    Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getPlugin(Main.class);
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -21,6 +22,7 @@ public class OnPlayerJoin implements Listener {
 
         sendNoDatabaseFoundMessage(player, prefix);
         if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
+        sendWorkaroundNeededMessage(player);
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
@@ -34,5 +36,10 @@ public class OnPlayerJoin implements Listener {
         if (Main.oldTableScheme) return true;
         SQLGetter data = new SQLGetter(plugin);
         return data.createPlayer(uuid);
+    }
+
+    private void sendWorkaroundNeededMessage(Player player) {
+        if (!player.hasPermission("kudos.admin.*") || !WorkaroundManagement.isMigrationNeeded) return;
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', WorkaroundManagement.workaroundNeededMessage(false)));
     }
 }
