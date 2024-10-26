@@ -1,3 +1,5 @@
+meta:
+  config-version: 1.0.0
 general-settings:
   update-notification: true
   prefix: "&7» &eKudos&7: "
