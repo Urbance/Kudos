@@ -25,21 +25,15 @@ public class WorkaroundManagement {
     }
 
     public void performMigrationCheck(boolean performWorkaround) {
-        if (check500Workaround())
+        if (check430Workaround() || check500Workaround())
             isMigrationNeeded = true;
 
         if (isMigrationNeeded && performWorkaround) {
-            performWorkarounds();
+            perform430Workaround();
+            perform500Workaround();
             isMigrationNeeded = false;
         }
 
-    }
-
-    private void performWorkarounds() {
-        if (!isMigrationNeeded)
-            return;
-
-        perform500Workaround();
     }
 
     private boolean check500Workaround() {
@@ -206,6 +200,63 @@ public class WorkaroundManagement {
         if (!guiConfigFileManager.deleteConfigFile())
             Bukkit.getLogger().severe("Can't delete gui.yml. Consider to delete the config file manually.");
 
+    }
+
+    private boolean check430Workaround() {
+        if (!Files.exists(guiConfigPath))
+            return false;
+
+        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        guiConfig.options().copyDefaults(true);
+
+        return guiConfig.getString("received-kudos.backwards-item.item-name") != null || guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos") != null;
+    }
+
+    private void perform430Workaround() {
+        if (!check430Workaround())
+            return;
+
+        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+
+        String receivedKudosBackwardsItemNameKeyPath = "received-kudos.backwards-item.item-name";
+        String receivedKudosForwardsItemNameKeyPath = "received-kudos.forwards-item.item-name";
+
+        String generalPageSwitcherBackwardsItemNameKeyPath = "general.page-switcher.backwards.item-name";
+        String generalPageSwitcherForwardsItemNameKeyPath = "general.page-switcher.forwards.item-name";
+
+        if (guiConfig.getString(receivedKudosBackwardsItemNameKeyPath) != null) {
+            guiConfig.set(generalPageSwitcherBackwardsItemNameKeyPath, guiConfig.getString(receivedKudosBackwardsItemNameKeyPath));
+            guiConfig.set("received-kudos.backwards-item", null);
+        }
+
+        if (guiConfig.getString(receivedKudosForwardsItemNameKeyPath) != null) {
+            guiConfig.set(generalPageSwitcherForwardsItemNameKeyPath, guiConfig.getString(receivedKudosForwardsItemNameKeyPath));
+            guiConfig.set("received-kudos.forwards-item", null);
+        }
+
+        // refactored papi leaderboard config key values into a separated key
+        String oldNotAssignedKudosPapiKeyPath = "slot.kudos-leaderboard.not-assigned-kudos";
+        String oldLoreFormatPapiKeyPath = "slot.kudos-leaderboard.lore-format";
+
+        if (guiConfig.getString(oldNotAssignedKudosPapiKeyPath) != null) {
+            String oldNotAssignedKudosPapiKeyValue = guiConfig.getString(oldNotAssignedKudosPapiKeyPath);
+            String newNotAssignedKudosPapiPath = "slot.kudos-leaderboard.papi.not-assigned-kudos";
+
+            guiConfig.set(newNotAssignedKudosPapiPath, oldNotAssignedKudosPapiKeyValue);
+            guiConfig.set(oldNotAssignedKudosPapiKeyPath, null);
+        }
+
+        if (guiConfig.getString(oldLoreFormatPapiKeyPath) != null) {
+            String oldLoreFormatPapiKeyValue = guiConfig.getString("slot.kudos-leaderboard.lore-format");
+            String newLoreFormatPapiKeyPath = "slot.kudos-leaderboard.papi.lore-format";
+
+            guiConfig.set(newLoreFormatPapiKeyPath, oldLoreFormatPapiKeyValue);
+            guiConfig.set(oldLoreFormatPapiKeyPath, null);
+        }
+        
+        guiConfigFileManager.save();
     }
 
     public static String workaroundNeededMessage(boolean consoleMessage) {
