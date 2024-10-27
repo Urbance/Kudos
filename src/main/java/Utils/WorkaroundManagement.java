@@ -292,6 +292,9 @@ public class WorkaroundManagement {
                 return true;
             }
 
+            if (sender == null || !sender.hasPermission("kudos.admin.*"))
+                return true;
+
             if (sender instanceof Player) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', workaroundNeededMessage(false)));
             } else {
