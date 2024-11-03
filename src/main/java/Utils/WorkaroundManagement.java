@@ -1,9 +1,12 @@
 package Utils;
 
+import Utils.KudosUtils.KudosMessage;
+import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -15,7 +18,9 @@ import java.util.Map;
 import static Utils.FileManager.copyConfigValuesBetweenTwoConfigs;
 
 public class WorkaroundManagement {
-    public static boolean isMigrationNeeded = false;
+    public static boolean isConfigMigrationNeeded = false;
+    public static boolean isSQLMigrationNeeded = false;
+    public static boolean isLegacyConfig = false;
     private Main plugin;
     private Path guiConfigPath;
 
@@ -25,15 +30,39 @@ public class WorkaroundManagement {
     }
 
     public void performMigrationCheck(boolean performWorkaround) {
-        if (check430Workaround() || check500Workaround())
-            isMigrationNeeded = true;
-
-        if (isMigrationNeeded && performWorkaround) {
-            perform430Workaround();
-            perform500Workaround();
-            isMigrationNeeded = false;
+        if (isConfigOlderThanMajorVersion400()) {
+            isLegacyConfig = true;
+            return;
+        }
+        if (checkSQLMigration()) {
+            isSQLMigrationNeeded = true;
         }
 
+        if (check430Workaround() || check500Workaround())
+            isConfigMigrationNeeded = true;
+
+        if (isConfigMigrationNeeded && performWorkaround) {
+            perform430Workaround();
+            perform500Workaround();
+            WorkaroundManagement.isConfigMigrationNeeded = false;
+        }
+    }
+
+    private boolean isConfigOlderThanMajorVersion400() {
+        if (!Files.exists(guiConfigPath))
+            return false;
+
+        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        guiConfig.options().copyDefaults(true);
+
+        return guiConfig.getString("title") != null && guiConfig.getString("enabled") != null && guiConfig.isConfigurationSection("slot.top3");
+
+    }
+
+    private boolean checkSQLMigration() {
+        SQLGetter data = new SQLGetter(plugin);
+        return isSQLMigrationNeeded = data.checkIfKudosTableHasOldTableSchematic();
     }
 
     private boolean check500Workaround() {
@@ -48,7 +77,7 @@ public class WorkaroundManagement {
     }
 
 
-    public void perform500Workaround() {
+    private void perform500Workaround() {
         if (!check500Workaround())
             return;
         if (!Files.exists(guiConfigPath)) {
@@ -198,7 +227,7 @@ public class WorkaroundManagement {
 
         // Step 12: delete gui.yml
         if (!guiConfigFileManager.deleteConfigFile())
-            Bukkit.getLogger().severe("Can't delete gui.yml. Consider to delete the config file manually.");
+            Bukkit.getLogger().warning("Can't delete gui.yml. Consider to delete the config file manually.");
 
     }
 
@@ -259,7 +288,7 @@ public class WorkaroundManagement {
         guiConfigFileManager.save();
     }
 
-    public static String workaroundNeededMessage(boolean consoleMessage) {
+    private static String getConfigWorkaroundNeededMessage() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("&7========= &e&lKudos&r &7=========\n");
         stringBuilder.append("\n&7It seems you already had an older version of Kudos installed.");
@@ -269,39 +298,111 @@ public class WorkaroundManagement {
         stringBuilder.append("\nData loss may occur. A backup of the database and configuration files is recommended.");
         stringBuilder.append("\n&7========= &e&lKudos&r &7=========\n");
 
-        String message = stringBuilder.toString();
+        return stringBuilder.toString();
+    }
 
-        if (consoleMessage) {
-            message = "\n " + message.replaceAll("&.", "");
+    private static String getSQLWorkaroundMessage() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("&7========= &e&lKudos&r &7=========\n");
+        stringBuilder.append("\n&7It seems you already had an older version of Kudos installed.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nThere have been critical changes to the plugin. Please execute the command &e/kudmin migration &7to continue using Kudos.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nThe statistics on the awarded Kudos will be reset after the migration!");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\n&7Data loss may occur. A backup of the database is recommended to avoid data loss.");
+        stringBuilder.append("\n&7========= &e&lKudos&r &7=========\n");
+
+        return stringBuilder.toString();
+    }
+
+    private static String getSQLAndConfigWorkaroundMessage() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("&7========= &e&lKudos&r &7=========\n");
+        stringBuilder.append("\n&7It seems you already had an older version of Kudos installed.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nThere have been critical changes to the plugin. Please execute the command &e/kudmin migration &7to continue using Kudos.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nThe statistics on the awarded Kudos will be reset after the migration!");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nData loss may occur. A backup of the database and configuration files is recommended.");
+        stringBuilder.append("\n&7========= &e&lKudos&r &7=========\n");
+
+        return stringBuilder.toString();
+    }
+
+    private static String getWorkaroundNeededMessage() {
+        String message = "";
+
+        if (isConfigMigrationNeeded && isSQLMigrationNeeded) {
+            message = getSQLAndConfigWorkaroundMessage();
+        } else if (isConfigMigrationNeeded) {
+            message = getConfigWorkaroundNeededMessage();
+        } else if (isSQLMigrationNeeded) {
+            message = getSQLWorkaroundMessage();
         }
 
         return message;
     }
 
-    public static boolean notifyWhenWorkaroundIsNeeded(CommandSender sender, boolean pluginStartup) {
-        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
-        workaroundManagement.performMigrationCheck(false);
+    private static String getLegacyConfigMessage() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("&7========= &e&lKudos&r &7=========\n");
+        stringBuilder.append("\n&7You were using a very old version of Kudos and a lot has changed since then.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nTo continue, stop the server, delete &econfig.yml &7and &egui.yml &7in the Kudos plugins folder and restart the server.");
+        stringBuilder.append("\n ");
+        stringBuilder.append("\nYou will then be prompted to execute a command to update the database to the correct version.");
+        stringBuilder.append("\n&7========= &e&lKudos&r &7=========\n");
 
-        if (isMigrationNeeded) {
-            if (pluginStartup) {
-                Bukkit.getLogger().severe(WorkaroundManagement.workaroundNeededMessage(true));
-
-                for (Player players : Bukkit.getOnlinePlayers()) {
-                    if (players.hasPermission("kudos.admin.*")) players.sendMessage(ChatColor.translateAlternateColorCodes('&', WorkaroundManagement.workaroundNeededMessage(false)));
-                }
-                return true;
-            }
-
-            if (sender == null || !sender.hasPermission("kudos.admin.*"))
-                return true;
-
-            if (sender instanceof Player) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', workaroundNeededMessage(false)));
-            } else {
-                sender.sendMessage(workaroundNeededMessage(true));
-            }
-            return true;
-        }
-        return false;
+        return stringBuilder.toString();
     }
+
+
+    public static void notifyInstanceAboutWorkaround(CommandSender sender) {
+        String message = getWorkaroundNeededMessage();
+        if (message.isBlank()) return;
+
+        if (sender instanceof ConsoleCommandSender) {
+            sender.sendMessage(KudosMessage.formatStringForConsole(message));
+        }
+
+        if (sender instanceof Player && sender.hasPermission("kudos.admin.*")) {
+            if (!sender.hasPermission("kudos.admin.*")) return;
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        }
+    }
+
+    public static void notifyInstanceAboutWorkaroundAtPluginStartup() {
+        String message = getWorkaroundNeededMessage();
+        if (message.isBlank()) return;
+
+        Bukkit.getLogger().warning(KudosMessage.formatStringForConsole(message));
+        for (Player players : Bukkit.getOnlinePlayers())
+            if (players.hasPermission("kudos.admin.*"))
+                players.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
+    public static void notifyInstanceAboutLegacyWorkaround(CommandSender sender) {
+        String message = getLegacyConfigMessage();
+
+        if (sender instanceof ConsoleCommandSender) {
+            sender.sendMessage(KudosMessage.formatStringForConsole(message));
+        }
+
+        if (sender instanceof Player && sender.hasPermission("kudos.admin.*")) {
+            if (!sender.hasPermission("kudos.admin.*")) return;
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        }
+    }
+
+    public static void notifyInstanceAboutLegacyConfigAtPluginStartup() {
+        String message = getLegacyConfigMessage();
+
+        Bukkit.getLogger().warning(KudosMessage.formatStringForConsole(message));
+        for (Player players : Bukkit.getOnlinePlayers())
+            if (players.hasPermission("kudos.admin.*"))
+                players.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+    }
+
 }

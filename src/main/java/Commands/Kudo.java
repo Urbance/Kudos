@@ -23,7 +23,9 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false)) return false;
+        if (WorkaroundManagement.isLegacyConfig || WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            return false;
+        }
 
         this.plugin = Main.getPlugin(Main.class);
         this.locale = plugin.localeConfig;
@@ -133,7 +135,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) return commandArguments;
 
-        if (WorkaroundManagement.isMigrationNeeded) {
+        if (WorkaroundManagement.isConfigMigrationNeeded) {
             return tabCompletions;
         }
 

@@ -22,16 +22,16 @@ public class Kudos implements CommandExecutor, TabCompleter {
     private Main plugin = Main.getPlugin(Main.class);
     private FileConfiguration locale;
     private SQLGetter data;
-    private String prefix;
     private OfflinePlayer targetPlayer;
     private KudosManagement kudosManagement;
     private KudosMessage kudosMessage;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false)) return false;
+        if (WorkaroundManagement.isLegacyConfig || WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            return false;
+        }
 
-        this.prefix = plugin.prefix;
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
         this.kudosManagement = new KudosManagement();
@@ -101,7 +101,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
 
         if (!(sender.hasPermission("kudos.player.show") || sender.hasPermission("kudos.player.*"))) return playerNameList;
 
-        if (WorkaroundManagement.isMigrationNeeded) {
+        if (WorkaroundManagement.isConfigMigrationNeeded) {
             return tabCompletions;
         }
 

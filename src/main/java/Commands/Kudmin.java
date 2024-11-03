@@ -47,27 +47,13 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         return false;
     }
 
-    private void handleNeededMigration(CommandSender sender, String[] args) {
-        if (!args[0].equals("migration")) {
-                WorkaroundManagement.notifyWhenWorkaroundIsNeeded(sender, false);
-            return;
-        }
-        performMigration(sender);
-    }
-
-    private void performMigration(CommandSender sender) {
-        if (!WorkaroundManagement.isMigrationNeeded)
-            return;
-
-        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
-        workaroundManagement.performMigrationCheck(true);
-
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Performed migration successfully."));
-    }
-
     private void performAction(CommandSender sender, String[] args) {
-        if (WorkaroundManagement.isMigrationNeeded) {
-            handleNeededMigration(sender, args);
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            if (!args[0].equals("migration")) {
+                WorkaroundManagement.notifyInstanceAboutWorkaround(sender);
+                return;
+            }
+            performMigration(sender);
             return;
         }
 
@@ -81,6 +67,47 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "remove" -> performRemove(sender, args);
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
+    }
+
+    private void performMigration(CommandSender sender) {
+        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
+        workaroundManagement.performMigrationCheck(true);
+
+        if (WorkaroundManagement.isConfigMigrationNeeded || WorkaroundManagement.isSQLMigrationNeeded) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start migration.."));
+
+            if (WorkaroundManagement.isSQLMigrationNeeded) {
+                // start SQL migration
+                if (data.migrateOldTableSchemeToNewTableScheme()) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Something went wrong during SQL table migration. Please check the logs!"));
+                    return;
+                }
+                // check if SQL migration is still needed -> something went wrong
+                if (!data.checkIfKudosTableHasOldTableSchematic()) {
+                    WorkaroundManagement.isSQLMigrationNeeded = false;
+                } else {
+                    // else: set sql migration not needed
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Step database migration: Something went wrong. Please check the logs!"));
+                    return;
+                }
+            }
+            if (WorkaroundManagement.isConfigMigrationNeeded) {
+                // start config migration
+                workaroundManagement.performMigrationCheck(true);
+                // check if config migration is still needed -> something went wrong
+                workaroundManagement.performMigrationCheck(false);
+
+                if (WorkaroundManagement.isConfigMigrationNeeded) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Step config migration: Something went wrong. Please check the logs!"));
+                    return;
+                } else {
+                    // else: set config migration not needed (somewhere is further set to false, delete it!)
+                    WorkaroundManagement.isConfigMigrationNeeded = false;
+                }
+            }
+        }
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Performed migration successfully."));
     }
 
     private void sendHelpMessage(CommandSender sender, String[] args) {
@@ -321,7 +348,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         List<String> tabCompletions = new ArrayList<>();
         if (!sender.hasPermission("kudos.admin.*")) return commandArguments;
 
-        if (WorkaroundManagement.isMigrationNeeded) {
+        if (WorkaroundManagement.isConfigMigrationNeeded || WorkaroundManagement.isSQLMigrationNeeded) {
             if (args.length == 1) commandArguments.add("migration");
             StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
             return commandArguments;

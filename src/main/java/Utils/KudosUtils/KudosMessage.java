@@ -45,4 +45,8 @@ public class KudosMessage {
     public String setPlaceholders(String message, Map<String, String> values) {
         return StringSubstitutor.replace(message, values, "%", "%");
     }
+
+    public static String formatStringForConsole(String message) {
+        return "\n " + message.replaceAll("&.", "");
+    }
 }

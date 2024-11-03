@@ -50,13 +50,23 @@ public class Main extends JavaPlugin implements Listener {
 
         this.prefix = config.getString("general-settings.prefix");
 
-        try {
-            setupSQL();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        setupSQL();
+
+        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
+        workaroundManagement.performMigrationCheck(false);
+
+        if (WorkaroundManagement.isLegacyConfig) {
+            WorkaroundManagement.notifyInstanceAboutLegacyConfigAtPluginStartup();
+            return;
         }
 
-        registerListenerAndCommands();
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            registerListenerAndCommands(true);
+            WorkaroundManagement.notifyInstanceAboutWorkaroundAtPluginStartup();
+            return;
+        }
+
+        registerListenerAndCommands(false);
     }
 
     @Override
@@ -64,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
         Utils.SQL.SQL.disconnect();
     }
 
-    public boolean setupSQL() throws SQLException {
+    public boolean setupSQL() {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
@@ -76,34 +86,17 @@ public class Main extends JavaPlugin implements Listener {
             getLogger().info("Database is not connected");
             throw exception;
         }
-        if (!Utils.SQL.SQL.getConnection().isClosed()) {
-            getLogger().info("Database is connected");
-            if (!data.initTables()) return false;
-            this.isConnected = true;
+        try {
+            if (!Utils.SQL.SQL.getConnection().isClosed()) {
+                getLogger().info("Database is connected");
+                if (!data.initTables()) return false;
+                this.isConnected = true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         return true;
-    }
-
-    public void registerListenerAndCommands() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        if (!isConnected) return;
-
-        WorkaroundManagement.notifyWhenWorkaroundIsNeeded(null, true);
-
-        getCommand("kudmin").setExecutor(new Kudmin());
-        getCommand("kudmin").setTabCompleter(new Kudmin());
-        pluginManager.registerEvents(new OverviewGUI(), this);
-        pluginManager.registerEvents(new ReceivedKudosGUI(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudos").setTabCompleter(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudo").setTabCompleter(new Kudo());
-        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
-            new KudosExpansion().register();
-        }
     }
 
     public void setupConfigs() {
@@ -149,6 +142,25 @@ public class Main extends JavaPlugin implements Listener {
         globalGuiSettingsManager.save();
 
         this.configKey = new ConfigKey();
+    }
+
+    public void registerListenerAndCommands() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (!isConnected) return;
+
+        getCommand("kudmin").setExecutor(new Kudmin());
+        getCommand("kudmin").setTabCompleter(new Kudmin());
+        pluginManager.registerEvents(new OverviewGUI(), this);
+        pluginManager.registerEvents(new ReceivedKudosGUI(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudos").setTabCompleter(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudo").setTabCompleter(new Kudo());
+        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new KudosExpansion().register();
+        }
     }
 
     private void setupMetrics() {

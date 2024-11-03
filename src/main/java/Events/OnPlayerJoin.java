@@ -21,7 +21,10 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
+        if (!createDatabasePlayer(player.getUniqueId())) {
+            Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
+            return;
+        }
         sendWorkaroundNeededMessage(player);
     }
 
@@ -39,7 +42,12 @@ public class OnPlayerJoin implements Listener {
     }
 
     private void sendWorkaroundNeededMessage(Player player) {
-        if (!player.hasPermission("kudos.admin.*") || !WorkaroundManagement.isMigrationNeeded) return;
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', WorkaroundManagement.workaroundNeededMessage(false)));
+        if (!player.hasPermission("kudos.admin.*")) return;
+        if (WorkaroundManagement.isLegacyConfig) {
+            WorkaroundManagement.notifyInstanceAboutLegacyWorkaround(player);
+            return;
+        }
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded)
+            WorkaroundManagement.notifyInstanceAboutWorkaround(player);
     }
 }
