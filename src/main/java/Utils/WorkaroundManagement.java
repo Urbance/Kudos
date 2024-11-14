@@ -108,6 +108,15 @@ public class WorkaroundManagement {
         configFileManager.createBackup();
         guiConfigFileManager.createBackup();
 
+        // adjust overview gui items to their default values if received kudos item is not existing
+        if (!guiConfig.isConfigurationSection("slot.received-kudos")) {
+            guiConfig.set("slot.statistics.item-slot", overviewGuiConfig.get("items.statistics.item-slot"));
+            guiConfig.set("slot.received-kudos.item-slot", overviewGuiConfig.get("items.received-kudos.item-slot"));
+            guiConfig.set("slot.help.item-slot", overviewGuiConfig.get("items.help.item-slot"));
+            guiConfig.set("slot.kudos-leaderboard.item-slot", overviewGuiConfig.get("items.kudos-leaderboard.item-slot"));
+
+            guiConfigFileManager.save();
+        }
 
         // perform workaround
         // Step 1: config.yml - general
