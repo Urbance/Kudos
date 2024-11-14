@@ -61,12 +61,12 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
-            registerListenerAndCommands(true);
+            registerListenerAndCommands();
             WorkaroundManagement.notifyInstanceAboutWorkaroundAtPluginStartup();
             return;
         }
 
-        registerListenerAndCommands(false);
+        registerListenerAndCommands();
     }
 
     @Override
