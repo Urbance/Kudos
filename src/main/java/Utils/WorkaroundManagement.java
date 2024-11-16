@@ -29,7 +29,7 @@ public class WorkaroundManagement {
         this.guiConfigPath = Path.of(plugin.getDataFolder() + "\\gui.yml");
     }
 
-    public void performMigrationCheck(boolean performWorkaround) {
+    public void performMigrationCheck() {
         if (isConfigOlderThanMajorVersion400()) {
             isLegacyConfig = true;
             return;
@@ -40,12 +40,24 @@ public class WorkaroundManagement {
 
         if (check430Workaround() || check500Workaround())
             isConfigMigrationNeeded = true;
+    }
 
-        if (isConfigMigrationNeeded && performWorkaround) {
+    public void performConfigMigration() {
+        if (isConfigMigrationNeeded) {
             perform430Workaround();
             perform500Workaround();
             WorkaroundManagement.isConfigMigrationNeeded = false;
         }
+    }
+
+    public boolean performSQLMigration() {
+        if (isSQLMigrationNeeded) {
+            SQLGetter data = new SQLGetter(plugin);
+
+            if (data.migrateOldTableSchemeToNewTableScheme())
+                return !data.checkIfKudosTableHasOldTableSchematic();
+        }
+        return false;
     }
 
     private boolean isConfigOlderThanMajorVersion400() {
