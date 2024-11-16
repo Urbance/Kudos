@@ -23,7 +23,7 @@ public class UrbanceGUI {
         this.globalGuiSettingsConfig = plugin.globalGuiSettingsConfig;
     }
 
-    public UrbanceGUI create(String title, int size) {;
+    public UrbanceGUI create(String title, int size) {
         this.chestGui = new ChestGui(size, ChatColor.translateAlternateColorCodes('&', title));
         return this;
     }
@@ -35,22 +35,22 @@ public class UrbanceGUI {
 
     public GuiItem getBackwardsPageSwitcher() {
         String arrowLeftURLSkull = "http://textures.minecraft.net/texture/bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9";
-        GuiItem pageSwitchterLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
+        GuiItem pageSwitcherLeft = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .setDisplayName(globalGuiSettingsConfig.getString("page-switcher.direction.backwards.item-name"))
                 .replaceSkullWithCustomURLSkull(arrowLeftURLSkull)
                 .get());
 
-        return pageSwitchterLeft;
+        return pageSwitcherLeft;
     }
 
     public GuiItem getForwardsPageSwitcher() {
         String arrowRightURLSkull = "http://textures.minecraft.net/texture/19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf";
-        GuiItem pageSwitchterRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
+        GuiItem pageSwitcherRight = new GuiItem(new ItemCreator("PLAYER_HEAD")
                 .replaceSkullWithCustomURLSkull(arrowRightURLSkull)
                 .setDisplayName(globalGuiSettingsConfig.getString("page-switcher.direction.forwards.item-name"))
                 .get());
 
-        return pageSwitchterRight;
+        return pageSwitcherRight;
     }
 
     public void playsoundPageSwitcher(Player player) {
