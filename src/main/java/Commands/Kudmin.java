@@ -71,38 +71,31 @@ public class Kudmin implements CommandExecutor, TabCompleter {
 
     private void performMigration(CommandSender sender) {
         WorkaroundManagement workaroundManagement = new WorkaroundManagement();
-        workaroundManagement.performMigrationCheck(true);
+        workaroundManagement.performMigrationCheck();
 
         if (WorkaroundManagement.isConfigMigrationNeeded || WorkaroundManagement.isSQLMigrationNeeded) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start migration.."));
 
             if (WorkaroundManagement.isSQLMigrationNeeded) {
-                // start SQL migration
-                if (data.migrateOldTableSchemeToNewTableScheme()) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Something went wrong during SQL table migration. Please check the logs!"));
+                if (!workaroundManagement.performSQLMigration())  {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Something went wrong during SQL table migration. Please check the logs and contact the plugin author."));
                     return;
                 }
-                // check if SQL migration is still needed -> something went wrong
-                if (!data.checkIfKudosTableHasOldTableSchematic()) {
-                    WorkaroundManagement.isSQLMigrationNeeded = false;
-                } else {
-                    // else: set sql migration not needed
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Step database migration: Something went wrong. Please check the logs!"));
+
+                workaroundManagement.performMigrationCheck();
+                if (WorkaroundManagement.isSQLMigrationNeeded) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error occurred during SQL migration. Please run the migration again or check the console and contact the plugin author."));
                     return;
                 }
+
             }
             if (WorkaroundManagement.isConfigMigrationNeeded) {
-                // start config migration
-                workaroundManagement.performMigrationCheck(true);
-                // check if config migration is still needed -> something went wrong
-                workaroundManagement.performMigrationCheck(false);
+                workaroundManagement.performConfigMigration();
 
+                workaroundManagement.performMigrationCheck();
                 if (WorkaroundManagement.isConfigMigrationNeeded) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Step config migration: Something went wrong. Please check the logs!"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error occurred during config migration. Please run the migration again or check the console and contact the plugin author."));
                     return;
-                } else {
-                    // else: set config migration not needed (somewhere is further set to false, delete it!)
-                    WorkaroundManagement.isConfigMigrationNeeded = false;
                 }
             }
         }

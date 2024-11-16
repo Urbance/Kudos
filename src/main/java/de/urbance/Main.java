@@ -53,7 +53,7 @@ public class Main extends JavaPlugin implements Listener {
         setupSQL();
 
         WorkaroundManagement workaroundManagement = new WorkaroundManagement();
-        workaroundManagement.performMigrationCheck(false);
+        workaroundManagement.performMigrationCheck();
 
         if (WorkaroundManagement.isLegacyConfig) {
             WorkaroundManagement.notifyInstanceAboutLegacyConfigAtPluginStartup();
