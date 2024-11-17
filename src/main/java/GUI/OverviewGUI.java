@@ -1,6 +1,5 @@
 package GUI;
 
-import Utils.ConfigKey;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
@@ -23,23 +22,21 @@ public class OverviewGUI implements Listener {
     private final FileConfiguration overviewConfig;
     private ChestGui kudosGUI;
     private Player player;
-    private final ConfigKey configKey;
     private StaticPane overviewPane;
 
     public OverviewGUI() {
         this.plugin = Main.getPlugin(Main.class);
         this.data = plugin.data;
         this.overviewConfig = plugin.overviewConfig;
-        this.configKey = plugin.configKey;
     }
 
     private void createOverviewGui() {
         FileConfiguration globalGuiSettingsConfig = plugin.globalGuiSettingsConfig;
         String guiTitle = globalGuiSettingsConfig.getString("general-settings.gui-title");
 
-        int size = configKey.guiGeneralRows();
+        int size = overviewConfig.getInt("general-settings.rows");
 
-        if (size == 0) {
+        if (size < 1 || size > 6) {
             plugin.getLogger().warning("Error: Please set the value for the key \"rows\" in the overview.yml between 1 and 6.");
             return;
         }
@@ -87,8 +84,8 @@ public class OverviewGUI implements Listener {
     private void addLeaderboardGuiItem() {
         if (overviewConfig.getBoolean("items.kudos-leaderboard.enabled")) {
             HashMap leaderboardTopKudosData = data.getTopPlayersKudos(6);
-            List<String> lore = configKey.slot_kudos_leaderboard_lore();
-            if (leaderboardTopKudosData.isEmpty()) lore = configKey.slot_kudos_leaderboard_lore_no_kudos_exists();
+            List<String> lore = overviewConfig.getStringList("items.kudos-leaderboard.item-lore");
+            if (leaderboardTopKudosData.isEmpty()) lore = overviewConfig.getStringList("items.kudos-leaderboard.item-lore-no-kudos-exists");
 
             ItemCreator leaderboardItemItemStack = new ItemCreator(overviewConfig.getString("items.kudos-leaderboard.item"))
                     .setDisplayName(overviewConfig.getString("items.kudos-leaderboard.item-name"))
@@ -144,7 +141,7 @@ public class OverviewGUI implements Listener {
         createOverviewGui();
 
         if (this.kudosGUI == null) {
-            String errorMessage = configKey.errorSomethingWentWrongPleaseContactServerAdministrator();
+            String errorMessage = plugin.localeConfig.getString("error.something-went-wrong-please-contact-server-administrator");
             if (player != null) new KudosMessage(plugin).send(player, errorMessage);
             return;
         }

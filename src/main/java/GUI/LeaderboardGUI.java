@@ -1,6 +1,5 @@
 package GUI;
 
-import Utils.ConfigKey;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
@@ -21,7 +20,6 @@ import java.util.UUID;
 
 public class LeaderboardGUI implements GUI_Interface {
     private Main plugin;
-    private ConfigKey configKey;
     private StaticPane staticPane;
     private Player player;
     private ChestGui gui;
@@ -29,7 +27,6 @@ public class LeaderboardGUI implements GUI_Interface {
 
     public LeaderboardGUI(HashMap<UUID, String> leaderboardData) {
         this.plugin = Main.getPlugin(Main.class);
-        this.configKey = plugin.configKey;
         this.leaderboardData = leaderboardData;
     }
 
@@ -70,9 +67,9 @@ public class LeaderboardGUI implements GUI_Interface {
         for (UUID entry : leaderboardData.keySet()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(entry);
             String playerTotalKudos = leaderboardData.get(entry);
-            String itemDisplayName = configKey.leaderboard_player_leaderboard_item_item_name().replace("%kudos_leaderboard_name%", player.getName());
+            String itemDisplayName = plugin.leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", player.getName());
 
-            List<String> itemLore = configKey.leaderboard_player_leaderboard_item_item_lore();
+            List<String> itemLore = plugin.leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
@@ -99,7 +96,7 @@ public class LeaderboardGUI implements GUI_Interface {
         init();
 
         if (this.gui == null) {
-            String errorMessage = configKey.errorSomethingWentWrongPleaseContactServerAdministrator();
+            String errorMessage = plugin.localeConfig.getString("error.something-went-wrong-please-contact-server-administrator");
             if (player != null) new KudosMessage(plugin).send(player, errorMessage);
             return;
         }

@@ -139,7 +139,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         new FileManager("guis/received-kudos.yml", plugin).reload();
         new FileManager("guis/global-gui-settings.yml", plugin).reload();
 
-        plugin.configKey = new ConfigKey();
     }
 
     private void performClear(CommandSender sender, String[] args) {

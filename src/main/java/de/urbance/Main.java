@@ -35,7 +35,6 @@ public class Main extends JavaPlugin implements Listener {
     public FileConfiguration receivedKudosConfig;
     public FileConfiguration leaderboardConfig;
     public FileConfiguration globalGuiSettingsConfig;
-    public ConfigKey configKey;
     public boolean isConnected;
 
     @Override
@@ -140,8 +139,6 @@ public class Main extends JavaPlugin implements Listener {
         this.globalGuiSettingsConfig = globalGuiSettingsManager.getConfig();
         globalGuiSettingsConfig.options().copyDefaults(true);
         globalGuiSettingsManager.save();
-
-        this.configKey = new ConfigKey();
     }
 
     public void registerListenerAndCommands() {
