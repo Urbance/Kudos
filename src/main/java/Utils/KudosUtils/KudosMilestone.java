@@ -79,8 +79,8 @@ public class KudosMilestone {
     }
 
     private void playMilestoneSound(CommandSender sender, Player targetPlayer) {
-        if (!config.getBoolean("kudo-award.milestones.enable-playsound"))
+        if (!config.getBoolean("kudo-award.milestones.playsound.enabled"))
             return;
-        kudosManagement.playSound(sender, targetPlayer, config.getString("kudo-award.milestones.playsound-type"));
+        kudosManagement.playSound(sender, targetPlayer, config.getString("kudo-award.milestones.playsound.playsound-type"));
     }
 }

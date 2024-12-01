@@ -229,16 +229,26 @@ public class WorkaroundManagement {
 
         copyConfigValuesBetweenTwoConfigs(guiConfigKudosLeaderboardKeyMap, guiConfig, overviewGuiConfig);
 
+        // Step 10: config.yml move playsound settings
+        Map<String, String> configPlaysoundKeyMap = new HashMap<>();
 
-        // Step 10: delete unused config keys in config.yml
+        configPlaysoundKeyMap.put("kudo-award.milestones.enable-playsound", "kudo-award.milestones.playsound.enabled");
+        configPlaysoundKeyMap.put("kudo-award.milestones.playsound-type", "kudo-award.milestones.playsound.playsound-type");
+
+        copyConfigValuesBetweenTwoConfigs(configPlaysoundKeyMap, config, config);
+
+        // Step 11: delete unused config keys in config.yml
         config.set("general", null);
         config.set("kudo-award.cooldown", null);
         config.set("kudo-award.enable-reasons", null);
         config.set("kudo-award.reason-length", null);
         config.set("kudo-award.no-reason-given", null);
+        config.set("kudo-award.milestones.playsound.playsound-type", null);
+        config.set("kudo-award.milestones.enable-playsound", null);
+        config.set("kudo-award.milestones.playsound-type", null);
 
 
-        // Step 11: save configs
+        // Step 12: save configs
         configFileManager.save();
         globalGuiSettingsConfigManager.save();
         guiConfigFileManager.save();
@@ -246,7 +256,7 @@ public class WorkaroundManagement {
         overviewGuiConfigManager.save();
 
 
-        // Step 12: delete gui.yml
+        // Step 13: delete gui.yml
         if (!guiConfigFileManager.deleteConfigFile())
             Bukkit.getLogger().warning("Can't delete gui.yml. Consider to delete the config file manually.");
 
