@@ -317,7 +317,11 @@ public class SQLGetter {
 
     public boolean checkIfKudosTableHasOldTableSchematic() {
         String statement = "SELECT COUNT(*) AS ENTRIES FROM pragma_table_info('kudos') WHERE name='Kudos' or name='Assigned'";
-        boolean useMySQL = config.getBoolean("general.use-SQL");
+        boolean useMySQL = config.getBoolean("general-settings.use-MySQL");
+
+        if (config.isConfigurationSection("general")) {
+            useMySQL = config.getBoolean("general.use-SQL");
+        }
 
         if (useMySQL) {
             FileConfiguration mysqlConfig = plugin.mysqlConfig;

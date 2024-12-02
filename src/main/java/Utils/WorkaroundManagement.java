@@ -85,7 +85,11 @@ public class WorkaroundManagement {
         FileConfiguration guiConfig = guiConfigFileManager.getConfig();
         guiConfig.options().copyDefaults(true);
 
-        return guiConfigFileManager.file.exists() && guiConfig.isConfigurationSection("general") && guiConfig.isConfigurationSection("slot");
+        FileManager configFileManager = new FileManager("config.yml", plugin);
+        FileConfiguration config = configFileManager.getConfig();
+        config.options().copyDefaults(true);
+
+        return guiConfigFileManager.file.exists() || guiConfig.isConfigurationSection("general") || guiConfig.isConfigurationSection("slot") || config.isConfigurationSection("general");
     }
 
 
