@@ -10,6 +10,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class WorkaroundManagement {
 
     public WorkaroundManagement() {
         this.plugin = Main.getPlugin(Main.class);
-        this.guiConfigPath = Path.of(plugin.getDataFolder() + "\\gui.yml");
+        this.guiConfigPath = Path.of(plugin.getDataFolder() + File.separator + "gui.yml");
     }
 
     public void performMigrationCheck() {
