@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>4.4.1</version>
+    <version>5.0.0-PRE1</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -41,7 +41,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>F:\Arbeitsbereich\Programmierung\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <outputFile>D:\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>com.github.stefvanschie.inventoryframework</pattern>
@@ -50,6 +50,10 @@
                                 <relocation>
                                     <pattern>com.zaxxer</pattern>
                                     <shadedPattern>de.urbance.shaded.hikaricp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>de.urbance.shaded.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
@@ -125,7 +129,19 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.10.12</version>
+            <version>0.10.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

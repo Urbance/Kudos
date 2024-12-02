@@ -1,22 +1,13 @@
-general:
-  title: "&rKudos"
+general-settings:
   enabled: true
   rows: 1
-  page-switcher:
-    backwards:
-      item-name: "&eBackwards"
-    forwards:
-      item-name: "&eForwards"
-    playsound:
-      enabled: true
-      playsound-type: "ITEM_BOOK_PAGE_TURN"
-slot:
+items:
   statistics:
     enabled: true
     item: PLAYER_HEAD
     item-name: "&2&lStatistics"
     item-slot: 1
-    lore:
+    item-lore:
       - "&7&e%kudos_player_kudos% &7Kudos received"
       - "&7&e%kudos_player_assigned_kudos% &7Kudos assigned"
   received-kudos:
@@ -24,16 +15,16 @@ slot:
     item: BOOK
     item-name: "&9&lReceived Kudos"
     item-slot: 3
-    lore:
+    item-lore:
       - "&7&o*Click*"
-    lore-no-received-kudos:
+    item-lore-no-received-kudos:
       - "&7You haven't received any Kudos yet"
   help:
     enabled: true
     item: POPPY
     item-name: "&e&lHelp"
     item-slot: 5
-    lore:
+    item-lore:
       - "&7/kudo [player] (reason) - Give a Kudo to a player, optionally with reason"
       - "&7/kudos - Opens GUI"
       - "&7/kudos [player] - Displays the players Kudos"
@@ -42,21 +33,7 @@ slot:
     item: EMERALD
     item-name: "&c&lLeaderboard"
     item-slot: 7
-    lore:
+    item-lore:
       - "&7&o*Click*"
-    lore-no-kudos-exists:
-    - "&7No Kudos have been awarded"
-    display-players: 3
-    papi:
-      lore-format: "&e%top_kudos% &7%top_player%"
-      not-assigned-kudos: "&eNot assigned"
-received-kudos:
-  received-kudos-item:
-    lore:
-      - "&7%kudos_award_reason%"
-      - "&7%kudos_award_date%"
-leaderboard:
-  player-leaderboard-item:
-    item-name: "&2%kudos_leaderboard_name%"
-    lore:
-      - "&7Total Kudos: %kudos_leaderboard_kudos%"
+    item-lore-no-kudos-exists:
+      - "&7No Kudos have been awarded"

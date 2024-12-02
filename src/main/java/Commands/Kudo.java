@@ -1,6 +1,7 @@
 package Commands;
 
 import Utils.KudosUtils.*;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -22,13 +23,17 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (WorkaroundManagement.isLegacyConfig || WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            return false;
+        }
+
         this.plugin = Main.getPlugin(Main.class);
         this.locale = plugin.localeConfig;
         this.config = plugin.config;
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
         String reason = null;
-        if (config.getBoolean("kudo-award.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
+        if (config.getBoolean("kudo-award.general-settings.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
         if (!validateInput(args, sender, reason)) return false;
 
         awardKudo(sender, args, reason);
@@ -79,8 +84,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
         if (args.length > 1) {
-            if (config.getBoolean("kudo-award.enable-reasons")) {
-                int maximumReasonLength = config.getInt("kudo-award.reason-length");
+            if (config.getBoolean("kudo-award.general-settings.enable-reasons")) {
+                int maximumReasonLength = config.getInt("kudo-award.general-settings.reason-length");
                 if (reason.length() < maximumReasonLength) {
                     return true;
                 }
@@ -96,11 +101,11 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private void setCooldown(CommandSender sender) {
         if (!(sender instanceof Player))
             return;
-        if (config.getInt("kudo-award.cooldown") == 0)
+        if (config.getInt("kudo-award.general-settings.cooldown") == 0)
             return;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
-        plugin.cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.cooldown"));
+        plugin.cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.general-settings.cooldown"));
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -127,7 +132,13 @@ public class Kudo implements CommandExecutor, TabCompleter {
         List<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         FileConfiguration config = Main.getPlugin(Main.class).config;
+
         if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) return commandArguments;
+
+        if (WorkaroundManagement.isConfigMigrationNeeded) {
+            return tabCompletions;
+        }
+
         switch (args.length) {
             case 1 -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -136,7 +147,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
                 StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
             }
             case 2 -> {
-                if (config.getBoolean("kudo-award.enable-reasons")) {
+                if (config.getBoolean("kudo-award.general-settings.enable-reasons")) {
                     tabCompletions.add("reason");
                 }
                 StringUtil.copyPartialMatches(args[1], commandArguments, tabCompletions);

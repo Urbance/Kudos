@@ -5,24 +5,24 @@ import Commands.Kudo;
 import Commands.Kudos;
 import Events.OnPlayerJoin;
 import GUI.ReceivedKudosGUI;
-import Utils.ConfigKey;
-import Utils.CooldownManager;
-import Utils.FileManager;
-import Utils.KudosUtils.ConfigWorkaroundManagement;
+import Utils.*;
 import Utils.KudosUtils.KudosExpansion;
-import GUI.KudosGUI;
+import GUI.OverviewGUI;
 import Utils.SQL.SQL;
 import Utils.SQL.SQLGetter;
-import Utils.UpdateChecker;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
+import java.io.File;
 import java.sql.SQLException;
 
-public final class Main extends JavaPlugin implements Listener {
+public class Main extends JavaPlugin implements Listener {
     public final CooldownManager cooldownManager = new CooldownManager();
     public static boolean oldTableScheme;
     public String prefix;
@@ -31,14 +31,15 @@ public final class Main extends JavaPlugin implements Listener {
     public SQLGetter data;
     public FileConfiguration config;
     public FileConfiguration mysqlConfig;
-    public FileConfiguration guiConfig;
-    public ConfigKey configKey;
+    public FileConfiguration overviewConfig;
+    public FileConfiguration receivedKudosConfig;
+    public FileConfiguration leaderboardConfig;
+    public FileConfiguration globalGuiSettingsConfig;
     public boolean isConnected;
 
     @Override
     public void onEnable() {
         this.config = getConfig();
-        this.prefix = config.getString("general.prefix");
 
         getLogger().info("Successfully launched. Suggestions? Questions? Report a Bug? Visit my discord server! https://discord.gg/hDqPms3MbH");
 
@@ -46,17 +47,25 @@ public final class Main extends JavaPlugin implements Listener {
         setupMetrics();
         setupConfigs();
 
-        try {
-            setupSQL();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        this.prefix = config.getString("general-settings.prefix");
+
+        setupSQL();
+
+        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
+        workaroundManagement.performMigrationCheck();
+
+        if (WorkaroundManagement.isLegacyConfig) {
+            WorkaroundManagement.notifyInstanceAboutLegacyConfigAtPluginStartup();
+            return;
         }
+
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            registerListenerAndCommands();
+            WorkaroundManagement.notifyInstanceAboutWorkaroundAtPluginStartup();
+            return;
+        }
+
         registerListenerAndCommands();
-
-
-        // perform workarounds
-        ConfigWorkaroundManagement configWorkaroundManagement = new ConfigWorkaroundManagement();
-        configWorkaroundManagement.performWorkarounds();
     }
 
     @Override
@@ -64,7 +73,7 @@ public final class Main extends JavaPlugin implements Listener {
         Utils.SQL.SQL.disconnect();
     }
 
-    public boolean setupSQL() throws SQLException {
+    public boolean setupSQL() {
         this.SQL = new SQL();
         this.data = new SQLGetter(this);
 
@@ -76,35 +85,17 @@ public final class Main extends JavaPlugin implements Listener {
             getLogger().info("Database is not connected");
             throw exception;
         }
-        if (!Utils.SQL.SQL.getConnection().isClosed()) {
-            getLogger().info("Database is connected");
-            if (!data.initTables()) return false;
-            this.isConnected = true;
+        try {
+            if (!Utils.SQL.SQL.getConnection().isClosed()) {
+                getLogger().info("Database is connected");
+                if (!data.initTables()) return false;
+                this.isConnected = true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
-        oldTableScheme = data.checkIfKudosTableHasOldTableSchematic();
-        if (oldTableScheme) getLogger().warning("Data migration is required. Please create a backup from the database. Perform /kudmin migrate and restart the server. The statistics of how many Kudos a player has awarded will be reset!");
 
         return true;
-    }
-
-    public void registerListenerAndCommands() {
-        PluginManager pluginManager = Bukkit.getPluginManager();
-
-        pluginManager.registerEvents(new OnPlayerJoin(), this);
-        if (!isConnected) return;
-        getCommand("kudmin").setExecutor(new Kudmin());
-        if (oldTableScheme) return;
-        getCommand("kudmin").setTabCompleter(new Kudmin());
-        pluginManager.registerEvents(new KudosGUI(), this);
-        pluginManager.registerEvents(new ReceivedKudosGUI(), this);
-        getCommand("kudos").setExecutor(new Kudos());
-        getCommand("kudos").setTabCompleter(new Kudos());
-        getCommand("kudo").setExecutor(new Kudo());
-        getCommand("kudo").setTabCompleter(new Kudo());
-        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
-            new KudosExpansion().register();
-        }
     }
 
     public void setupConfigs() {
@@ -125,13 +116,48 @@ public final class Main extends JavaPlugin implements Listener {
         localeConfig.options().copyDefaults(true);
         localeManager.save();
 
-        // setup gui.yml
-        FileManager guiManager = new FileManager("gui.yml", this);
-        this.guiConfig = guiManager.getConfig();
-        guiConfig.options().copyDefaults(true);
+        // setup overview.yml
+        FileManager guiManager = new FileManager("guis/overview.yml", this);
+        this.overviewConfig = guiManager.getConfig();
+        overviewConfig.options().copyDefaults(true);
         guiManager.save();
 
-        this.configKey = new ConfigKey();
+        // setup received-kudos.yml
+        FileManager receivedKudosManager = new FileManager("guis/received-kudos.yml", this);
+        this.receivedKudosConfig = receivedKudosManager.getConfig();
+        receivedKudosConfig.options().copyDefaults(true);
+        receivedKudosManager.save();
+
+        // setup leaderboard.yml
+        FileManager leaderboardManager = new FileManager("guis/leaderboard.yml", this);
+        this.leaderboardConfig = leaderboardManager.getConfig();
+        leaderboardConfig.options().copyDefaults(true);
+        leaderboardManager.save();
+
+        // setup global-gui-settings.yml
+        FileManager globalGuiSettingsManager = new FileManager("guis/global-gui-settings.yml", this);
+        this.globalGuiSettingsConfig = globalGuiSettingsManager.getConfig();
+        globalGuiSettingsConfig.options().copyDefaults(true);
+        globalGuiSettingsManager.save();
+    }
+
+    public void registerListenerAndCommands() {
+        PluginManager pluginManager = Bukkit.getPluginManager();
+
+        pluginManager.registerEvents(new OnPlayerJoin(), this);
+        if (!isConnected) return;
+
+        getCommand("kudmin").setExecutor(new Kudmin());
+        getCommand("kudmin").setTabCompleter(new Kudmin());
+        pluginManager.registerEvents(new OverviewGUI(), this);
+        pluginManager.registerEvents(new ReceivedKudosGUI(), this);
+        getCommand("kudos").setExecutor(new Kudos());
+        getCommand("kudos").setTabCompleter(new Kudos());
+        getCommand("kudo").setExecutor(new Kudo());
+        getCommand("kudo").setTabCompleter(new Kudo());
+        if (pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new KudosExpansion().register();
+        }
     }
 
     private void setupMetrics() {
@@ -142,7 +168,7 @@ public final class Main extends JavaPlugin implements Listener {
         String pluginVersion = getDescription().getVersion();
         if (pluginVersion.contains("PRE")) getLogger().info("You're using a 'PRE' version. Please notice that bugs can occur!");
 
-        if (!config.getBoolean("general.update-notification")) return;
+        if (!config.getBoolean("general-settings.update-notification")) return;
         new UpdateChecker(this, 106036).getVersion(version -> {
             int majorPluginVersion = Integer.parseInt(pluginVersion.substring(0, pluginVersion.indexOf('.')));
             int majorPluginVersionOnSpigot = Integer.parseInt(version.substring(0, version.indexOf('.')));

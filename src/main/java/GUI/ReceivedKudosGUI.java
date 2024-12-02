@@ -26,7 +26,7 @@ import java.util.List;
 public class ReceivedKudosGUI implements GUI_Interface, Listener {
     private Main plugin;
     private SQLGetter data;
-    private FileConfiguration guiConfig;
+    private FileConfiguration receivedKudosConfig;
     private ChestGui receivedKudosGUI;
     private PaginatedPane paginatedPane;
     private HashMap<Integer, String> receivedKudosList;
@@ -37,7 +37,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     public ReceivedKudosGUI() {
         this.plugin = Main.getPlugin(Main.class);
         this.data = plugin.data;
-        this.guiConfig = plugin.guiConfig;
+        this.receivedKudosConfig = plugin.receivedKudosConfig;
     }
 
     private void init() {
@@ -62,7 +62,6 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     }
 
     private void createGUI() {
-        // TODO build gui title dynamically
         this.urbanceGUI = new UrbanceGUI();
         this.receivedKudosGUI = urbanceGUI.create("Kudos", 1)
                 .cancelOnGlobalClick(true)
@@ -83,7 +82,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
         pageSwitcherLeft.setAction(inventoryClickEvent -> {
             if (currentPage == 1) {
-                new KudosGUI().open(player);
+                new OverviewGUI().open(player);
             } else {
                 paginatedPane.setPage(currentPage - 1);
                 receivedKudosGUI.update();
@@ -105,7 +104,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
-            String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general.console-name") : unsplittedReceivedKudosList[0];
+            String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? plugin.config.getString("general-settings.console-name") : unsplittedReceivedKudosList[0];
             String awardReason = unsplittedReceivedKudosList[1];
             String awardDateString = unsplittedReceivedKudosList[2];
             Date date;
@@ -118,7 +117,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
             awardDateString = dateFormat.format(date);
 
-            List<String> itemLore = guiConfig.getStringList("received-kudos.received-kudos-item.lore");
+            List<String> itemLore = receivedKudosConfig.getStringList("items.received-kudos-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
@@ -130,7 +129,7 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
 
             ItemCreator playerHead = new ItemCreator("PLAYER_HEAD");
 
-            if (playerName.equals(plugin.config.getString("general.console-name"))) {
+            if (playerName.equals(plugin.config.getString("general-settings.console-name"))) {
                 playerHead.setDisplayName("&2" + playerName)
                         .replaceSkullWithCustomURLSkull(serverURLSkull);
             } else {

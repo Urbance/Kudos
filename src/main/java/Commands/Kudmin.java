@@ -1,11 +1,8 @@
 package Commands;
 
-import Utils.ComponentCreator;
-import Utils.ConfigKey;
-import Utils.FileManager;
+import Utils.*;
 import Utils.KudosUtils.KudosManagement;
 import Utils.SQL.SQLGetter;
-import Utils.ValidationManagement;
 import de.urbance.Main;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
@@ -22,7 +19,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class Kudmin implements CommandExecutor, TabCompleter {
-    private static boolean performedMigration = false;
     public static String prefix = "&7» &cKudmin&7: ";
     private Main plugin;
     private SQLGetter data;
@@ -47,39 +43,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        if (performMigration(sender, args)) return false;
-
         performAction(sender, args);
         return false;
     }
 
-    private boolean performMigration(CommandSender sender, String[] args) {
-        if (Main.oldTableScheme) {
-            if (args[0].equals("migrate") && args.length == 1) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start data migration"));
-
-                if (!data.migrateOldTableSchemeToNewTableScheme()) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Errors have occurred. Please check the console for more information!"));
-                    return true;
-                }
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration successful. Please restart the server to complete the data migration"));
-                performedMigration = true;
-                return true;
-            }
-        }
-        if (data.checkIfKudosTableHasOldTableSchematic()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server. The statistics of how many Kudos a player has awarded will be reset!"));
-            return true;
-        }
-        if (performedMigration) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Please restart the server to complete the migration"));
-            return true;
-        }
-
-        return false;
-    }
-
     private void performAction(CommandSender sender, String[] args) {
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            if (!args[0].equals("migration")) {
+                WorkaroundManagement.notifyInstanceAboutWorkaround(sender);
+                return;
+            }
+            performMigration(sender);
+            return;
+        }
+
         switch (args[0]) {
             case "help" -> sendHelpMessage(sender, args);
             case "reload" -> reloadConfigs(sender, args);
@@ -90,6 +67,40 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             case "remove" -> performRemove(sender, args);
             default -> sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Unknown argument &e" + args[0] + "&7. Type &e/kudmin help &7to get more informations!"));
         }
+    }
+
+    private void performMigration(CommandSender sender) {
+        WorkaroundManagement workaroundManagement = new WorkaroundManagement();
+        workaroundManagement.performMigrationCheck();
+
+        if (WorkaroundManagement.isConfigMigrationNeeded || WorkaroundManagement.isSQLMigrationNeeded) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Start migration.."));
+
+            if (WorkaroundManagement.isSQLMigrationNeeded) {
+                if (!workaroundManagement.performSQLMigration())  {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Something went wrong during SQL table migration. Please check the logs and contact the plugin author."));
+                    return;
+                }
+
+                workaroundManagement.performMigrationCheck();
+                if (WorkaroundManagement.isSQLMigrationNeeded) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error occurred during SQL migration. Please run the migration again or check the console and contact the plugin author."));
+                    return;
+                }
+
+            }
+            if (WorkaroundManagement.isConfigMigrationNeeded) {
+                workaroundManagement.performConfigMigration();
+
+                workaroundManagement.performMigrationCheck();
+                if (WorkaroundManagement.isConfigMigrationNeeded) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error occurred during config migration. Please run the migration again or check the console and contact the plugin author."));
+                    return;
+                }
+            }
+        }
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Performed migration successfully."));
     }
 
     private void sendHelpMessage(CommandSender sender, String[] args) {
@@ -109,7 +120,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
                 "&7You can find all commands and permissions " ;
         ComponentBuilder helpTextComponent = new ComponentCreator(helpText).createPlainTextComponent(false, null);
         ComponentBuilder wiki = new ComponentCreator("&chere&7!")
-                .createLinkTextComponent("&l&o&cClick!","https://urbance.gitbook.io/kudos-v4-wiki/getting-started/permissions-and-commands", false);
+                .createLinkTextComponent("&l&o&cClick!","https://urbance.gitbook.io/kudos-v5-wiki/getting-started/permissions-and-commands", false);
         sender.spigot().sendMessage(helpTextComponent
                 .append(wiki.create())
                 .create());
@@ -123,9 +134,11 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         new FileManager("config.yml", plugin).reload();
         new FileManager("messages.yml", plugin).reload();
         new FileManager("mysql.yml", plugin).reload();
-        new FileManager("gui.yml", plugin).reload();
+        new FileManager("guis/overview.yml", plugin).reload();
+        new FileManager("guis/leaderboard.yml", plugin).reload();
+        new FileManager("guis/received-kudos.yml", plugin).reload();
+        new FileManager("guis/global-gui-settings.yml", plugin).reload();
 
-        plugin.configKey = new ConfigKey();
     }
 
     private void performClear(CommandSender sender, String[] args) {
@@ -178,7 +191,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     }
 
     private void performAdd(CommandSender sender, String[] args) {
-        int maximumReasonLength = config.getInt("kudo-award.reason-length");
+        int maximumReasonLength = config.getInt("kudo-award.general-settings.reason-length");
 
         if (!validateInput(args, sender, 3 + maximumReasonLength, 1, true, true)) return;
 
@@ -326,6 +339,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         ArrayList<String> commandArguments = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
         if (!sender.hasPermission("kudos.admin.*")) return commandArguments;
+
+        if (WorkaroundManagement.isConfigMigrationNeeded || WorkaroundManagement.isSQLMigrationNeeded) {
+            if (args.length == 1) commandArguments.add("migration");
+            StringUtil.copyPartialMatches(args[0], commandArguments, tabCompletions);
+            return commandArguments;
+        }
 
         switch (args.length) {
             case 1 -> {

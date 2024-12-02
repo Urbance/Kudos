@@ -1,0 +1,17 @@
+general-settings:
+  gui-title: "&rKudos"
+page-switcher:
+  playsound:
+    enabled: true
+    playsound-type: "ITEM_BOOK_PAGE_TURN"
+  direction:
+    backwards:
+      item-name: "&eBackwards"
+    forwards:
+      item-name: "&eForwards"
+placeholderapi-settings:
+  items:
+    kudos-leaderboard:
+      item-lore-format: "&e%top_kudos% &7%top_player%"
+      item-lore-not-assigned-kudos: "&eNot assigned"
+      display-players: 3

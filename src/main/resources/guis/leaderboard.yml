@@ -1,0 +1,5 @@
+items:
+  player-leaderboard-item:
+    item-name: "&2%kudos_leaderboard_name%"
+    item-lore:
+      - "&7Total Kudos: %kudos_leaderboard_kudos%"

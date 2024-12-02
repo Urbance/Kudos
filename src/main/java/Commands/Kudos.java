@@ -1,9 +1,10 @@
 package Commands;
 
-import GUI.KudosGUI;
+import GUI.OverviewGUI;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,17 +19,19 @@ import org.bukkit.util.StringUtil;
 import java.util.*;
 
 public class Kudos implements CommandExecutor, TabCompleter {
-    Main plugin = Main.getPlugin(Main.class);
-    FileConfiguration locale;
-    SQLGetter data;
-    String prefix;
-    OfflinePlayer targetPlayer;
-    KudosManagement kudosManagement;
-    KudosMessage kudosMessage;
+    private Main plugin = Main.getPlugin(Main.class);
+    private FileConfiguration locale;
+    private SQLGetter data;
+    private OfflinePlayer targetPlayer;
+    private KudosManagement kudosManagement;
+    private KudosMessage kudosMessage;
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        this.prefix = plugin.prefix;
+        if (WorkaroundManagement.isLegacyConfig || WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded) {
+            return false;
+        }
+
         this.locale = plugin.localeConfig;
         this.data = new SQLGetter(plugin);
         this.kudosManagement = new KudosManagement();
@@ -54,15 +57,15 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission(sender);
             return;
         }
-        FileConfiguration guiConfig = plugin.guiConfig;
-        if (!guiConfig.getBoolean("general.enabled")) {
+        FileConfiguration overviewConfig = plugin.overviewConfig;
+        if (!overviewConfig.getBoolean("general-settings.enabled")) {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return;
         }
 
         Player player = Bukkit.getPlayer(sender.getName());
 
-        KudosGUI kudosGUI = new KudosGUI();
+        OverviewGUI kudosGUI = new OverviewGUI();
         kudosGUI.open(player);
     }
 
@@ -95,7 +98,13 @@ public class Kudos implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> playerNameList = new ArrayList<>();
         List<String> tabCompletions = new ArrayList<>();
+
         if (!(sender.hasPermission("kudos.player.show") || sender.hasPermission("kudos.player.*"))) return playerNameList;
+
+        if (WorkaroundManagement.isConfigMigrationNeeded) {
+            return tabCompletions;
+        }
+
         if (args.length == 1) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 playerNameList.add(player.getName());

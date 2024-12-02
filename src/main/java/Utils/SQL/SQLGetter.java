@@ -1,6 +1,5 @@
 package Utils.SQL;
 
-import Utils.FileManager;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,10 +17,8 @@ public class SQLGetter {
     public static String consoleCommandSenderPrefix = "%ConsoleCommandSender%";
     private Main plugin;
     private FileConfiguration config;
-    private FileConfiguration guiConfig;
 
     public SQLGetter(Main plugin) {
-        this.guiConfig = new FileManager("gui.yml", plugin).getConfig();
         this.plugin = Main.getPlugin(Main.class);
         this.config = plugin.config;
     }
@@ -173,8 +170,8 @@ public class SQLGetter {
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
-                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
-                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general.console-name"));
+                if (reason == null) reason = config.getString("kudo-award.general-settings.no-reason-given");
+                if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general-settings.console-name"));
 
                 kudos.add(String.format("&eID&7: %s | &efrom &7%s | &eat&7 %s \n&eReason: &7%s", entryNumber, receivedFromPlayer, date, reason));
             }
@@ -202,7 +199,7 @@ public class SQLGetter {
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
 
-                if (reason == null) reason = config.getString("kudo-award.no-reason-given");
+                if (reason == null) reason = config.getString("kudo-award.general-settings.no-reason-given");
 
                 receivedKudos.put(entryNumber, receivedFromPlayer + "@" + reason + "@" + date);
                 entryNumber++;
@@ -254,7 +251,7 @@ public class SQLGetter {
     // TODO: remove function specific coded entries amount: make entries dynamically
     public List<String> getTopPlayersKudosTemp() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 3")){
-            int amountDisplayPlayers = guiConfig.getInt("slot.kudos-leaderboard.display-players");
+            int amountDisplayPlayers = plugin.globalGuiSettingsConfig.getInt("placeholderapi-settings.items.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
             ResultSet results = preparedStatement.executeQuery();
@@ -299,9 +296,32 @@ public class SQLGetter {
         return playerKudos;
     }
 
+    private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
+        List<String> list = new ArrayList<>();
+        String loreFormat = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
+
+        for (int entry = 0; entry < amountDisplayPlayers; entry++) {
+            list.add(loreFormat);
+        }
+        return list;
+    }
+
+    private List<String> setNotAssignedKudosText(List<String> lore) {
+        for (int entry = 0; entry < lore.size(); entry++) {
+            if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos")));
+            }
+        }
+        return lore;
+    }
+
     public boolean checkIfKudosTableHasOldTableSchematic() {
         String statement = "SELECT COUNT(*) AS ENTRIES FROM pragma_table_info('kudos') WHERE name='Kudos' or name='Assigned'";
-        boolean useMySQL = config.getBoolean("general.use-SQL");
+        boolean useMySQL = config.getBoolean("general-settings.use-MySQL");
+
+        if (config.isConfigurationSection("general")) {
+            useMySQL = config.getBoolean("general.use-SQL");
+        }
 
         if (useMySQL) {
             FileConfiguration mysqlConfig = plugin.mysqlConfig;
@@ -373,27 +393,8 @@ public class SQLGetter {
             int totalKudos = entry.getValue();
             createPlayer(uuid);
             addKudos(uuid, SQLGetter.consoleCommandSenderPrefix, null, totalKudos);
-
         }
         return true;
     }
 
-    private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
-        List<String> list = new ArrayList<>();
-        String loreFormat = guiConfig.getString("slot.kudos-leaderboard.papi.lore-format");
-
-        for (int entry = 0; entry < amountDisplayPlayers; entry++) {
-            list.add(loreFormat);
-        }
-        return list;
-    }
-
-    private List<String> setNotAssignedKudosText(List<String> lore) {
-        for (int entry = 0; entry < lore.size(); entry++) {
-            if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', guiConfig.getString("slot.kudos-leaderboard.papi.not-assigned-kudos")));
-            }
-        }
-        return lore;
-    }
 }

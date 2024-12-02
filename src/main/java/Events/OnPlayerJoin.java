@@ -1,7 +1,7 @@
 package Events;
 
-import Commands.Kudmin;
 import Utils.SQL.SQLGetter;
+import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import java.util.UUID;
 
 public class OnPlayerJoin implements Listener {
-    Main plugin = Main.getPlugin(Main.class);
+    private Main plugin = Main.getPlugin(Main.class);
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -21,8 +21,11 @@ public class OnPlayerJoin implements Listener {
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        sendOldTableSchemeMessage(player);
-        if (!createDatabasePlayer(player.getUniqueId())) Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
+        if (!createDatabasePlayer(player.getUniqueId())) {
+            Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
+            return;
+        }
+        sendWorkaroundNeededMessage(player);
     }
 
     private void sendNoDatabaseFoundMessage(Player player, String prefix) {
@@ -31,15 +34,20 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private void sendOldTableSchemeMessage(Player player) {
-        if (!Main.oldTableScheme || !player.hasPermission("kudos.admin.*")) return;
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', Kudmin.prefix + "Data migration is required. Please create a &ebackup &7from the database. Perform &e/kudmin migrate &7and restart the server. The statistics of how many Kudos a player has awarded will be reset!"));
-    }
-
     private boolean createDatabasePlayer(UUID uuid) {
         if (!plugin.isConnected) return false;
         if (Main.oldTableScheme) return true;
         SQLGetter data = new SQLGetter(plugin);
         return data.createPlayer(uuid);
+    }
+
+    private void sendWorkaroundNeededMessage(Player player) {
+        if (!player.hasPermission("kudos.admin.*")) return;
+        if (WorkaroundManagement.isLegacyConfig) {
+            WorkaroundManagement.notifyInstanceAboutLegacyWorkaround(player);
+            return;
+        }
+        if (WorkaroundManagement.isSQLMigrationNeeded || WorkaroundManagement.isConfigMigrationNeeded)
+            WorkaroundManagement.notifyInstanceAboutWorkaround(player);
     }
 }
