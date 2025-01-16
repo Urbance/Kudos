@@ -1,9 +1,9 @@
 package GUI;
 
+import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
-import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -11,6 +11,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -62,14 +63,16 @@ public class LeaderboardGUI implements GUI_Interface {
     }
 
     private void setLeaderboardPlayers() {
+        FileConfiguration leaderboardConfig = ConfigManagement.getLeaderboardGuiConfig();
+
         int playerHeadSlot = 2;
 
         for (UUID entry : leaderboardData.keySet()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(entry);
             String playerTotalKudos = leaderboardData.get(entry);
-            String itemDisplayName = plugin.leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", player.getName());
+            String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", player.getName());
 
-            List<String> itemLore = plugin.leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
+            List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
 
             for (String itemLoreEntry : itemLore) {
@@ -96,7 +99,7 @@ public class LeaderboardGUI implements GUI_Interface {
         init();
 
         if (this.gui == null) {
-            String errorMessage = plugin.localeConfig.getString("error.something-went-wrong-please-contact-server-administrator");
+            String errorMessage = ConfigManagement.getLocalesConfig().getString("error.something-went-wrong-please-contact-server-administrator");
             if (player != null) new KudosMessage(plugin).send(player, errorMessage);
             return;
         }

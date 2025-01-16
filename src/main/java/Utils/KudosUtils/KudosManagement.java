@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
@@ -23,8 +24,8 @@ public class KudosManagement {
     public KudosManagement() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
-        this.config = plugin.config;
-        this.locale = plugin.localeConfig;
+        this.config = ConfigManagement.getConfig();
+        this.locale = ConfigManagement.getLocalesConfig();
         this.kudosMessage = new KudosMessage(plugin);
     }
 

@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,7 @@ public class KudosNotification {
         Main plugin = JavaPlugin.getPlugin(Main.class);
         this.kudosMessage = new KudosMessage(plugin);
         this.data = new SQLGetter(plugin);
-        this.locale = plugin.localeConfig;
+        this.locale = ConfigManagement.getLocalesConfig();;
     }
 
     public void fromConsole(Player targetPlayer, String reason) {

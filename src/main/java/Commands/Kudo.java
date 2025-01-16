@@ -1,5 +1,6 @@
 package Commands;
 
+import Utils.ConfigManagement;
 import Utils.KudosUtils.*;
 import Utils.WorkaroundManagement;
 import de.urbance.Main;
@@ -28,8 +29,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
 
         this.plugin = Main.getPlugin(Main.class);
-        this.locale = plugin.localeConfig;
-        this.config = plugin.config;
+        this.locale = ConfigManagement.getLocalesConfig();
+        this.config = ConfigManagement.getConfig();
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
         String reason = null;

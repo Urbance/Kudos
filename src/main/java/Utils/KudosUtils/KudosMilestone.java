@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
@@ -23,9 +24,9 @@ public class KudosMilestone {
 
     public KudosMilestone() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
-        this.config = plugin.config;
+        this.config = ConfigManagement.getConfig();
         this.data = new SQLGetter(plugin);
-        this.locale = plugin.localeConfig;
+        this.locale = ConfigManagement.getLocalesConfig();
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
     }
