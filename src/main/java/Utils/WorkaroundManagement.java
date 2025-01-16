@@ -282,7 +282,7 @@ public class WorkaroundManagement {
             return;
 
         ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
 
         String receivedKudosBackwardsItemNameKeyPath = "received-kudos.backwards-item.item-name";
         String receivedKudosForwardsItemNameKeyPath = "received-kudos.forwards-item.item-name";
