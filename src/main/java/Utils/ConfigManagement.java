@@ -31,6 +31,7 @@ public class ConfigManagement {
 
     public static void initConfigFiles(Main plugin) {
         ConfigManagement.configPathMapping.put("config.yml", "config.yml");
+        ConfigManagement.configPathMapping.put("gui.yml", "gui.yml"); // Deprecated configuration file
         ConfigManagement.configPathMapping.put("mysql.yml", "mysql.yml");
         ConfigManagement.configPathMapping.put("messages.yml", "messages.yml");
         ConfigManagement.configPathMapping.put("overview.yml", "guis" + File.separator + "overview.yml");
