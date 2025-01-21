@@ -130,9 +130,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         if (!validateInput(args, sender, 1, 0, false, false))
             return;
 
+        String useMySQLValueBeforeReload = config.getString("general-settings.use-MySQL");
 
         ConfigManagement.reloadAllConfigs(plugin);
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs. A few changes will only take effect after a server restart!"));
+
+        config = ConfigManagement.getConfig();
+        String useMySQLValueAfterReload = config.getString("general-settings.use-MySQL");
+
+        String message = "Reloaded configs.";
+        if (!useMySQLValueBeforeReload.equals(useMySQLValueAfterReload)) {
+            message +=  " You have adjusted the database mode. The change may only take effect after a server restart.";
+        }
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
+
     }
 
     private void performClear(CommandSender sender, String[] args) {

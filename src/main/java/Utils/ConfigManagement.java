@@ -26,7 +26,6 @@ public class ConfigManagement {
         this.fileConfiguration = ConfigManagement.configFiles.get(fileName);
         this.plugin = plugin;
 
-
         saveDefaultConfig();
     }
 
