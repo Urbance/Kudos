@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import de.urbance.Main;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -14,7 +15,7 @@ public class KudosAward {
 
     public KudosAward() {
         this.plugin = JavaPlugin.getPlugin(Main.class);
-        this.config = plugin.config;
+        this.config = ConfigManagement.getConfig();
         this.kudosManagement = new KudosManagement();
     }
 

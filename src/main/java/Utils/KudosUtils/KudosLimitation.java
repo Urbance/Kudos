@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import de.urbance.Main;
 import org.apache.commons.lang3.time.DateUtils;
 import org.bukkit.command.CommandSender;
@@ -19,10 +20,10 @@ public class KudosLimitation {
 
     public boolean setLimitation(CommandSender sender, Player targetPlayer) {
         Main plugin = Main.getPlugin(Main.class);
-        this.config = plugin.config;
+        this.config = ConfigManagement.getConfig();
         this.targetPlayerUUID = targetPlayer.getUniqueId();
         KudosMessage kudosMessage = new KudosMessage(plugin);
-        FileConfiguration localeConfig = plugin.localeConfig;
+        FileConfiguration localeConfig = ConfigManagement.getLocalesConfig();;
         Date currentDate = new Date();
 
         if (!receivedKudos.containsKey(targetPlayerUUID)) {

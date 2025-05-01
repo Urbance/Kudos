@@ -1,5 +1,6 @@
 package Utils.SQL;
 
+import Utils.ConfigManagement;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.urbance.Main;
@@ -25,7 +26,7 @@ public class SQL {
     public SQL() {
         this.plugin = Main.getPlugin(Main.class);
         this.config = plugin.getConfig();
-        this.mysqlConfig = plugin.mysqlConfig;
+        this.mysqlConfig = ConfigManagement.getMySQLConfig();
         this.host = mysqlConfig.getString("hostname");
         this.port = mysqlConfig.getString("port");
         this.database = mysqlConfig.getString("database");

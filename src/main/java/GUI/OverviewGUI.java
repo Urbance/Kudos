@@ -1,5 +1,6 @@
 package GUI;
 
+import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
@@ -27,11 +28,11 @@ public class OverviewGUI implements Listener {
     public OverviewGUI() {
         this.plugin = Main.getPlugin(Main.class);
         this.data = plugin.data;
-        this.overviewConfig = plugin.overviewConfig;
+        this.overviewConfig = ConfigManagement.getOverviewGuiConfig();
     }
 
     private void createOverviewGui() {
-        FileConfiguration globalGuiSettingsConfig = plugin.globalGuiSettingsConfig;
+        FileConfiguration globalGuiSettingsConfig = ConfigManagement.getGlobalGuiSettingsConfig();
         String guiTitle = globalGuiSettingsConfig.getString("general-settings.gui-title");
 
         int size = overviewConfig.getInt("general-settings.rows");
@@ -141,7 +142,7 @@ public class OverviewGUI implements Listener {
         createOverviewGui();
 
         if (this.kudosGUI == null) {
-            String errorMessage = plugin.localeConfig.getString("error.something-went-wrong-please-contact-server-administrator");
+            String errorMessage = ConfigManagement.getLocalesConfig().getString("error.something-went-wrong-please-contact-server-administrator");
             if (player != null) new KudosMessage(plugin).send(player, errorMessage);
             return;
         }

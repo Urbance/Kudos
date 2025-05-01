@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import Utils.SQL.SQLGetter;
 import de.urbance.Main;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -37,7 +38,7 @@ public class KudosExpansion extends PlaceholderExpansion {
         Main plugin = Main.getPlugin(Main.class);
         SQLGetter data = new SQLGetter(plugin);
         UUID playerUUID = player.getUniqueId();
-        String notAssignedKudos = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos");
+        String notAssignedKudos = ConfigManagement.getGlobalGuiSettingsConfig().getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos");
         List<String> topPlayerKudos = data.getTopPlayersKudosTemp();
 
         switch (parameter) {
@@ -55,6 +56,7 @@ public class KudosExpansion extends PlaceholderExpansion {
                     return notAssignedKudos;
                 return topPlayerKudos.get(0);
             }
+            
             case "top2_kudos" -> {
                 if (topPlayerKudos.size() < 2)
                     return notAssignedKudos;

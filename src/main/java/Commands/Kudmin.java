@@ -29,9 +29,9 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         this.plugin = Main.getPlugin(Main.class);
         this.data = new SQLGetter(plugin);
-        this.config = plugin.config;
+        this.config = ConfigManagement.getConfig();
         this.validationManagement = new ValidationManagement();
-        FileConfiguration locale = plugin.localeConfig;
+        FileConfiguration locale = ConfigManagement.getLocalesConfig();
 
         if (!sender.hasPermission("kudos.admin.*")) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + locale.getString("error.no-permission")));
@@ -129,15 +129,20 @@ public class Kudmin implements CommandExecutor, TabCompleter {
     private void reloadConfigs(CommandSender sender, String[] args) {
         if (!validateInput(args, sender, 1, 0, false, false))
             return;
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Reloaded configs. A few changes will only take effect after a server restart!"));
 
-        new FileManager("config.yml", plugin).reload();
-        new FileManager("messages.yml", plugin).reload();
-        new FileManager("mysql.yml", plugin).reload();
-        new FileManager("guis/overview.yml", plugin).reload();
-        new FileManager("guis/leaderboard.yml", plugin).reload();
-        new FileManager("guis/received-kudos.yml", plugin).reload();
-        new FileManager("guis/global-gui-settings.yml", plugin).reload();
+        String useMySQLValueBeforeReload = config.getString("general-settings.use-MySQL");
+
+        ConfigManagement.reloadAllConfigs(plugin);
+
+        config = ConfigManagement.getConfig();
+        String useMySQLValueAfterReload = config.getString("general-settings.use-MySQL");
+
+        String message = "Reloaded configs.";
+        if (!useMySQLValueBeforeReload.equals(useMySQLValueAfterReload)) {
+            message +=  " You have adjusted the database mode. The change may only take effect after a server restart.";
+        }
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + message));
 
     }
 

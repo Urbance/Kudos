@@ -4,6 +4,7 @@ package Utils.KudosUtils;
     requires InventoryFramework
  */
 
+import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
@@ -20,7 +21,7 @@ public class UrbanceGUI {
 
     public UrbanceGUI() {
         this.plugin = Main.getPlugin(Main.class);
-        this.globalGuiSettingsConfig = plugin.globalGuiSettingsConfig;
+        this.globalGuiSettingsConfig = ConfigManagement.getGlobalGuiSettingsConfig();
     }
 
     public UrbanceGUI create(String title, int size) {

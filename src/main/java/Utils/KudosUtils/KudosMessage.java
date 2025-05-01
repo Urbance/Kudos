@@ -1,5 +1,6 @@
 package Utils.KudosUtils;
 
+import Utils.ConfigManagement;
 import de.urbance.Main;
 import org.apache.commons.text.StringSubstitutor;
 import org.bukkit.Bukkit;
@@ -19,7 +20,7 @@ public class KudosMessage {
 
     public KudosMessage(Main plugin) {
         this.prefix = plugin.prefix;
-        this.locale = plugin.localeConfig;
+        this.locale = ConfigManagement.getLocalesConfig();
     }
 
     public void send(Player player, String message) {

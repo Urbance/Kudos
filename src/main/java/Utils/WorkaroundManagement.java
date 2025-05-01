@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Utils.FileManager.copyConfigValuesBetweenTwoConfigs;
+import static Utils.ConfigManagement.copyConfigValuesBetweenTwoConfigs;
 
 public class WorkaroundManagement {
     public static boolean isConfigMigrationNeeded = false;
@@ -65,8 +65,8 @@ public class WorkaroundManagement {
         if (!Files.exists(guiConfigPath))
             return false;
 
-        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
         guiConfig.options().copyDefaults(true);
 
         return guiConfig.getString("title") != null && guiConfig.getString("enabled") != null && guiConfig.isConfigurationSection("slot.top3");
@@ -82,12 +82,12 @@ public class WorkaroundManagement {
         if (!Files.exists(guiConfigPath))
             return false;
 
-        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
         guiConfig.options().copyDefaults(true);
 
-        FileManager configFileManager = new FileManager("config.yml", plugin);
-        FileConfiguration config = configFileManager.getConfig();
+        ConfigManagement configFileManager = new ConfigManagement("config.yml", plugin);
+        FileConfiguration config = configFileManager.getFileConfiguration();
         config.options().copyDefaults(true);
 
         return guiConfigFileManager.file.exists() || guiConfig.isConfigurationSection("general") || guiConfig.isConfigurationSection("slot") || config.isConfigurationSection("general");
@@ -101,24 +101,24 @@ public class WorkaroundManagement {
             return;
         }
 
-        FileManager configFileManager = new FileManager("config.yml", plugin);
-        FileConfiguration config = configFileManager.getConfig();
+        ConfigManagement configFileManager = new ConfigManagement("config.yml", plugin);
+        FileConfiguration config = configFileManager.getFileConfiguration();
         config.options().copyDefaults(true);
 
-        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
         guiConfig.options().copyDefaults(true);
 
-        FileManager globalGuiSettingsConfigManager = new FileManager("guis/global-gui-settings.yml", plugin);
-        FileConfiguration globalGuiSettingsConfig = globalGuiSettingsConfigManager.getConfig();
+        ConfigManagement globalGuiSettingsConfigManager = new ConfigManagement("global-gui-settings.yml", plugin);
+        FileConfiguration globalGuiSettingsConfig = globalGuiSettingsConfigManager.getFileConfiguration();
         globalGuiSettingsConfig.options().copyDefaults(true);
 
-        FileManager leaderboardGuiConfigManager = new FileManager("guis/leaderboard.yml", plugin);
-        FileConfiguration leaderboardGuiConfig = leaderboardGuiConfigManager.getConfig();
+        ConfigManagement leaderboardGuiConfigManager = new ConfigManagement("leaderboard.yml", plugin);
+        FileConfiguration leaderboardGuiConfig = leaderboardGuiConfigManager.getFileConfiguration();
         leaderboardGuiConfig.options().copyDefaults(true);
 
-        FileManager overviewGuiConfigManager = new FileManager("guis/overview.yml", plugin);
-        FileConfiguration overviewGuiConfig = overviewGuiConfigManager.getConfig();
+        ConfigManagement overviewGuiConfigManager = new ConfigManagement("overview.yml", plugin);
+        FileConfiguration overviewGuiConfig = overviewGuiConfigManager.getFileConfiguration();
         overviewGuiConfig.options().copyDefaults(true);
 
         // create config backup files
@@ -271,9 +271,8 @@ public class WorkaroundManagement {
         if (!Files.exists(guiConfigPath))
             return false;
 
-        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
-        guiConfig.options().copyDefaults(true);
+        ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
 
         return guiConfig.getString("received-kudos.backwards-item.item-name") != null || guiConfig.getString("slot.kudos-leaderboard.not-assigned-kudos") != null;
     }
@@ -282,8 +281,8 @@ public class WorkaroundManagement {
         if (!check430Workaround())
             return;
 
-        FileManager guiConfigFileManager = new FileManager("gui.yml", plugin);
-        FileConfiguration guiConfig = guiConfigFileManager.getConfig();
+        ConfigManagement guiConfigFileManager = new ConfigManagement("gui.yml", plugin);
+        FileConfiguration guiConfig = guiConfigFileManager.getFileConfiguration();
 
         String receivedKudosBackwardsItemNameKeyPath = "received-kudos.backwards-item.item-name";
         String receivedKudosForwardsItemNameKeyPath = "received-kudos.forwards-item.item-name";

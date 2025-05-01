@@ -1,5 +1,6 @@
 package Utils.SQL;
 
+import Utils.ConfigManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ public class SQLGetter {
 
     public SQLGetter(Main plugin) {
         this.plugin = Main.getPlugin(Main.class);
-        this.config = plugin.config;
+        this.config = ConfigManagement.getConfig();
     }
 
     public boolean initTables() {
@@ -251,7 +252,7 @@ public class SQLGetter {
     // TODO: remove function specific coded entries amount: make entries dynamically
     public List<String> getTopPlayersKudosTemp() {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 3")){
-            int amountDisplayPlayers = plugin.globalGuiSettingsConfig.getInt("placeholderapi-settings.items.kudos-leaderboard.display-players");
+            int amountDisplayPlayers = ConfigManagement.getGlobalGuiSettingsConfig().getInt("placeholderapi-settings.items.kudos-leaderboard.display-players");
             if (amountDisplayPlayers > 15) amountDisplayPlayers = 15;
             int counter = 0;
             ResultSet results = preparedStatement.executeQuery();
@@ -298,7 +299,7 @@ public class SQLGetter {
 
     private List<String> prepareTopPlayersKudosList(int amountDisplayPlayers) {
         List<String> list = new ArrayList<>();
-        String loreFormat = plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
+        String loreFormat = ConfigManagement.getGlobalGuiSettingsConfig().getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-format");
 
         for (int entry = 0; entry < amountDisplayPlayers; entry++) {
             list.add(loreFormat);
@@ -309,7 +310,7 @@ public class SQLGetter {
     private List<String> setNotAssignedKudosText(List<String> lore) {
         for (int entry = 0; entry < lore.size(); entry++) {
             if (lore.get(entry).contains("%top_kudos%") || lore.get(entry).contains("%top_player%")) {
-                lore.set(entry, ChatColor.translateAlternateColorCodes('&', plugin.globalGuiSettingsConfig.getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos")));
+                lore.set(entry, ChatColor.translateAlternateColorCodes('&', ConfigManagement.getGlobalGuiSettingsConfig().getString("placeholderapi-settings.items.kudos-leaderboard.item-lore-not-assigned-kudos")));
             }
         }
         return lore;
@@ -324,7 +325,8 @@ public class SQLGetter {
         }
 
         if (useMySQL) {
-            FileConfiguration mysqlConfig = plugin.mysqlConfig;
+            new ConfigManagement("mysql.yml", plugin);
+            FileConfiguration mysqlConfig = ConfigManagement.getMySQLConfig();
             String databaseName = mysqlConfig.getString("database");
             statement = ("SELECT COUNT(*) AS ENTRIES FROM information_schema.columns\n" +
                     "WHERE TABLE_SCHEMA='%s'\n" +

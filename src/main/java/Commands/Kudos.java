@@ -1,6 +1,7 @@
 package Commands;
 
 import GUI.OverviewGUI;
+import Utils.ConfigManagement;
 import Utils.KudosUtils.KudosManagement;
 import Utils.KudosUtils.KudosMessage;
 import Utils.SQL.SQLGetter;
@@ -32,7 +33,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        this.locale = plugin.localeConfig;
+        this.locale = ConfigManagement.getLocalesConfig();
         this.data = new SQLGetter(plugin);
         this.kudosManagement = new KudosManagement();
         this.kudosMessage = new KudosMessage(plugin);
@@ -57,7 +58,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
             kudosMessage.noPermission(sender);
             return;
         }
-        FileConfiguration overviewConfig = plugin.overviewConfig;
+        FileConfiguration overviewConfig = ConfigManagement.getOverviewGuiConfig();
         if (!overviewConfig.getBoolean("general-settings.enabled")) {
             kudosMessage.sendSender(sender, locale.getString("error.specify-player"));
             return;
