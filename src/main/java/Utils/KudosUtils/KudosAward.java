@@ -21,7 +21,6 @@ public class KudosAward {
 
     public boolean sendKudoAward(CommandSender sender, Player targetPlayer, String reason) {
         if (!addRewards(sender, targetPlayer)) {
-             if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
             return false;
         }
         sendNotification(sender, targetPlayer, reason);

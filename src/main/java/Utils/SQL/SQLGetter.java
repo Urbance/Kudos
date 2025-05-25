@@ -83,6 +83,19 @@ public class SQLGetter {
         return null;
     }
 
+    public String getLastKudoAwardedDateFromPlayer(UUID uuid) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Date FROM `kudos` WHERE ReceivedFromPlayer=? ORDER BY Date DESC LIMIT 1;")) {
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+            if (results.next()) {
+                return results.getString("Date");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean exists(UUID uuid) {
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM players WHERE UUID=?")) {

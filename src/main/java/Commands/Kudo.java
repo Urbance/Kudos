@@ -5,12 +5,17 @@ import Utils.KudosUtils.*;
 import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.StringUtil;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Kudo implements CommandExecutor, TabCompleter {
@@ -19,7 +24,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
     private KudosManagement kudosManagement;
     private FileConfiguration locale;
     private FileConfiguration config;
-    private int playerCooldown;
     private final KudosLimitation kudosLimitation = new KudosLimitation();
 
     @Override
@@ -34,7 +38,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
         this.kudosMessage = new KudosMessage(plugin);
         this.kudosManagement = new KudosManagement();
         String reason = null;
-        if (config.getBoolean("kudo-award.general-settings.enable-reasons") && args.length > 1) reason = kudosManagement.getReason(args, 2);
+        if (config.getBoolean("kudo-award.general-settings.enable-reasons") && args.length > 1)
+            reason = kudosManagement.getReason(args, 2);
         if (!validateInput(args, sender, reason)) return false;
 
         awardKudo(sender, args, reason);
@@ -45,24 +50,20 @@ public class Kudo implements CommandExecutor, TabCompleter {
         Player targetPlayer = Bukkit.getPlayer(args[0]);
         UUID targetPlayerUUID = targetPlayer.getUniqueId();
 
-        if (sender instanceof Player) this.playerCooldown = plugin.cooldownManager.getCooldown(((Player) sender).getUniqueId());
         if (!playerCanReceiveKudo(sender, targetPlayer)) return;
         if (kudosManagement.isMilestone(targetPlayer)) {
             if (!new KudosMilestone().sendMilestone(sender, targetPlayer, reason)) {
-                if (sender instanceof Player) plugin.cooldownManager.setCooldown(((Player) sender).getUniqueId(), 0);
                 return;
             }
         } else {
             if (!new KudosAward().sendKudoAward(sender, targetPlayer, reason)) return;
         }
         kudosManagement.addKudo(sender, targetPlayerUUID, reason);
-        setCooldown(sender);
     }
 
     private boolean playerCanReceiveKudo(CommandSender sender, Player targetPlayer) {
         if (!validatePlayerCooldown(sender)) return false;
-        if (config.getBoolean("kudo-award.limitation.enabled") && !kudosLimitation.setLimitation(sender, targetPlayer)) return false;
-        return true;
+        return !config.getBoolean("kudo-award.limitation.enabled") || kudosLimitation.setLimitation(sender, targetPlayer);
     }
 
     private boolean validateInput(String[] args, CommandSender sender, String reason) {
@@ -99,32 +100,31 @@ public class Kudo implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private void setCooldown(CommandSender sender) {
+    private boolean validatePlayerCooldown(CommandSender sender) {
         if (!(sender instanceof Player))
-            return;
-        if (config.getInt("kudo-award.general-settings.cooldown") == 0)
-            return;
+            return true;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
-        plugin.cooldownManager.setCooldown(senderUUID, config.getInt("kudo-award.general-settings.cooldown"));
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                int timeLeft = plugin.cooldownManager.getCooldown(senderUUID);
-                plugin.cooldownManager.setCooldown(senderUUID, --timeLeft);
-                if (timeLeft == 0)
-                    this.cancel();
-            }
-        }.runTaskTimer(plugin, 0, 20);
-    }
 
-    private boolean validatePlayerCooldown(CommandSender sender) {
-        if (playerCooldown > 0 && sender instanceof Player) {
+        String stringLastKudoAwardedAt = plugin.data.getLastKudoAwardedDateFromPlayer(senderUUID);
+
+        if (stringLastKudoAwardedAt == null || stringLastKudoAwardedAt.isBlank())
+            return true;
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+        LocalDateTime lastKudoAwardedAt = LocalDateTime.parse(stringLastKudoAwardedAt, dateFormat);
+        LocalDateTime nextKudoCanAwardedAt = lastKudoAwardedAt.plusSeconds(config.getLong("kudo-award.general-settings.cooldown"));
+
+        Long secondsUntilNextKudoCanAwarded = Duration.between(LocalDateTime.now(), nextKudoCanAwardedAt).getSeconds();
+
+        if (secondsUntilNextKudoCanAwarded > 0) {
             Map<String, String> placeholderValues = new HashMap<>();
-            placeholderValues.put("kudos_cooldown", String.valueOf(playerCooldown));
+            placeholderValues.put("kudos_cooldown", String.valueOf(secondsUntilNextKudoCanAwarded));
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.must-wait-before-use-again"), placeholderValues));
             return false;
         }
+
         return true;
     }
 
@@ -134,7 +134,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
         List<String> tabCompletions = new ArrayList<>();
         FileConfiguration config = Main.getPlugin(Main.class).config;
 
-        if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*"))) return commandArguments;
+        if (!(sender.hasPermission("kudos.player.award") || sender.hasPermission("kudos.player.*")))
+            return commandArguments;
 
         if (WorkaroundManagement.isConfigMigrationNeeded) {
             return tabCompletions;

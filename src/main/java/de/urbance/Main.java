@@ -20,7 +20,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 
 public class Main extends JavaPlugin implements Listener {
-    public final CooldownManager cooldownManager = new CooldownManager();
     public static boolean oldTableScheme;
     public String prefix;
     public Utils.SQL.SQL SQL;
