@@ -26,7 +26,7 @@ public class ConfigManagement {
         this.fileConfiguration = ConfigManagement.configFiles.get(fileName);
         this.plugin = plugin;
 
-        save();
+        saveDefaultConfig();
     }
 
     public static void initConfigFiles(Main plugin) {
@@ -120,7 +120,9 @@ public class ConfigManagement {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.fileConfiguration.setDefaults(defaultConfig);
             this.fileConfiguration.options().copyDefaults(true);
-        }
+
+            save();
+         }
 
         ConfigManagement.configFiles.put(fileName, fileConfiguration);
     }
