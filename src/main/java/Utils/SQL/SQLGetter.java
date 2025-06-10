@@ -1,6 +1,7 @@
 package Utils.SQL;
 
 import Utils.ConfigManagement;
+import Utils.UrbanceDebug;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,6 +85,11 @@ public class SQLGetter {
     }
 
     public String getLastKudoAwardedDateFromPlayer(UUID uuid) {
+        if (!exists(uuid)) {
+            UrbanceDebug.sendInfo("Player with UUID " + uuid + " not found in players table");
+            return null;
+        }
+
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Date FROM `kudos` WHERE ReceivedFromPlayer=? ORDER BY Date DESC LIMIT 1;")) {
             preparedStatement.setString(1, uuid.toString());
             ResultSet results = preparedStatement.executeQuery();
@@ -248,6 +254,25 @@ public class SQLGetter {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public int getTotalAwardedKudos(UUID uuid) {
+        if (!exists(uuid)) {
+            UrbanceDebug.sendInfo("Player with UUID " + uuid + " not found in players table");
+            return -1;
+        }
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT COUNT(ReceivedFromPlayer) FROM kudos WHERE ReceivedFromPlayer=?")) {
+            preparedStatement.setString(1, uuid.toString());
+            ResultSet results = preparedStatement.executeQuery();
+
+            if (results.next())
+                return results.getInt("COUNT(ReceivedFromPlayer)");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public int getAssignedKudos(UUID uuid) {
