@@ -153,6 +153,8 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        kudosMessage.sendSender(sender, locale.getString("error.something-went-wrong-please-contact-server-administrator"));
+        
         return false;
     }
 
