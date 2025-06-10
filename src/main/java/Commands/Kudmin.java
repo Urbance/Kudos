@@ -209,7 +209,6 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         String reason = kudosManagement.getReason(args, 4);
         String playerName = args[1];
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-        String receivedFromPlayer = String.valueOf(playerUUID);
         int amountKudos = Integer.parseInt(args[2]);
 
         if (amountKudos > 2500) {
@@ -224,7 +223,14 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "An error has occurred. Can't get reason."));
             return;
         }
-        if (sender instanceof ConsoleCommandSender) receivedFromPlayer = SQLGetter.consoleCommandSenderPrefix;
+
+        String receivedFromPlayer;
+        if (sender instanceof ConsoleCommandSender) {
+            receivedFromPlayer = SQLGetter.consoleCommandSenderPrefix;
+        } else {
+            receivedFromPlayer = String.valueOf(((Player) sender).getUniqueId());
+        }
+
         data.addKudos(playerUUID, receivedFromPlayer, reason, amountKudos);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "Added &e" + amountKudos + " Kudos &7" + "to &e" + playerName));
     }
