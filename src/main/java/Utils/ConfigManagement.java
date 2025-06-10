@@ -119,7 +119,10 @@ public class ConfigManagement {
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.fileConfiguration.setDefaults(defaultConfig);
-        }
+            this.fileConfiguration.options().copyDefaults(true);
+
+            save();
+         }
 
         ConfigManagement.configFiles.put(fileName, fileConfiguration);
     }

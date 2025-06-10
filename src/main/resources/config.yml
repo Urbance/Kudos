@@ -3,6 +3,7 @@ general-settings:
   prefix: "&7» &eKudos&7: "
   use-MySQL: false
   console-name: "SERVER"
+  debug-mode: false
 kudo-award:
   general-settings:
     cooldown: 900

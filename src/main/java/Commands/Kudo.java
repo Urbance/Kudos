@@ -2,13 +2,11 @@ package Commands;
 
 import Utils.ConfigManagement;
 import Utils.KudosUtils.*;
+import Utils.UrbanceDebug;
 import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
@@ -101,31 +99,61 @@ public class Kudo implements CommandExecutor, TabCompleter {
     }
 
     private boolean validatePlayerCooldown(CommandSender sender) {
-        if (!(sender instanceof Player))
+        UrbanceDebug.sendInfo("Step: Kudos.Award.Validate.Cooldown");
+
+        if (sender instanceof ConsoleCommandSender)
             return true;
 
         UUID senderUUID = ((Player) sender).getUniqueId();
 
+        UrbanceDebug.sendInfo(sender.getName() + " kudos to a player");
+        UrbanceDebug.sendInfo("senderUUID: " + senderUUID);
+        UrbanceDebug.sendInfo("Date: " + LocalDateTime.now());
+
+        int totalAwardedKudos = plugin.data.getTotalAwardedKudos(senderUUID);
+
+        if (totalAwardedKudos == -1) {
+            kudosMessage.sendSender(sender, locale.getString("error.something-went-wrong-please-contact-server-administrator"));
+            return false;
+        }
+
+        UrbanceDebug.sendInfo("totalAwardedKudos: " + totalAwardedKudos);
+
+        if (totalAwardedKudos == 0)
+            return true;
+
         String stringLastKudoAwardedAt = plugin.data.getLastKudoAwardedDateFromPlayer(senderUUID);
 
-        if (stringLastKudoAwardedAt == null || stringLastKudoAwardedAt.isBlank())
-            return true;
+        if (stringLastKudoAwardedAt == null ) {
+            kudosMessage.sendSender(sender, locale.getString("error.something-went-wrong-please-contact-server-administrator"));
+            return false;
+        }
 
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
         LocalDateTime lastKudoAwardedAt = LocalDateTime.parse(stringLastKudoAwardedAt, dateFormat);
         LocalDateTime nextKudoCanAwardedAt = lastKudoAwardedAt.plusSeconds(config.getLong("kudo-award.general-settings.cooldown"));
 
+        UrbanceDebug.sendInfo("lastKudoAwardedAt: " + lastKudoAwardedAt);
+        UrbanceDebug.sendInfo("nextKudoCanAwardedAt:  " + nextKudoCanAwardedAt);
+
+        if (LocalDateTime.now().isAfter(nextKudoCanAwardedAt))
+            return true;
+
         Long secondsUntilNextKudoCanAwarded = Duration.between(LocalDateTime.now(), nextKudoCanAwardedAt).getSeconds();
 
         if (secondsUntilNextKudoCanAwarded > 0) {
+            UrbanceDebug.sendInfo("secondsUntilNextKudoCanAwarded: " + secondsUntilNextKudoCanAwarded);
+
             Map<String, String> placeholderValues = new HashMap<>();
             placeholderValues.put("kudos_cooldown", String.valueOf(secondsUntilNextKudoCanAwarded));
+
             kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.must-wait-before-use-again"), placeholderValues));
+
             return false;
         }
 
-        return true;
+        return false;
     }
 
     @Override

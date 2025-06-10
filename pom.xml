@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>5.2.0</version>
+    <version>5.2.1</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -41,7 +41,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>D:\Repositorys\Kudos\Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
+                            <outputFile>D:\Minecraft Development Servers\(1.21.5) Dev Server\plugins\${project.artifactId}-${project.version}.jar</outputFile>
                             <relocations>
                                 <relocation>
                                     <pattern>com.github.stefvanschie.inventoryframework</pattern>
