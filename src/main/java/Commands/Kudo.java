@@ -56,7 +56,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         } else {
             if (!new KudosAward().sendKudoAward(sender, targetPlayer, reason)) return;
         }
-        kudosManagement.addKudo(sender, targetPlayerUUID, reason);
     }
 
     private boolean playerCanReceiveKudo(CommandSender sender, Player targetPlayer) {
@@ -142,7 +141,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
 
         Long secondsUntilNextKudoCanAwarded = Duration.between(LocalDateTime.now(), nextKudoCanAwardedAt).getSeconds();
 
-        if (secondsUntilNextKudoCanAwarded > 0) {
+        if (secondsUntilNextKudoCanAwarded >= 0) {
             UrbanceDebug.sendInfo("secondsUntilNextKudoCanAwarded: " + secondsUntilNextKudoCanAwarded);
 
             Map<String, String> placeholderValues = new HashMap<>();
@@ -154,7 +153,6 @@ public class Kudo implements CommandExecutor, TabCompleter {
         }
 
         kudosMessage.sendSender(sender, locale.getString("error.something-went-wrong-please-contact-server-administrator"));
-        
         return false;
     }
 

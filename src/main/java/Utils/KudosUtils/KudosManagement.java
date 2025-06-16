@@ -3,9 +3,11 @@ package Utils.KudosUtils;
 import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
+import Utils.UrbanceDebug;
 import de.urbance.Main;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -34,14 +36,30 @@ public class KudosManagement {
         MILESTONE
     }
 
-    public void addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
+    public boolean addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
         if (sender instanceof Player) {
-            if (!data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1)) kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
-            return;
-        }
-        if (!data.addKudos(targetPlayerUUID, SQLGetter.consoleCommandSenderPrefix, reason, 1)) {
+
+            UrbanceDebug.sendInfo("Step: KudosManagement.AddKudo");
+            UrbanceDebug.sendInfo("sender: " + sender.getName());
+            UrbanceDebug.sendInfo("senderUUID: " + ((Player) sender).getUniqueId());
+            UrbanceDebug.sendInfo("targetPlayerUUID: " + targetPlayerUUID);
+
+            boolean returnValue = data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1);
+
+            if (returnValue) return true;
+
             kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+            return false;
         }
+        if (sender instanceof ConsoleCommandSender) {
+            boolean returnValue = data.addKudos(targetPlayerUUID, SQLGetter.consoleCommandSenderPrefix, reason, 1);
+
+            if (returnValue) return true;
+
+            kudosMessage.sendSender(sender, "An error has occurred: Please contact the system administrator or the developer of the plugin.");
+            return false;
+        }
+        return false;
     }
 
     public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {

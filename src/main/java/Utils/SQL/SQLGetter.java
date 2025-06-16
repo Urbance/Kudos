@@ -115,6 +115,10 @@ public class SQLGetter {
     }
 
     public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason, int amount) {
+        UrbanceDebug.sendInfo("Step: SQLGetter.AddKudos");
+
+        int affectedRows = 0;
+
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
 
@@ -125,14 +129,25 @@ public class SQLGetter {
                 preparedStatement.setString(2, receivedFromPlayer);
                 preparedStatement.setString(3, reason);
                 preparedStatement.setString(4, dateFormat.format(date));
-                preparedStatement.executeUpdate();
+                affectedRows = preparedStatement.executeUpdate();
+
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
+        UrbanceDebug.sendInfo("affectedRows: " + affectedRows);
+
+        if (affectedRows > 0) {
+            UrbanceDebug.sendInfo("affectedRows is higher than 0, return true");
+            return true;
+        } else if (affectedRows <= 0) {
+            UrbanceDebug.sendInfo("affectedRows not higher than 0, return false");
+            return false;
+        }
+
+        return false;
     }
 
     public boolean removeKudo(int kudosID) {

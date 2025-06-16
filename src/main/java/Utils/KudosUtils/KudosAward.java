@@ -23,6 +23,9 @@ public class KudosAward {
         if (!addRewards(sender, targetPlayer)) {
             return false;
         }
+        if (!kudosManagement.addKudo(sender, targetPlayer.getUniqueId(), reason)) {
+            return false;
+        }
         sendNotification(sender, targetPlayer, reason);
         return true;
     }
