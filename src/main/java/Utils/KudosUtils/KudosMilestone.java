@@ -35,6 +35,9 @@ public class KudosMilestone {
         if (!addRewards(sender, targetPlayer)) {
             return false;
         }
+        if (!kudosManagement.addKudo(sender, targetPlayer.getUniqueId(), reason)) {
+            return false;
+        }
 
         Map<String, String> placeholderValues = new HashMap<>();
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
