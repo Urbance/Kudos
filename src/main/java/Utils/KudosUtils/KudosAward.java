@@ -9,18 +9,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class KudosAward {
-    private Main plugin;
     private FileConfiguration config;
     private KudosManagement kudosManagement;
 
     public KudosAward() {
-        this.plugin = JavaPlugin.getPlugin(Main.class);
         this.config = ConfigManagement.getConfig();
         this.kudosManagement = new KudosManagement();
     }
 
     public boolean sendKudoAward(CommandSender sender, Player targetPlayer, String reason) {
         if (!addRewards(sender, targetPlayer)) {
+            return false;
+        }
+        if (!kudosManagement.addKudo(sender, targetPlayer.getUniqueId(), reason)) {
             return false;
         }
         sendNotification(sender, targetPlayer, reason);

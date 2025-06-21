@@ -115,6 +115,8 @@ public class SQLGetter {
     }
 
     public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason, int amount) {
+        int affectedRows = 0;
+
         try (Connection connection = SQL.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
 
@@ -125,15 +127,18 @@ public class SQLGetter {
                 preparedStatement.setString(2, receivedFromPlayer);
                 preparedStatement.setString(3, reason);
                 preparedStatement.setString(4, dateFormat.format(date));
-                preparedStatement.executeUpdate();
+
+                affectedRows = preparedStatement.executeUpdate();
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
+
+        return affectedRows > 0;
     }
+
 
     public boolean removeKudo(int kudosID) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE KudoID=?")) {

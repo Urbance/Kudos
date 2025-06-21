@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>5.2.1</version>
+    <version>5.3.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.1.0</version>
+            <version>6.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.11.0</version>
+            <version>0.11.1</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
