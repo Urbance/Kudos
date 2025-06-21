@@ -3,6 +3,7 @@ package Utils.KudosUtils;
 import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.SQL.SQLGetter;
+import Utils.UrbanceDebug;
 import de.urbance.Main;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
@@ -37,6 +38,12 @@ public class KudosManagement {
 
     public boolean addKudo(CommandSender sender, UUID targetPlayerUUID, String reason) {
         if (sender instanceof Player) {
+
+            UrbanceDebug.sendInfo("Step: KudosManagement.AddKudo");
+            UrbanceDebug.sendInfo("sender: " + sender.getName());
+            UrbanceDebug.sendInfo("senderUUID: " + ((Player) sender).getUniqueId());
+            UrbanceDebug.sendInfo("targetPlayerUUID: " + targetPlayerUUID);
+
             boolean kudosAdded = data.addKudos(targetPlayerUUID, String.valueOf(((Player) sender).getUniqueId()), reason, 1);
 
             if (kudosAdded) return true;

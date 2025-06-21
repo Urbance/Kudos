@@ -115,6 +115,8 @@ public class SQLGetter {
     }
 
     public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason, int amount) {
+        UrbanceDebug.sendInfo("Step: SQLGetter.AddKudos");
+
         int affectedRows = 0;
 
         try (Connection connection = SQL.getConnection();
@@ -135,6 +137,8 @@ public class SQLGetter {
             e.printStackTrace();
             return false;
         }
+
+        UrbanceDebug.sendInfo("affectedRows: " + affectedRows);
 
         return affectedRows > 0;
     }
