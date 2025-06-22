@@ -11,6 +11,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
 
@@ -27,6 +30,46 @@ public class SQLGetter {
 
     public boolean initTables() {
         return createPlayersTable() && createKudosTable();
+    }
+
+    public boolean oldDateFormatUsed() {
+        String rawFirstAwardedKudoDate = null;
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Date FROM `kudos` ORDER BY Date ASC LIMIT 1;")) {
+            ResultSet results = preparedStatement.executeQuery();
+            if (results.next()) {
+                rawFirstAwardedKudoDate = results.getString("Date");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (rawFirstAwardedKudoDate == null) return false;
+
+        try {
+            LocalDateTime.parse(rawFirstAwardedKudoDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (DateTimeException e) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean convertOldDateFormatToNewDateFormat() {
+        UrbanceDebug.sendInfo("Step: SQLGetter.ConvertOldDateFormatToNewDateFormat");
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE kudos SET Date = " +
+                "substr(Date, 7, 4) || '-' || " +                                   // Year
+                "substr(Date, 4, 2) || '-' || " +                                   // Month
+                "substr(Date, 1, 2) || 'T' || " +                                   // Day
+                "substr(Date, 12, 8) || '.000000000';")) {                          // Time
+
+            int updatedRows = preparedStatement.executeUpdate();
+            UrbanceDebug.sendInfo("updatedRows: " + updatedRows);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 
     private boolean createPlayersTable() {
@@ -123,12 +166,11 @@ public class SQLGetter {
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
 
             for (int counter = 1; counter <= amount; counter++) {
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Date date = new Date();
+
                 preparedStatement.setString(1, String.valueOf(awardedToPlayer));
                 preparedStatement.setString(2, receivedFromPlayer);
                 preparedStatement.setString(3, reason);
-                preparedStatement.setString(4, dateFormat.format(date));
+                preparedStatement.setString(4, LocalDateTime.now().toString());
 
                 affectedRows = preparedStatement.executeUpdate();
             }

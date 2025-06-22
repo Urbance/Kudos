@@ -36,6 +36,10 @@ public class Main extends JavaPlugin implements Listener {
         setupMetrics();
         setupSQL();
 
+        if (data.oldDateFormatUsed()) {
+            data.convertOldDateFormatToNewDateFormat();
+        }
+
         WorkaroundManagement workaroundManagement = new WorkaroundManagement();
         workaroundManagement.performMigrationCheck();
 
