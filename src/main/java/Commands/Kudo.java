@@ -128,7 +128,7 @@ public class Kudo implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter dateFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
         LocalDateTime lastKudoAwardedAt = LocalDateTime.parse(stringLastKudoAwardedAt, dateFormat);
         LocalDateTime nextKudoCanAwardedAt = lastKudoAwardedAt.plusSeconds(config.getLong("kudo-award.general-settings.cooldown"));

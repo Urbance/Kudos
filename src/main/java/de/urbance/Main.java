@@ -36,6 +36,7 @@ public class Main extends JavaPlugin implements Listener {
         setupMetrics();
         setupSQL();
 
+
         WorkaroundManagement workaroundManagement = new WorkaroundManagement();
         workaroundManagement.performMigrationCheck();
 
@@ -48,6 +49,15 @@ public class Main extends JavaPlugin implements Listener {
             registerListenerAndCommands();
             WorkaroundManagement.notifyInstanceAboutWorkaroundAtPluginStartup();
             return;
+        }
+
+        if (data.oldDateFormatUsed()) {
+            boolean dateConversionWorked = data.convertOldDateFormatToNewDateFormat();
+
+            if (!dateConversionWorked) {
+                getLogger().warning("Date conversion failed. Please contact the plugin developer.");
+                return;
+            }
         }
 
         registerListenerAndCommands();

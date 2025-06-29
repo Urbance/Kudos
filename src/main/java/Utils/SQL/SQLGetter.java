@@ -11,6 +11,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Date;
 
@@ -27,6 +30,60 @@ public class SQLGetter {
 
     public boolean initTables() {
         return createPlayersTable() && createKudosTable();
+    }
+
+    public boolean oldDateFormatUsed() {
+        String rawFirstAwardedKudoDate = null;
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT Date FROM `kudos` ORDER BY Date ASC LIMIT 1;")) {
+            ResultSet results = preparedStatement.executeQuery();
+            if (results.next()) {
+                rawFirstAwardedKudoDate = results.getString("Date");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (rawFirstAwardedKudoDate == null) return false;
+
+        try {
+            LocalDateTime.parse(rawFirstAwardedKudoDate, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (DateTimeException e) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean convertOldDateFormatToNewDateFormat() {
+        UrbanceDebug.sendInfo("Step: SQLGetter.ConvertOldDateFormatToNewDateFormat");
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT KudoID, Date FROM kudos")) {
+            ResultSet results = preparedStatement.executeQuery();
+            PreparedStatement updateDatesPreparedStatement = connection.prepareStatement("UPDATE kudos SET Date=? WHERE KudoID=?");
+
+            while (results.next()) {
+                String kudoID = results.getString("KudoID");
+                String oldDate = results.getString("Date");
+
+                DateTimeFormatter oldDateTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                LocalDateTime oldDateTime = LocalDateTime.parse(oldDate, oldDateTimeFormat);
+
+                String newDate = oldDateTime + ".000000000";
+
+                updateDatesPreparedStatement.setString(1, newDate);
+                updateDatesPreparedStatement.setString(2, kudoID);
+
+                int updatedRows = updateDatesPreparedStatement.executeUpdate();
+                UrbanceDebug.sendInfo("updatedRows: " + updatedRows);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     private boolean createPlayersTable() {
@@ -121,12 +178,10 @@ public class SQLGetter {
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO kudos (AwardedToPlayer, ReceivedFromPlayer, Reason, Date) VALUES (?,?,?,?);")) {
 
             for (int counter = 1; counter <= amount; counter++) {
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-                Date date = new Date();
                 preparedStatement.setString(1, String.valueOf(awardedToPlayer));
                 preparedStatement.setString(2, receivedFromPlayer);
                 preparedStatement.setString(3, reason);
-                preparedStatement.setString(4, dateFormat.format(date));
+                preparedStatement.setString(4, LocalDateTime.now().toString());
 
                 affectedRows = preparedStatement.executeUpdate();
             }
@@ -195,6 +250,10 @@ public class SQLGetter {
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
+
+                LocalDateTime formattedDate = LocalDateTime.parse(date);
+                date = formattedDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+
                 if (reason == null) reason = config.getString("kudo-award.general-settings.no-reason-given");
                 if (receivedFromPlayer.equals(SQLGetter.consoleCommandSenderPrefix)) receivedFromPlayer = receivedFromPlayer.replace(SQLGetter.consoleCommandSenderPrefix, config.getString("general-settings.console-name"));
 
