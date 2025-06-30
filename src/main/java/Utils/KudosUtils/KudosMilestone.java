@@ -41,7 +41,7 @@ public class KudosMilestone {
 
         Map<String, String> placeholderValues = new HashMap<>();
         placeholderValues.put("kudos_targetplayer_name", targetPlayer.getName());
-        placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId()) + 1));
+        placeholderValues.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId())));
         if (reason != null) placeholderValues.put("kudos_award_reason", reason);
         String milestonesMessage = locale.getString("error.something-went-wrong-by-sending-milestone-broadcast");
 
