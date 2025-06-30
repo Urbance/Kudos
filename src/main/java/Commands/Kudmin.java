@@ -242,7 +242,7 @@ public class Kudmin implements CommandExecutor, TabCompleter {
         UUID playerUUID = Bukkit.getOfflinePlayer(playerName).getUniqueId();
         List<String> entryKudosList = data.getAllPlayerKudos(playerUUID);
 
-        if (entryKudosList.isEmpty()) {
+        if (entryKudosList == null || entryKudosList.isEmpty()) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "The player &e" + playerName + " &7has no Kudos."));
             return;
         }

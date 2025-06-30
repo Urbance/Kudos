@@ -50,6 +50,15 @@ public class Main extends JavaPlugin implements Listener {
             return;
         }
 
+        if (data.oldDateFormatUsed()) {
+            boolean dateConversionWorked = data.convertOldDateFormatToNewDateFormat();
+
+            if (!dateConversionWorked) {
+                getLogger().warning("Date conversion failed. Please contact the plugin developer.");
+                return;
+            }
+        }
+
         registerListenerAndCommands();
     }
 

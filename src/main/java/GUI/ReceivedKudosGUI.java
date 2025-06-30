@@ -19,6 +19,8 @@ import org.bukkit.event.Listener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -101,22 +103,15 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
         int inventorySlot = 2;
         int firstKudoReceivedListEntry = (currentPage - 1) * 5;
         int lastKudoReceivedListEntry = Math.min(firstKudoReceivedListEntry + entriesPerPane, totalEntries);
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");
             String playerName = unsplittedReceivedKudosList[0].equals(SQLGetter.consoleCommandSenderPrefix) ? ConfigManagement.getConfig().getString("general-settings.console-name") : unsplittedReceivedKudosList[0];
             String awardReason = unsplittedReceivedKudosList[1];
             String awardDateString = unsplittedReceivedKudosList[2];
-            Date date;
 
-            try {
-                date = dateFormat.parse(awardDateString);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-
-            awardDateString = dateFormat.format(date);
+            LocalDateTime awardDate = LocalDateTime.parse(awardDateString);
+            awardDateString = awardDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
             List<String> itemLore = receivedKudosConfig.getStringList("items.received-kudos-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
