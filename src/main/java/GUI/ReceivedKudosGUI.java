@@ -103,7 +103,6 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
         int inventorySlot = 2;
         int firstKudoReceivedListEntry = (currentPage - 1) * 5;
         int lastKudoReceivedListEntry = Math.min(firstKudoReceivedListEntry + entriesPerPane, totalEntries);
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         for (int entry = firstKudoReceivedListEntry; entry < lastKudoReceivedListEntry; entry++) {
             String[] unsplittedReceivedKudosList = receivedKudosList.get(entry).split("@");

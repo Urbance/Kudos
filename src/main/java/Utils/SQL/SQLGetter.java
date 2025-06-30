@@ -62,6 +62,8 @@ public class SQLGetter {
             ResultSet results = preparedStatement.executeQuery();
             PreparedStatement updateDatesPreparedStatement = connection.prepareStatement("UPDATE kudos SET Date=? WHERE KudoID=?");
 
+            int updatedRows = 0;
+
             while (results.next()) {
                 String kudoID = results.getString("KudoID");
                 String oldDate = results.getString("Date");
@@ -69,14 +71,15 @@ public class SQLGetter {
                 DateTimeFormatter oldDateTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                 LocalDateTime oldDateTime = LocalDateTime.parse(oldDate, oldDateTimeFormat);
 
-                String newDate = oldDateTime + ".000000000";
+                String newDate = oldDateTime.format(DateTimeFormatter.ISO_DATE_TIME) + ".000000000";
 
                 updateDatesPreparedStatement.setString(1, newDate);
                 updateDatesPreparedStatement.setString(2, kudoID);
 
-                int updatedRows = updateDatesPreparedStatement.executeUpdate();
-                UrbanceDebug.sendInfo("updatedRows: " + updatedRows);
+                updatedRows += updateDatesPreparedStatement.executeUpdate();
             }
+
+            UrbanceDebug.sendInfo("updatedRows: " + updatedRows);
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -36,7 +36,6 @@ public class Main extends JavaPlugin implements Listener {
         setupMetrics();
         setupSQL();
 
-
         WorkaroundManagement workaroundManagement = new WorkaroundManagement();
         workaroundManagement.performMigrationCheck();
 
