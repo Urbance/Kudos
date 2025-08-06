@@ -6,7 +6,7 @@
 
     <groupId>de.urbance</groupId>
     <artifactId>Kudos</artifactId>
-    <version>5.4.0</version>
+    <version>5.5.0</version>
     <packaging>jar</packaging>
 
     <name>Kudos</name>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.11.2 </version>
+            <version>0.11.3</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
