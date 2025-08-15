@@ -46,7 +46,10 @@ public class LeaderboardGUI implements GUI_Interface {
     }
 
     private void createGUI() {
-        this.gui = new UrbanceGUI().create("Kudos", 1)
+        FileConfiguration globalGuiSettingsConfig = ConfigManagement.getGlobalGuiSettingsConfig();
+        String guiTitle = globalGuiSettingsConfig.getString("general-settings.gui-title");
+
+        this.gui = new UrbanceGUI().create(guiTitle, 1)
                 .cancelOnGlobalClick(true)
                 .get();
     }
