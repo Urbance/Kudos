@@ -65,8 +65,11 @@ public class ReceivedKudosGUI implements GUI_Interface, Listener {
     }
 
     private void createGUI() {
+        FileConfiguration globalGuiSettingsConfig = ConfigManagement.getGlobalGuiSettingsConfig();
+        String guiTitle = globalGuiSettingsConfig.getString("general-settings.gui-title");
+
         this.urbanceGUI = new UrbanceGUI();
-        this.receivedKudosGUI = urbanceGUI.create("Kudos", 1)
+        this.receivedKudosGUI = urbanceGUI.create(guiTitle, 1)
                 .cancelOnGlobalClick(true)
                 .get();
     }
