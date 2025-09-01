@@ -1,10 +1,12 @@
 package Events;
 
+import Utils.ConfigManagement;
 import Utils.SQL.SQLGetter;
 import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,14 +16,21 @@ import java.util.UUID;
 
 public class OnPlayerJoin implements Listener {
     private Main plugin = Main.getPlugin(Main.class);
+    private FileConfiguration locale;
+
+    public OnPlayerJoin() {
+        locale = ConfigManagement.getLocalesConfig();
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        String displayName = player.getName();
+        UUID uuid = player.getUniqueId();
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        if (!createDatabasePlayer(player.getUniqueId())) {
+        if (!createDatabasePlayer(uuid, displayName)) {
             Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
             return;
         }
@@ -34,11 +43,13 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private boolean createDatabasePlayer(UUID uuid) {
+    private boolean createDatabasePlayer(UUID uuid, String displayName) {
         if (!plugin.isConnected) return false;
         if (Main.oldTableScheme) return true;
+
         SQLGetter data = new SQLGetter(plugin);
-        return data.createPlayer(uuid);
+
+        return data.updatePlayer(uuid, displayName);
     }
 
     private void sendWorkaroundNeededMessage(Player player) {
