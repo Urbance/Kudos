@@ -337,12 +337,12 @@ public class Kudmin implements CommandExecutor, TabCompleter {
             return false;
         }
         String targetPlayerName = args[playerArgumentPosition];
-        OfflinePlayer targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(targetPlayerName).getUniqueId());
-        if (targetPlayer == null) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Player &e" + targetPlayerName + " &7not found!"));
-            return false;
-        }
-        return true;
+
+        if (data.existsByDisplayName(targetPlayerName))
+            return true;
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&',prefix + "Player &e" + targetPlayerName + " &7not found!"));
+        return false;
     }
 
     @Override

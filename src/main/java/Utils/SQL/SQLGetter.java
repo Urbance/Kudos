@@ -276,6 +276,18 @@ public class SQLGetter {
         return false;
     }
 
+    public boolean existsByDisplayName(String displayName) {
+        try (Connection connection = SQL.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM players WHERE DisplayName=?")) {
+            preparedStatement.setString(1, displayName);
+            ResultSet results = preparedStatement.executeQuery();
+            return results.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean addKudos(UUID awardedToPlayer, String receivedFromPlayer, String reason, int amount) {
         int affectedRows = 0;
 
