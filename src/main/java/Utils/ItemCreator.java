@@ -47,7 +47,8 @@ public class ItemCreator {
         if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
 
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        skullMeta.setOwningPlayer(offlinePlayer);
+        if (offlinePlayer != null && offlinePlayer.hasPlayedBefore())
+            skullMeta.setOwningPlayer(offlinePlayer);
         skullMeta.setDisplayName(itemMeta.getDisplayName());
         skullMeta.setLore(itemMeta.getLore());
         this.itemMeta = skullMeta;
