@@ -4,6 +4,7 @@ import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
+import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
@@ -67,13 +68,15 @@ public class LeaderboardGUI implements GUI_Interface {
 
     private void setLeaderboardPlayers() {
         FileConfiguration leaderboardConfig = ConfigManagement.getLeaderboardGuiConfig();
+        SQLGetter data = new SQLGetter(plugin);
 
         int playerHeadSlot = 2;
 
         for (UUID entry : leaderboardData.keySet()) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(entry);
+            String playerName = data.getPlayerDisplayName(entry.toString());
+
             String playerTotalKudos = leaderboardData.get(entry);
-            String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", player.getName());
+            String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", playerName);
 
             List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
             ArrayList<String> modifiedItemLore = new ArrayList<>();
@@ -86,7 +89,7 @@ public class LeaderboardGUI implements GUI_Interface {
             ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
             GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
                     .setLore(modifiedItemLore)
-                    .replaceSkullWithPlayerSkull(player)
+                    .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer(playerName))
                     .get()
             );
 

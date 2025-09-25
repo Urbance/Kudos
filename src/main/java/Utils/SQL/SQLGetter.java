@@ -175,13 +175,16 @@ public class SQLGetter {
         return false;
     }
 
-    public OfflinePlayer getPlayer(UUID uuid) {
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID FROM players WHERE UUID=?")) {
-            preparedStatement.setString(1, uuid.toString());
+
+    // TODO: Check what happens if there are more than 1 results
+    public UUID getPlayerByDisplayName(String displayName) {
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT UUID FROM players WHERE DisplayName=?")) {
+            preparedStatement.setString(1, displayName);
             ResultSet results = preparedStatement.executeQuery();
-            if (results.next()) {
-                return Bukkit.getOfflinePlayer(UUID.fromString(results.getString("UUID")));
-            }
+
+            if (results.next())
+                return UUID.fromString(results.getString("UUID"));
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -219,6 +222,21 @@ public class SQLGetter {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        ArrayList<String> playerUUIDS = new ArrayList<String>();
+
+        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 10")) {
+            ResultSet results = preparedStatement.executeQuery();
+
+            while (results.next())
+                playerUUIDS.add(results.getString("AwardedToPlayer"));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for (String entry : playerUUIDS) {
+            updateDisplayName(entry, Bukkit.getOfflinePlayer(entry).getName());
         }
 
         return columnExists("players", columnName);
