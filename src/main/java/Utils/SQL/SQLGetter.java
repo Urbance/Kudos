@@ -299,10 +299,20 @@ public class SQLGetter {
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM players WHERE DisplayName=?")) {
             preparedStatement.setString(1, displayName);
             ResultSet results = preparedStatement.executeQuery();
-            return results.next();
+
+            if (results.next())
+                return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        if (Bukkit.getOfflinePlayer(displayName).hasPlayedBefore()) {
+            UUID uuid = Bukkit.getOfflinePlayer(displayName).getUniqueId();
+            updatePlayer(uuid, displayName);
+
+            return existsByDisplayName(displayName);
+        }
+
         return false;
     }
 
@@ -328,7 +338,6 @@ public class SQLGetter {
 
         return affectedRows > 0;
     }
-
 
     public boolean removeKudo(int kudosID) {
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM kudos WHERE KudoID=?")) {
