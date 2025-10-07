@@ -123,7 +123,7 @@ public class SQLGetter {
             addColumn("players", "DisplayName", "VARCHAR(100)", "undefined", true);
 
         if (exists(uuid))
-            return updateDisplayName(String.valueOf(uuid), displayName);
+            return updateDisplayName(uuid);
 
         return createPlayer(uuid, displayName);
     }
@@ -146,16 +146,23 @@ public class SQLGetter {
         return exists(uuid) && getPlayerDisplayName(String.valueOf(uuid)).equals(displayName);
     }
 
-    private boolean updateDisplayName(String uuid, String displayName) {
+    private boolean updateDisplayName(UUID uuid) {
         if (!columnExists("players","DisplayName"))
             addColumn("players", "DisplayName", "VARCHAR(100)", "undefined", true);
 
-        if (!exists(UUID.fromString(uuid)))
-            return createPlayer(UUID.fromString(uuid), displayName);
+        String displayName = uuid.toString();
+
+        if (Bukkit.getOfflinePlayer(uuid).hasPlayedBefore())
+            displayName = Bukkit.getOfflinePlayer(uuid).getName();
+
+        if (!exists(uuid))
+            return createPlayer(uuid, displayName);
+
+
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE players SET DisplayName=? WHERE UUID=?")) {
             preparedStatement.setString(1, displayName);
-            preparedStatement.setString(2, uuid);
+            preparedStatement.setString(2, uuid.toString());
 
             preparedStatement.executeUpdate();
 
@@ -163,7 +170,7 @@ public class SQLGetter {
             e.printStackTrace();
         }
 
-        String databasePlayerDisplayName = getPlayerDisplayName(uuid);
+        String databasePlayerDisplayName = getPlayerDisplayName(uuid.toString());
 
         if (databasePlayerDisplayName.equals(displayName))
             return true;
@@ -199,7 +206,6 @@ public class SQLGetter {
             if (results.next())
                 return results.getString("DisplayName");
 
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -223,6 +229,9 @@ public class SQLGetter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
+        // Update DisplayName for top 10 total kudos players
         ArrayList<String> playerUUIDS = new ArrayList<String>();
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 10")) {
@@ -235,8 +244,8 @@ public class SQLGetter {
             e.printStackTrace();
         }
 
-        for (String entry : playerUUIDS) {
-            updateDisplayName(entry, Bukkit.getOfflinePlayer(entry).getName());
+        for (String uuid : playerUUIDS) {
+            updateDisplayName(UUID.fromString(uuid)); // check if this is right
         }
 
         return columnExists("players", columnName);
