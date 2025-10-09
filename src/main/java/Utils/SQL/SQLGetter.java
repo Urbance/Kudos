@@ -118,17 +118,24 @@ public class SQLGetter {
         return true;
     }
 
-    public boolean updatePlayer(UUID uuid, String displayName) {
+    public boolean updatePlayer(UUID uuid) {
         if (!columnExists("players", "DisplayName"))
             addColumn("players", "DisplayName", "VARCHAR(100)", "undefined", true);
 
         if (exists(uuid))
             return updateDisplayName(uuid);
 
-        return createPlayer(uuid, displayName);
+        return createPlayer(uuid);
     }
 
-    private boolean createPlayer(UUID uuid, String displayName) {
+    private boolean createPlayer(UUID uuid) {
+        String displayName = "";
+        if (Bukkit.getPlayer(uuid) != null) {
+            displayName = Bukkit.getPlayer(uuid).getName();
+        } else {
+            displayName = Bukkit.getOfflinePlayer(uuid).getName();
+        }
+
         if (!columnExists("players", "DisplayName"))
             addColumn("players", "DisplayName", "VARCHAR(100)", "undefined", true);
 
@@ -156,9 +163,7 @@ public class SQLGetter {
             displayName = Bukkit.getOfflinePlayer(uuid).getName();
 
         if (!exists(uuid))
-            return createPlayer(uuid, displayName);
-
-
+            return createPlayer(uuid);
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("UPDATE players SET DisplayName=? WHERE UUID=?")) {
             preparedStatement.setString(1, displayName);
@@ -181,7 +186,6 @@ public class SQLGetter {
 
         return false;
     }
-
 
     // TODO: Check what happens if there are more than 1 results
     public UUID getPlayerByDisplayName(String displayName) {
@@ -273,6 +277,7 @@ public class SQLGetter {
 
         return false;
     }
+
     public String getLastKudoAwardedDateFromPlayer(UUID uuid) {
         if (!exists(uuid)) {
             UrbanceDebug.sendInfo("Player with UUID " + uuid + " not found in players table");
@@ -317,7 +322,7 @@ public class SQLGetter {
 
         if (Bukkit.getOfflinePlayer(displayName).hasPlayedBefore()) {
             UUID uuid = Bukkit.getOfflinePlayer(displayName).getUniqueId();
-            updatePlayer(uuid, displayName);
+            updatePlayer(uuid);
 
             return existsByDisplayName(displayName);
         }

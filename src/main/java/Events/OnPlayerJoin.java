@@ -25,12 +25,11 @@ public class OnPlayerJoin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String displayName = player.getName();
         UUID uuid = player.getUniqueId();
         String prefix = plugin.prefix;
 
         sendNoDatabaseFoundMessage(player, prefix);
-        if (!createDatabasePlayer(uuid, displayName)) {
+        if (!createDatabasePlayer(uuid)) {
             Bukkit.getLogger().warning(prefix + "An error has occurred: No player could be created in the database. Please contact the system administrator or the developer of the plugin");
             return;
         }
@@ -43,13 +42,13 @@ public class OnPlayerJoin implements Listener {
         }
     }
 
-    private boolean createDatabasePlayer(UUID uuid, String displayName) {
+    private boolean createDatabasePlayer(UUID uuid) {
         if (!plugin.isConnected) return false;
         if (Main.oldTableScheme) return true;
 
         SQLGetter data = new SQLGetter(plugin);
 
-        return data.updatePlayer(uuid, displayName);
+        return data.updatePlayer(uuid);
     }
 
     private void sendWorkaroundNeededMessage(Player player) {
