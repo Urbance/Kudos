@@ -11,14 +11,10 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class LeaderboardGUI implements GUI_Interface {
     private Main plugin;
@@ -72,10 +68,13 @@ public class LeaderboardGUI implements GUI_Interface {
 
         int playerHeadSlot = 2;
 
-        for (UUID entry : leaderboardData.keySet()) {
-            String playerName = data.getPlayerDisplayName(entry.toString());
+        List<Map.Entry<UUID, String>> map = new ArrayList<>(leaderboardData.entrySet());
+        map.sort((e1, e2) -> -e1.getValue().compareTo(e2.getValue()));
 
-            String playerTotalKudos = leaderboardData.get(entry);
+        for (Map.Entry<UUID, String> entry : map) {
+            String playerName = data.getPlayerDisplayName(entry.getKey().toString());
+
+            String playerTotalKudos = entry.getValue();
             String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", playerName);
 
             List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
