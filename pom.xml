@@ -129,7 +129,7 @@
         <dependency>
             <groupId>com.github.stefvanschie.inventoryframework</groupId>
             <artifactId>IF</artifactId>
-            <version>0.11.4</version>
+            <version>0.11.5</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
