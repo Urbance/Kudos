@@ -11,6 +11,7 @@ import org.bukkit.profile.PlayerTextures;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class ItemCreator {
@@ -46,14 +47,20 @@ public class ItemCreator {
     public ItemCreator replaceSkullWithPlayerSkull(OfflinePlayer offlinePlayer) {
         if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
 
-        Bukkit.getLogger().info("replaceSkull " + offlinePlayer.getName());
-
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        if (offlinePlayer.hasPlayedBefore())
-            skullMeta.setOwningPlayer(offlinePlayer);
+
+        try {
+            if (offlinePlayer.hasPlayedBefore())
+                skullMeta.setOwningPlayer(offlinePlayer);
+        } catch (NoSuchElementException ignored) {
+
+        }
+
         skullMeta.setDisplayName(itemMeta.getDisplayName());
         skullMeta.setLore(itemMeta.getLore());
+
         this.itemMeta = skullMeta;
+
         return this;
     }
 
