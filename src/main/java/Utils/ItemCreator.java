@@ -46,8 +46,10 @@ public class ItemCreator {
     public ItemCreator replaceSkullWithPlayerSkull(OfflinePlayer offlinePlayer) {
         if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
 
+        Bukkit.getLogger().info("replaceSkull " + offlinePlayer.getName());
+
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        if (offlinePlayer != null && offlinePlayer.hasPlayedBefore())
+        if (offlinePlayer.hasPlayedBefore())
             skullMeta.setOwningPlayer(offlinePlayer);
         skullMeta.setDisplayName(itemMeta.getDisplayName());
         skullMeta.setLore(itemMeta.getLore());
