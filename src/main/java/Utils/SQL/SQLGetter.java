@@ -159,8 +159,11 @@ public class SQLGetter {
 
         String displayName = uuid.toString();
 
-        if (Bukkit.getOfflinePlayer(uuid).hasPlayedBefore())
-            displayName = Bukkit.getOfflinePlayer(uuid).getName();
+        try {
+            if (Bukkit.getOfflinePlayer(uuid).hasPlayedBefore())
+                displayName = Bukkit.getOfflinePlayer(uuid).getName();
+        } catch (NoSuchElementException ignored) {
+        }
 
         if (!exists(uuid))
             return createPlayer(uuid);
