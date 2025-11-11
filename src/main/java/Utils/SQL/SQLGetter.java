@@ -222,13 +222,12 @@ public class SQLGetter {
     private boolean addColumn(String table, String columnName, String datatype, String defaultValue, boolean setNotNull) {
         String statement = "";
         String parameterSetNotNull = "NOT NULL";
-        String parameterDefaultValue = "DEFAULT " + defaultValue;
+        String parameterDefaultValue = "DEFAULT " +  "\"" + defaultValue + "\"";
 
         if (!setNotNull) parameterSetNotNull = "";
         if (defaultValue.isBlank()) parameterDefaultValue = "";
 
-        if (driverClassName.equals("org.sqlite.JDBC"))
-            statement = String.format("ALTER TABLE %s ADD COLUMN %s %s %s %s", table, columnName, datatype, parameterDefaultValue, parameterSetNotNull);
+        statement = String.format("ALTER TABLE %s ADD COLUMN %s %s %s %s", table, columnName, datatype, parameterSetNotNull, parameterDefaultValue);
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
@@ -239,7 +238,7 @@ public class SQLGetter {
 
 
         // Update DisplayName for top 10 total kudos players
-        ArrayList<String> playerUUIDS = new ArrayList<String>();
+        ArrayList<String> playerUUIDS = new ArrayList<>();
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT 10")) {
             ResultSet results = preparedStatement.executeQuery();
@@ -258,24 +257,38 @@ public class SQLGetter {
         return columnExists("players", columnName);
     }
 
-    private boolean columnExists(String database, String columnName) {
+    private boolean columnExists(String tableName, String columnName) {
         String statement = "";
 
-        if (driverClassName.equals("org.sqlite.JDBC"))
-            statement = String.format("PRAGMA table_info(%s)", database);
+        if (driverClassName.equals("org.sqlite.JDBC")) {
+            statement = String.format("PRAGMA table_info(%s)", tableName);
 
-        try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
-            ResultSet results = preparedStatement.executeQuery();
+            try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+                ResultSet results = preparedStatement.executeQuery();
 
-            while (results.next()) {
-                String resultColumnName = results.getString("name");
+                while (results.next()) {
+                    String resultColumnName = results.getString("name");
 
-                if (Objects.equals(resultColumnName, columnName))
-                    return true;
+                    if (Objects.equals(resultColumnName, columnName))
+                        return true;
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
+            statement = String.format("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = '%s' AND column_name = '%s';", tableName, columnName);
+
+            try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(statement)) {
+                ResultSet results = preparedStatement.executeQuery();
+
+                if (results.next())
+                    return results.getInt("COUNT(*)") == 1;
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return false;
