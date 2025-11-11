@@ -520,7 +520,8 @@ public class SQLGetter {
 
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
-                String playerName = Bukkit.getOfflinePlayer(uuid).getName();
+
+                String playerName = getPlayerDisplayName(String.valueOf(uuid));
                 String kudos = results.getString("COUNT(KudoID)");
                 String loreEntry = itemLore.get(counter);
 
