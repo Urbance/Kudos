@@ -55,10 +55,10 @@ public class KudosManagement {
         return false;
     }
 
-    public void showPlayerKudos(CommandSender sender, OfflinePlayer targetPlayer) {
+    public void showPlayerKudos(CommandSender sender, UUID targetPlayer) {
         Map<String, String> values = new HashMap<>();
-        values.put("kudos_targetplayer_name", targetPlayer.getName());
-        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer.getUniqueId())));
+        values.put("kudos_targetplayer_name", data.getPlayerDisplayName(targetPlayer.toString()));
+        values.put("kudos_targetplayer_kudos", String.valueOf(data.getAmountKudos(targetPlayer)));
         kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("kudos.show-player-kudos"), values));
     }
 

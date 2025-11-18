@@ -11,6 +11,7 @@ import org.bukkit.profile.PlayerTextures;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class ItemCreator {
@@ -47,10 +48,19 @@ public class ItemCreator {
         if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
 
         SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        skullMeta.setOwningPlayer(offlinePlayer);
+
+        try {
+            if (offlinePlayer.hasPlayedBefore())
+                skullMeta.setOwningPlayer(offlinePlayer);
+        } catch (NoSuchElementException ignored) {
+
+        }
+
         skullMeta.setDisplayName(itemMeta.getDisplayName());
         skullMeta.setLore(itemMeta.getLore());
+
         this.itemMeta = skullMeta;
+
         return this;
     }
 
@@ -58,17 +68,23 @@ public class ItemCreator {
         if (!(itemStack.getType() == Material.PLAYER_HEAD)) return this;
 
         SkullMeta skullMeta = (SkullMeta) itemMeta;
-        PlayerProfile playerProfile = Bukkit.createPlayerProfile(UUID.randomUUID());
+
+        UUID uuid = UUID.randomUUID();
+
+        PlayerProfile playerProfile =  Bukkit.createPlayerProfile(uuid, uuid.toString().substring(0, 16));
         PlayerTextures playerTextures = playerProfile.getTextures();
+        URL urlObject;
 
         try {
             playerTextures.setSkin(new URL(url));
+            urlObject = new URL(url);
         } catch (MalformedURLException e) {
             plugin.getLogger().warning("An error occurred! Please report the error to the plugin developer:");
             e.printStackTrace();
             return this;
         }
 
+        playerTextures.setSkin(urlObject);
         playerProfile.setTextures(playerTextures);
         skullMeta.setOwnerProfile(playerProfile);
 
