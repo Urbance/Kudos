@@ -414,13 +414,7 @@ public class SQLGetter {
 
             while (results.next()) {
                 String entryNumber = results.getString("KudoID");
-                String receivedFromPlayer;
-
-                try {
-                    receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
-                } catch (Exception e) {
-                    receivedFromPlayer = results.getString("ReceivedFromPlayer");
-                }
+                String receivedFromPlayer = getPlayerDisplayName(results.getString("ReceivedFromPlayer"));
 
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
@@ -446,14 +440,7 @@ public class SQLGetter {
             ResultSet results = preparedStatement.executeQuery();
             int entryNumber = 0;
             while (results.next()) {
-                String receivedFromPlayer;
-
-                try {
-                    receivedFromPlayer = Bukkit.getOfflinePlayer(UUID.fromString(results.getString("ReceivedFromPlayer"))).getName();
-                } catch (Exception e) {
-                    receivedFromPlayer = results.getString("ReceivedFromPlayer");
-                }
-
+                String receivedFromPlayer = getPlayerDisplayName(results.getString("ReceivedFromPlayer"));
                 String reason = results.getString("Reason");
                 String date = results.getString("Date");
 
