@@ -8,7 +8,6 @@ import Utils.SQL.SQLGetter;
 import Utils.WorkaroundManagement;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,7 @@ public class Kudos implements CommandExecutor, TabCompleter {
     private Main plugin = Main.getPlugin(Main.class);
     private FileConfiguration locale;
     private SQLGetter data;
-    private OfflinePlayer targetPlayer;
+    private UUID targetPlayer;
     private KudosManagement kudosManagement;
     private KudosMessage kudosMessage;
 
@@ -79,20 +78,30 @@ public class Kudos implements CommandExecutor, TabCompleter {
     }
 
     public boolean validateInput(String[] args, CommandSender sender) {
+       if (args.length == 0)
+           return true;
+
         if (args.length > 1) {
             kudosMessage.wrongUsage(sender);
             return false;
         }
+
         if (args.length == 1) {
-            targetPlayer = data.getPlayer(Bukkit.getOfflinePlayer(args[0]).getUniqueId());
-            if (targetPlayer == null) {
-                Map<String, String> values = new HashMap<>();
-                values.put("kudos_targetplayer_name", args[0]);
-                kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
-                return false;
+            boolean targetPlayerExists = data.existsByDisplayName(args[0]);
+
+            if (targetPlayerExists) {
+                targetPlayer = data.getPlayerByDisplayName(args[0]);
+                return true;
             }
+            Map<String, String> values = new HashMap<>();
+            values.put("kudos_targetplayer_name", args[0]);
+
+            kudosMessage.sendSender(sender, kudosMessage.setPlaceholders(locale.getString("error.player-not-found"), values));
+
+            return false;
         }
-        return true;
+
+        return false;
     }
 
     @Override

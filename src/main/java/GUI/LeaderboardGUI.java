@@ -4,29 +4,27 @@ import Utils.ConfigManagement;
 import Utils.ItemCreator;
 import Utils.KudosUtils.KudosMessage;
 import Utils.KudosUtils.UrbanceGUI;
+import Utils.SQL.SQLGetter;
 import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.github.stefvanschie.inventoryframework.pane.util.Slot;
 import de.urbance.Main;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LeaderboardGUI implements GUI_Interface {
     private Main plugin;
     private StaticPane staticPane;
     private Player player;
     private ChestGui gui;
-    private HashMap<UUID, String> leaderboardData;
+    private HashMap<UUID, Integer> leaderboardData;
 
-    public LeaderboardGUI(HashMap<UUID, String> leaderboardData) {
+    public LeaderboardGUI(HashMap<UUID, Integer> leaderboardData) {
         this.plugin = Main.getPlugin(Main.class);
         this.leaderboardData = leaderboardData;
     }
@@ -67,32 +65,35 @@ public class LeaderboardGUI implements GUI_Interface {
 
     private void setLeaderboardPlayers() {
         FileConfiguration leaderboardConfig = ConfigManagement.getLeaderboardGuiConfig();
+        SQLGetter data = new SQLGetter(plugin);
 
-        int playerHeadSlot = 2;
+        AtomicInteger playerHeadSlot = new AtomicInteger(2);
 
-        for (UUID entry : leaderboardData.keySet()) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(entry);
-            String playerTotalKudos = leaderboardData.get(entry);
-            String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", player.getName());
+        leaderboardData.entrySet().stream().sorted(Map.Entry.<UUID, Integer>comparingByValue().reversed())
+                .forEach(entry -> {
+                    String playerName = data.getPlayerDisplayName(entry.getKey().toString());
 
-            List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
-            ArrayList<String> modifiedItemLore = new ArrayList<>();
+                    String playerTotalKudos = entry.getValue().toString();
+                    String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", playerName);
 
-            for (String itemLoreEntry : itemLore) {
-                itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", playerTotalKudos);
-                modifiedItemLore.add(itemLoreEntry);
-            }
+                    List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
+                    ArrayList<String> modifiedItemLore = new ArrayList<>();
 
-            ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
-            GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
-                    .setLore(modifiedItemLore)
-                    .replaceSkullWithPlayerSkull(player)
-                    .get()
-            );
+                    for (String itemLoreEntry : itemLore) {
+                        itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", playerTotalKudos);
+                        modifiedItemLore.add(itemLoreEntry);
+                    }
 
-            staticPane.addItem(playerHead, Slot.fromIndex(playerHeadSlot));
-            playerHeadSlot++;
-        }
+                    ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
+                    GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
+                            .setLore(modifiedItemLore)
+                            .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer(playerName))
+                            .get()
+                    );
+
+                    staticPane.addItem(playerHead, Slot.fromIndex(playerHeadSlot.get()));
+                    playerHeadSlot.getAndIncrement();
+                });
     }
 
     @Override
