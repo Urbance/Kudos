@@ -84,7 +84,7 @@ public class OverviewGUI implements Listener {
 
     private void addLeaderboardGuiItem() {
         if (overviewConfig.getBoolean("items.kudos-leaderboard.enabled")) {
-            HashMap leaderboardTopKudosData = data.getTopPlayersKudos(6);
+            HashMap<UUID, Integer> leaderboardTopKudosData = data.getTopPlayersKudos(6);
             List<String> lore = overviewConfig.getStringList("items.kudos-leaderboard.item-lore");
             if (leaderboardTopKudosData.isEmpty()) lore = overviewConfig.getStringList("items.kudos-leaderboard.item-lore-no-kudos-exists");
 

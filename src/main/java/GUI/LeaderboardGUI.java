@@ -15,15 +15,16 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LeaderboardGUI implements GUI_Interface {
     private Main plugin;
     private StaticPane staticPane;
     private Player player;
     private ChestGui gui;
-    private HashMap<UUID, String> leaderboardData;
+    private HashMap<UUID, Integer> leaderboardData;
 
-    public LeaderboardGUI(HashMap<UUID, String> leaderboardData) {
+    public LeaderboardGUI(HashMap<UUID, Integer> leaderboardData) {
         this.plugin = Main.getPlugin(Main.class);
         this.leaderboardData = leaderboardData;
     }
@@ -66,35 +67,33 @@ public class LeaderboardGUI implements GUI_Interface {
         FileConfiguration leaderboardConfig = ConfigManagement.getLeaderboardGuiConfig();
         SQLGetter data = new SQLGetter(plugin);
 
-        int playerHeadSlot = 2;
+        AtomicInteger playerHeadSlot = new AtomicInteger(2);
 
-        List<Map.Entry<UUID, String>> map = new ArrayList<>(leaderboardData.entrySet());
-        map.sort((e1, e2) -> -e1.getValue().compareTo(e2.getValue()));
+        leaderboardData.entrySet().stream().sorted(Map.Entry.<UUID, Integer>comparingByValue().reversed())
+                .forEach(entry -> {
+                    String playerName = data.getPlayerDisplayName(entry.getKey().toString());
 
-        for (Map.Entry<UUID, String> entry : map) {
-            String playerName = data.getPlayerDisplayName(entry.getKey().toString());
+                    String playerTotalKudos = entry.getValue().toString();
+                    String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", playerName);
 
-            String playerTotalKudos = entry.getValue();
-            String itemDisplayName = leaderboardConfig.getString("items.player-leaderboard-item.item-name").replace("%kudos_leaderboard_name%", playerName);
+                    List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
+                    ArrayList<String> modifiedItemLore = new ArrayList<>();
 
-            List<String> itemLore = leaderboardConfig.getStringList("items.player-leaderboard-item.item-lore");
-            ArrayList<String> modifiedItemLore = new ArrayList<>();
+                    for (String itemLoreEntry : itemLore) {
+                        itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", playerTotalKudos);
+                        modifiedItemLore.add(itemLoreEntry);
+                    }
 
-            for (String itemLoreEntry : itemLore) {
-                itemLoreEntry = itemLoreEntry.replace("%kudos_leaderboard_kudos%", playerTotalKudos);
-                modifiedItemLore.add(itemLoreEntry);
-            }
+                    ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
+                    GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
+                            .setLore(modifiedItemLore)
+                            .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer(playerName))
+                            .get()
+                    );
 
-            ItemCreator itemCreator = new ItemCreator("PLAYER_HEAD");
-            GuiItem playerHead = new GuiItem(itemCreator.setDisplayName(itemDisplayName)
-                    .setLore(modifiedItemLore)
-                    .replaceSkullWithPlayerSkull(Bukkit.getOfflinePlayer(playerName))
-                    .get()
-            );
-
-            staticPane.addItem(playerHead, Slot.fromIndex(playerHeadSlot));
-            playerHeadSlot++;
-        }
+                    staticPane.addItem(playerHead, Slot.fromIndex(playerHeadSlot.get()));
+                    playerHeadSlot.getAndIncrement();
+                });
     }
 
     @Override

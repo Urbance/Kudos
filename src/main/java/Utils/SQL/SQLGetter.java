@@ -555,15 +555,15 @@ public class SQLGetter {
         return Collections.emptyList();
     }
 
-    public HashMap<UUID, String> getTopPlayersKudos(int amountPlayers) {
-        HashMap<UUID, String> playerKudos = new HashMap<>();
+    public HashMap<UUID, Integer> getTopPlayersKudos(int amountPlayers) {
+        HashMap<UUID, Integer> playerKudos = new HashMap<>();
 
         try (Connection connection = SQL.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("SELECT AwardedToPlayer, COUNT(KudoID) FROM kudos GROUP BY AwardedToPlayer ORDER BY COUNT(KudoID) DESC LIMIT " + amountPlayers)) {
             ResultSet results = preparedStatement.executeQuery();
 
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("AwardedToPlayer"));
-                String kudos = results.getString("COUNT(KudoID)");
+                int kudos = results.getInt("COUNT(KudoID)");
 
                 playerKudos.put(uuid, kudos);
             }
