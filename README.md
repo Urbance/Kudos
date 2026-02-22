@@ -3,6 +3,9 @@
   <br>Kudos
 </h1>
 
+> [!CAUTION]
+> This repository moved to Codeberg: https://codeberg.org/Urbance/Kudos
+
 ## Introduction
 Kudos is an open source praise system. Players have the opportunity to praise each other.
 <br>It includes an editable GUI with various statistics and many ways to award rewards for praises.
